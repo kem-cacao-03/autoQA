@@ -1,0 +1,2 @@
+﻿src/components/TestCaseCard.tsx(86,11): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+src/components/TestCaseCard.tsx(87,11): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
