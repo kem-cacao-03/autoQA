@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+  <diagram name="Overall Architecture" id="dia-1">
+    <mxGraphModel dx="1086" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;" value="Kiến trúc Tổng thể Hệ thống AutoQA-Gen" vertex="1">
+          <mxGeometry height="40" width="750" x="150" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="fe" parent="1" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;arcSize=4;" value="&lt;b&gt;Frontend (Browser)&lt;/b&gt;" vertex="1">
+          <mxGeometry height="490" width="220" x="3" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fe1" parent="fe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="React 19 + TypeScript" vertex="1">
+          <mxGeometry height="50" width="180" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="fe2" parent="fe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Vite 6 + Tailwind CSS v4" vertex="1">
+          <mxGeometry height="50" width="180" x="20" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="fe3" parent="fe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="TanStack Query v5" vertex="1">
+          <mxGeometry height="50" width="180" x="20" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="fe4" parent="fe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Pages: Generator / History / Profile" vertex="1">
+          <mxGeometry height="60" width="180" x="20" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="fe5" parent="fe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="api.ts&#xa;(HTTP client + silent JWT refresh)" vertex="1">
+          <mxGeometry height="60" width="180" x="20" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="fe6" parent="fe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="AuthContext + ProtectedRoute" vertex="1">
+          <mxGeometry height="50" width="180" x="20" y="415" as="geometry" />
+        </mxCell>
+        <mxCell id="be" parent="1" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;arcSize=4;" value="&lt;b&gt;Backend (FastAPI + Uvicorn)&lt;/b&gt;" vertex="1">
+          <mxGeometry height="490" width="360" x="310" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="be-auth" parent="be" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Auth Module&lt;/b&gt;&#xa;POST /auth/register · POST /auth/login&#xa;POST /auth/refresh · GET /auth/me · PUT /auth/me" vertex="1">
+          <mxGeometry height="80" width="300" x="30" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="be-gen" parent="be" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Generator Module&lt;/b&gt;&#xa;POST /generate (submit job)&#xa;GET /generate/jobs/{id} (poll status)" vertex="1">
+          <mxGeometry height="80" width="300" x="30" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="be-hist" parent="be" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;History Module&lt;/b&gt;&#xa;GET /history · GET /history/{id}&#xa;DELETE /history/{id} · POST /history/{id}/favorite" vertex="1">
+          <mxGeometry height="80" width="300" x="30" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="be-jobs" parent="be" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;Job Store&lt;/b&gt; (In-Memory Dict)&#xa;asyncio background tasks — Async Task-Based Pattern" vertex="1">
+          <mxGeometry height="70" width="300" x="30" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;size=15;" value="MongoDB&lt;div&gt;Collections:&lt;br&gt;users · history&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="190" x="838" y="64" as="geometry" />
+        </mxCell>
+        <mxCell id="llm" parent="1" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;rounded=1;arcSize=0;" value="&lt;b&gt;LLM Providers&lt;/b&gt;" vertex="1">
+          <mxGeometry height="280" width="190" x="838" y="307" as="geometry" />
+        </mxCell>
+        <mxCell id="llm1" parent="llm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#23a26d;" value="OpenAI GPT-4o" vertex="1">
+          <mxGeometry height="55" width="140" x="25" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="llm2" parent="llm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#4285f4;" value="Google Gemini 2.0 Flash" vertex="1">
+          <mxGeometry height="55" width="140" x="25" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="llm3" parent="llm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Anthropic Claude 3.5 Sonnet" vertex="1">
+          <mxGeometry height="55" width="140" x="25" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="fe" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=block;endFill=1;" target="be" value="HTTP REST&#xa;Bearer JWT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="be" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.3;exitDx=0;exitDy=0;endArrow=block;endFill=1;" target="db" value="Motor async&#xa;(MongoDB Wire)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="be" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.65;exitDx=0;exitDy=0;endArrow=block;endFill=1;" target="llm" value="HTTPS API&#xa;(openai / google-generativeai / anthropic)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

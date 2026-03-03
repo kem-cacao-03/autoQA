@@ -1,0 +1,346 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+
+  <!-- ═══════════════ UC01: Đăng ký tài khoản ═══════════════ -->
+  <diagram name="UC01 — Đăng ký" id="seq-uc01">
+    <mxGraphModel dx="900" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="690" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="uc01-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC01 — Đăng ký tài khoản" vertex="1">
+          <mxGeometry x="25" y="8" width="800" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc01-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc01-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc01-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="Auth API (FastAPI)" vertex="1">
+          <mxGeometry x="405" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc01-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="595" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines (dashed vertical) -->
+        <mxCell id="uc01-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="660" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc01-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="660" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc01-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="90" as="sourcePoint"/><mxPoint x="480" y="660" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc01-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="90" as="sourcePoint"/><mxPoint x="670" y="660" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <!-- ─── Messages ─── -->
+        <!-- 1 -->
+        <mxCell id="uc01-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Điền form đăng ký (email, password, name)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <!-- 2 -->
+        <mxCell id="uc01-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. POST /auth/register {email, password, name}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="480" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <!-- 3 -->
+        <mxCell id="uc01-m3" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="3. findOne({email})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="230" as="sourcePoint"/><mxPoint x="670" y="230" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <!-- 4 return -->
+        <mxCell id="uc01-m4" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="4. null (email chưa tồn tại)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="285" as="sourcePoint"/><mxPoint x="480" y="285" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <!-- 5 self-note -->
+        <mxCell id="uc01-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="5. bcrypt.hashpw(password, salt)" vertex="1">
+          <mxGeometry x="388" y="308" width="195" height="28" as="geometry"/>
+        </mxCell>
+        <!-- 6 -->
+        <mxCell id="uc01-m6" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="6. insertOne({email, password_hash, name})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="368" as="sourcePoint"/><mxPoint x="670" y="368" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <!-- 7 return -->
+        <mxCell id="uc01-m7" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="7. {_id, email, name}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="423" as="sourcePoint"/><mxPoint x="480" y="423" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <!-- 8 self-note -->
+        <mxCell id="uc01-n2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="8. Sinh JWT: access_token (15m) · refresh_token (7d)" vertex="1">
+          <mxGeometry x="370" y="447" width="235" height="28" as="geometry"/>
+        </mxCell>
+        <!-- 9 return -->
+        <mxCell id="uc01-m9" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="9. 201 Created {access_token, refresh_token, user}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="507" as="sourcePoint"/><mxPoint x="290" y="507" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <!-- 10 self-note -->
+        <mxCell id="uc01-n3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="10. localStorage.setItem(access_token, refresh_token)" vertex="1">
+          <mxGeometry x="185" y="530" width="215" height="28" as="geometry"/>
+        </mxCell>
+        <!-- 11 return -->
+        <mxCell id="uc01-m11" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="11. Redirect → /generator (đăng ký thành công)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="593" as="sourcePoint"/><mxPoint x="100" y="593" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC02: Đăng nhập ═══════════════ -->
+  <diagram name="UC02 — Đăng nhập" id="seq-uc02">
+    <mxGraphModel dx="900" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="630" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc02-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC02 — Đăng nhập" vertex="1">
+          <mxGeometry x="25" y="8" width="800" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc02-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc02-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc02-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="Auth API (FastAPI)" vertex="1">
+          <mxGeometry x="405" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc02-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="595" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc02-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="600" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="600" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="90" as="sourcePoint"/><mxPoint x="480" y="600" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="90" as="sourcePoint"/><mxPoint x="670" y="600" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc02-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Nhập email + mật khẩu, click Đăng nhập">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. POST /auth/login {email, password}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="480" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-m3" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="3. findOne({email})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="230" as="sourcePoint"/><mxPoint x="670" y="230" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-m4" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="4. {_id, email, password_hash, name, is_active}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="285" as="sourcePoint"/><mxPoint x="480" y="285" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="5. bcrypt.checkpw(password, password_hash)" vertex="1">
+          <mxGeometry x="388" y="308" width="200" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc02-n2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="6. Sinh JWT: access_token (15m) · refresh_token (7d)" vertex="1">
+          <mxGeometry x="370" y="345" width="235" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc02-m7" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="7. 200 OK {access_token, refresh_token, user}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="405" as="sourcePoint"/><mxPoint x="290" y="405" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc02-n3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="8. localStorage.setItem(access_token, refresh_token)" vertex="1">
+          <mxGeometry x="185" y="428" width="215" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc02-m9" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="9. Redirect → /generator (đăng nhập thành công)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="490" as="sourcePoint"/><mxPoint x="100" y="490" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC03: Đăng xuất ═══════════════ -->
+  <diagram name="UC03 — Đăng xuất" id="seq-uc03">
+    <mxGraphModel dx="900" dy="400" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="600" pageHeight="330" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc03-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC03 — Đăng xuất" vertex="1">
+          <mxGeometry x="25" y="8" width="550" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants (2 only — stateless JWT, no API call) -->
+        <mxCell id="uc03-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="50" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc03-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="270" y="50" width="160" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc03-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="125" y="90" as="sourcePoint"/><mxPoint x="125" y="300" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc03-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="350" y="90" as="sourcePoint"/><mxPoint x="350" y="300" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc03-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Click nút Đăng xuất">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="125" y="120" as="sourcePoint"/><mxPoint x="350" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc03-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="2. localStorage.removeItem(tokens)&#xa;    AuthContext.reset() — clear user state" vertex="1">
+          <mxGeometry x="265" y="145" width="210" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc03-m3" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="3. Redirect → /login">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="350" y="225" as="sourcePoint"/><mxPoint x="125" y="225" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC04: Cập nhật thông tin cá nhân ═══════════════ -->
+  <diagram name="UC04 — Cập nhật hồ sơ" id="seq-uc04">
+    <mxGraphModel dx="900" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="540" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc04-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC04 — Cập nhật thông tin cá nhân" vertex="1">
+          <mxGeometry x="25" y="8" width="800" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc04-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc04-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc04-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="Auth API (FastAPI)" vertex="1">
+          <mxGeometry x="405" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc04-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="595" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc04-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="510" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="510" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="90" as="sourcePoint"/><mxPoint x="480" y="510" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="90" as="sourcePoint"/><mxPoint x="670" y="510" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc04-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Chỉnh sửa thông tin (name), click Lưu">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. PUT /auth/profile {name}  [Bearer token]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="480" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="3. JWT middleware: verify &amp; extract user_id" vertex="1">
+          <mxGeometry x="388" y="198" width="210" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc04-m4" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="4. updateOne({_id: user_id}, {$set: {name}})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="258" as="sourcePoint"/><mxPoint x="670" y="258" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-m5" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="5. {acknowledged: true, modifiedCount: 1}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="313" as="sourcePoint"/><mxPoint x="480" y="313" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-m6" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="6. 200 OK {_id, email, name}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="368" as="sourcePoint"/><mxPoint x="290" y="368" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc04-m7" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="7. Toast: Cập nhật thành công">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="423" as="sourcePoint"/><mxPoint x="100" y="423" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC05: Đổi mật khẩu ═══════════════ -->
+  <diagram name="UC05 — Đổi mật khẩu" id="seq-uc05">
+    <mxGraphModel dx="900" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="760" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc05-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC05 — Đổi mật khẩu" vertex="1">
+          <mxGeometry x="25" y="8" width="800" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc05-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc05-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc05-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="Auth API (FastAPI)" vertex="1">
+          <mxGeometry x="405" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc05-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="595" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc05-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="730" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="730" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="90" as="sourcePoint"/><mxPoint x="480" y="730" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value="">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="90" as="sourcePoint"/><mxPoint x="670" y="730" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc05-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Nhập current_password + new_password, click Đổi">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. PUT /auth/password {current_password, new_password}  [Bearer]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="480" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="3. JWT middleware: verify &amp; extract user_id" vertex="1">
+          <mxGeometry x="388" y="198" width="210" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc05-m4" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="4. findOne({_id: user_id})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="258" as="sourcePoint"/><mxPoint x="670" y="258" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-m5" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="5. {password_hash, email, name}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="313" as="sourcePoint"/><mxPoint x="480" y="313" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-n2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="6. bcrypt.checkpw(current_password, password_hash)" vertex="1">
+          <mxGeometry x="385" y="336" width="215" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc05-n3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="7. bcrypt.hashpw(new_password, salt)" vertex="1">
+          <mxGeometry x="388" y="373" width="195" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc05-m8" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="8. updateOne({$set: {password_hash: new_hash}})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="433" as="sourcePoint"/><mxPoint x="670" y="433" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-m9" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="9. {acknowledged: true, modifiedCount: 1}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="670" y="488" as="sourcePoint"/><mxPoint x="480" y="488" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-m10" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="10. 200 OK">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="480" y="543" as="sourcePoint"/><mxPoint x="290" y="543" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc05-m11" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="11. Toast: Đổi mật khẩu thành công">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="598" as="sourcePoint"/><mxPoint x="100" y="598" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+</mxfile>

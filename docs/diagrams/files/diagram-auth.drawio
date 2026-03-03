@@ -1,0 +1,121 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.4">
+  <diagram id="auth-diagram" name="auth">
+    <mxGraphModel dx="2612" dy="978" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" value="auth" vertex="1">
+          <mxGeometry height="700" width="736" x="-52" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="20" parent="2" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="UserRegister" vertex="1">
+          <mxGeometry height="98" width="216" x="500" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="21" parent="20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ email: EmailStr" vertex="1">
+          <mxGeometry height="18" width="380" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="22" parent="20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ password: str  [min=8]" vertex="1">
+          <mxGeometry height="18" width="380" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="23" parent="20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ full_name: str  [min=2]" vertex="1">
+          <mxGeometry height="18" width="380" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="30" parent="2" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="UserLogin" vertex="1">
+          <mxGeometry height="62" width="230" x="83" y="112" as="geometry" />
+        </mxCell>
+        <mxCell id="31" parent="30" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ email: EmailStr" vertex="1">
+          <mxGeometry height="18" width="380" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="32" parent="30" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ password: str" vertex="1">
+          <mxGeometry height="18" width="380" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="10" parent="2" style="swimlane;startSize=26;fillColor=#e1d5e7;strokeColor=#000000;fontStyle=1;fontSize=11;" value="AuthService" vertex="1">
+          <mxGeometry height="192" width="400" x="230" y="295" as="geometry" />
+        </mxCell>
+        <mxCell id="11" parent="10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="- _col: AsyncIOMotorDatabase" vertex="1">
+          <mxGeometry height="18" width="400" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="12" parent="10" style="line;strokeColor=#000000;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="4" width="400" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="13" parent="10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ register(body: UserRegister): UserResponse" vertex="1">
+          <mxGeometry height="18" width="400" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="14" parent="10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ login(body: UserLogin): TokenResponse" vertex="1">
+          <mxGeometry height="18" width="400" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="15" parent="10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ refresh(body: RefreshRequest): TokenResponse" vertex="1">
+          <mxGeometry height="18" width="400" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="16" parent="10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ to_response(user_doc: dict): UserResponse  [static]" vertex="1">
+          <mxGeometry height="18" width="400" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="17" parent="10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ update_profile(user_id: str, body: UpdateProfileRequest): UserResponse" vertex="1">
+          <mxGeometry height="18" width="400" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="18" parent="10" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ change_password(user_id: str, body: ChangePasswordRequest): None" vertex="1">
+          <mxGeometry height="18" width="400" y="144" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="2" source="10" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="20" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="2" source="10" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="30" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="312" parent="2" style="swimlane;startSize=26;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" value="TokenResponse" vertex="1">
+          <mxGeometry height="62" width="179" x="16" y="309" as="geometry" />
+        </mxCell>
+        <mxCell id="313a" parent="312" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ access_token: str" vertex="1">
+          <mxGeometry height="18" width="380" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="313b" parent="312" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ refresh_token: str" vertex="1">
+          <mxGeometry height="18" width="380" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="2" source="10" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="312" value="creates">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="40" parent="2" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="UserResponse" vertex="1">
+          <mxGeometry height="116" width="252" x="86" y="548" as="geometry" />
+        </mxCell>
+        <mxCell id="41" parent="40" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ id: str" vertex="1">
+          <mxGeometry height="18" width="380" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="42" parent="40" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ email: str" vertex="1">
+          <mxGeometry height="18" width="380" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="43" parent="40" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ full_name: str" vertex="1">
+          <mxGeometry height="18" width="380" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="44" parent="40" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ img_url: str?" vertex="1">
+          <mxGeometry height="18" width="380" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="45" parent="40" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ created_at: datetime" vertex="1">
+          <mxGeometry height="18" width="380" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="2" source="10" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="40" value="creates">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="50" parent="2" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="UserInDB" vertex="1">
+          <mxGeometry height="134" width="233" x="474" y="527" as="geometry" />
+        </mxCell>
+        <mxCell id="51" parent="50" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ id: str" vertex="1">
+          <mxGeometry height="18" width="380" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="52" parent="50" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ email: str" vertex="1">
+          <mxGeometry height="18" width="380" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="53" parent="50" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ full_name: str" vertex="1">
+          <mxGeometry height="18" width="380" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="54" parent="50" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ hashed_password: str" vertex="1">
+          <mxGeometry height="18" width="380" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="55" parent="50" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ created_at: datetime" vertex="1">
+          <mxGeometry height="18" width="380" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="56" parent="50" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ is_active: bool" vertex="1">
+          <mxGeometry height="18" width="380" y="116" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -7,7 +7,7 @@ This file defines only generator-specific types.
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Literal, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -20,13 +20,9 @@ def _utcnow() -> datetime:
 
 __all__ = [
     "LLMProvider",
-    "TestType",
     "GenerationMode",
     "JobStatus",
     "GenerateRequest",
-    "TestCase",
-    "BDDScenario",
-    "APITestCase",
     "StageUsage",
     "ResearchProviderResult",
     "GenerationResult",        # re-exported for convenience
@@ -43,12 +39,6 @@ class LLMProvider(str, Enum):
     CLAUDE = "claude"
 
 
-class TestType(str, Enum):
-    STANDARD = "standard"
-    BDD = "bdd"
-    API = "api"
-
-
 class GenerationMode(str, Enum):
     PIPELINE = "pipeline"
     # Gemini (BA) → GPT-4o (QA Engineer) → Claude (Reviewer) — sequential, single output
@@ -62,6 +52,7 @@ class JobStatus(str, Enum):
     RUNNING = "running"
     SUCCESS = "success"
     FAILURE = "failure"
+    CANCELLED = "cancelled"
 
 
 # ── Request ───────────────────────────────────────────────────────────────────
@@ -73,7 +64,6 @@ class GenerateRequest(BaseModel):
         examples=["As a user I want to log in with email and password."],
     )
     mode: GenerationMode = GenerationMode.PIPELINE
-    test_type: TestType = TestType.STANDARD
     language: str = "English"
 
     # Research mode only — which providers to compare (ignored in Pipeline mode)
@@ -83,47 +73,12 @@ class GenerateRequest(BaseModel):
     )
 
 
-# ── Test-case inner structures ────────────────────────────────────────────────
-
-class TestCase(BaseModel):
-    test_case_id: str
-    title: str
-    priority: Literal["High", "Medium", "Low"]
-    category: Literal["Functional", "UI/UX", "Negative", "Security"]
-    preconditions: list[str] = Field(default_factory=list)
-    steps: list[str] = Field(default_factory=list)
-    expected_result: str
-    test_data: dict[str, Any] = Field(default_factory=dict)
-
-
-class BDDScenario(BaseModel):
-    id: str
-    title: str
-    type: str
-    tags: list[str] = Field(default_factory=list)
-    gherkin: str
-    examples: Optional[Any] = None
-
-
-class APITestCase(BaseModel):
-    test_case_id: str
-    title: str
-    method: Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
-    endpoint: str
-    headers: dict[str, str] = Field(default_factory=dict)
-    request_body: Optional[Any] = None
-    expected_status: int
-    expected_result: str
-    expected_response: dict[str, Any] = Field(default_factory=dict)
-    category: Literal["Functional", "Negative", "Security"]
-    priority: Literal["High", "Medium", "Low"]
-
-
 # ── Token usage ───────────────────────────────────────────────────────────────
 
 class StageUsage(BaseModel):
     """Token usage and timing for one LLM call (pipeline stage or research provider)."""
-    stage: str           # e.g. "ba", "qa", "reviewer", or provider name
+    stage: str           # e.g. "ba", "qa", "reviewer", or provider name in research
+    provider: str        # actual provider used: "openai" | "gemini" | "claude"
     prompt_tokens: int
     completion_tokens: int
     total_tokens: int

@@ -1,0 +1,105 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+  <diagram name="Async Task - Flowchart" id="dia-2">
+    <mxGraphModel dx="2519" dy="1011" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="950" pageHeight="1010" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;" value="Luồng xử lý Async Task-Based (Biểu đồ khối)" vertex="1">
+          <mxGeometry height="40" width="800" x="50" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="h1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;rounded=1;fontColor=#333333;" value="Luồng chính (Client ↔ FastAPI)" vertex="1">
+          <mxGeometry height="26" width="400" x="100" y="57" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;rounded=1;" value="Tác vụ nền (asyncio background)" vertex="1">
+          <mxGeometry height="26" width="290" x="580" y="57" as="geometry" />
+        </mxCell>
+        <mxCell id="vsep" edge="1" parent="1" style="endArrow=none;startArrow=none;dashed=1;strokeColor=#cccccc;strokeWidth=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="548" y="88" as="sourcePoint" />
+            <mxPoint x="548" y="965" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s-start" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" value="BẮT ĐẦU" vertex="1">
+          <mxGeometry height="42" width="160" x="250" y="88" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Client gửi yêu cầu sinh test&#xa;POST /generate {requirement, mode, providers, test_type}" vertex="1">
+          <mxGeometry height="65" width="420" x="110" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="FastAPI tạo Job trong Job Store&#xa;job_id = uuid4()  ·  status = pending  ·  progress = 0" vertex="1">
+          <mxGeometry height="65" width="420" x="110" y="263" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="FastAPI kích hoạt tác vụ nền&#xa;asyncio.create_task(run_pipeline | run_research)" vertex="1">
+          <mxGeometry height="60" width="420" x="110" y="361" as="geometry" />
+        </mxCell>
+        <mxCell id="bg1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;b&gt;Tác vụ nền chạy song song&lt;/b&gt;&#xa;&#xa;Pipeline: BA Agent → Generator → Reviewer&#xa;(3 LLM calls tuần tự)&#xa;&#xa;Research: asyncio.gather(openai, gemini, claude)&#xa;(3 LLM calls song song)" vertex="1">
+          <mxGeometry height="140" width="300" x="575" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="FastAPI trả về ngay lập tức (không chờ task xong)&#xa;202 Accepted  {job_id,  status: pending}" vertex="1">
+          <mxGeometry height="60" width="420" x="110" y="454" as="geometry" />
+        </mxCell>
+        <mxCell id="bg2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Cập nhật Job Store&#xa;{status: success | failure, result, history_id}&#xa;+ Lưu kết quả → MongoDB (HistoryService)" vertex="1">
+          <mxGeometry height="80" width="300" x="575" y="498" as="geometry" />
+        </mxCell>
+        <mxCell id="poll-lbl" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontStyle=2;fontSize=10;" value="[ Vòng lặp polling — mỗi 2 giây ]" vertex="1">
+          <mxGeometry height="22" width="280" x="110" y="536" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Client kiểm tra tiến trình&#xa;GET /generate/jobs/{job_id}" vertex="1">
+          <mxGeometry height="60" width="420" x="110" y="562" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="FastAPI đọc Job Store → trả kết quả cho Client&#xa;{status, progress, elapsed_seconds, usage[]}" vertex="1">
+          <mxGeometry height="60" width="420" x="110" y="655" as="geometry" />
+        </mxCell>
+        <mxCell id="dec" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="status ==&#xa;&#39;success&#39; ?" vertex="1">
+          <mxGeometry height="85" width="210" x="215" y="748" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Client hiển thị kết quả&#xa;test_cases[] · review_summary · token usage · duration" vertex="1">
+          <mxGeometry height="65" width="420" x="110" y="868" as="geometry" />
+        </mxCell>
+        <mxCell id="s-end" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="KẾT THÚC" vertex="1">
+          <mxGeometry height="42" width="160" x="250" y="960" as="geometry" />
+        </mxCell>
+        <mxCell id="e-st-p1" edge="1" parent="1" source="s-start" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="p1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p1-p2" edge="1" parent="1" source="p1" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="p2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p2-p3" edge="1" parent="1" source="p2" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="p3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p3-p4" edge="1" parent="1" source="p3" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="p4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p4-p5" edge="1" parent="1" source="p4" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="p5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p5-p6" edge="1" parent="1" source="p5" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="p6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p6-dec" edge="1" parent="1" source="p6" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="dec" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-yes" edge="1" parent="1" source="dec" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#82b366;fontColor=#006600;" target="p7" value="Có (success)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-no" edge="1" parent="1" source="dec" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#b85450;fontColor=#b85450;" target="p5" value="Không — chờ 2s rồi poll lại">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="790" />
+              <mxPoint x="60" y="592" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-p7-end" edge="1" parent="1" source="p7" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="s-end" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p3-bg1" edge="1" parent="1" source="p3" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#d79b00;" target="bg1" value="create_task">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-bg1-bg2" edge="1" parent="1" source="bg1" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;" target="bg2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

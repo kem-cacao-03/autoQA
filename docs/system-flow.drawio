@@ -1,0 +1,220 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.6.0">
+  <diagram name="AutoQA-Gen System Flow" id="autoqa-gen-flow">
+    <mxGraphModel dx="1765" dy="1223" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="fe" parent="1" style="swimlane;fontStyle=1;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;startSize=36;" value="Frontend  (React + Vite + Tailwind)" vertex="1">
+          <mxGeometry height="260" width="1220" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-login" parent="fe" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" value="LoginPage&#xa;RegisterPage" vertex="1">
+          <mxGeometry height="56" width="150" x="20" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-gen-page" parent="fe" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" value="GeneratorPage" vertex="1">
+          <mxGeometry height="56" width="150" x="190" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-hist-page" parent="fe" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" value="HistoryPage" vertex="1">
+          <mxGeometry height="56" width="150" x="360" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-prof-page" parent="fe" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" value="ProfilePage" vertex="1">
+          <mxGeometry height="56" width="150" x="530" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-auth-ctx" parent="fe" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="AuthContext&#xa;JWT store + auto-refresh" vertex="1">
+          <mxGeometry height="60" width="170" x="20" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-gen-ctx" parent="fe" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="GeneratorContext&#xa;submit + polling loop" vertex="1">
+          <mxGeometry height="60" width="170" x="210" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-api-lib" parent="fe" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="lib/api.ts&#xa;fetch + 401 auto-refresh" vertex="1">
+          <mxGeometry height="60" width="170" x="400" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-export-lib" parent="fe" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="lib/export.ts&#xa;JSON / Excel download" vertex="1">
+          <mxGeometry height="60" width="170" x="590" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="efe1" edge="1" parent="fe" source="fe-login" style="edgeStyle=orthogonalEdgeStyle;" target="fe-auth-ctx">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="efe2" edge="1" parent="fe" source="fe-gen-page" style="edgeStyle=orthogonalEdgeStyle;" target="fe-gen-ctx">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="efe3" edge="1" parent="fe" source="fe-hist-page" style="edgeStyle=orthogonalEdgeStyle;" target="fe-api-lib">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="efe4" edge="1" parent="fe" source="fe-prof-page" style="edgeStyle=orthogonalEdgeStyle;" target="fe-api-lib">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="efe5" edge="1" parent="fe" source="fe-auth-ctx" style="edgeStyle=orthogonalEdgeStyle;" target="fe-api-lib">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="efe6" edge="1" parent="fe" source="fe-gen-ctx" style="edgeStyle=orthogonalEdgeStyle;" target="fe-api-lib">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="efe7" edge="1" parent="fe" source="fe-hist-page" style="edgeStyle=orthogonalEdgeStyle;" target="fe-export-lib">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be" parent="1" style="swimlane;fontStyle=1;fontSize=13;fillColor=#f8cecc;strokeColor=#b85450;startSize=36;" value="Backend  (FastAPI — Modular Monolith + Async Task-Based)" vertex="1">
+          <mxGeometry height="460" width="1220" x="20" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-mod" parent="be" style="swimlane;fontSize=12;fillColor=#fff2cc;strokeColor=#d6b656;startSize=28;" value="Auth Module  /auth" vertex="1">
+          <mxGeometry height="370" width="270" x="20" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-router" parent="auth-mod" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" value="router.py&#xa;POST /register&#xa;POST /login&#xa;POST /refresh&#xa;GET /me   PUT /me&#xa;PUT /me/password" vertex="1">
+          <mxGeometry height="96" width="230" x="20" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-svc" parent="auth-mod" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" value="service.py&#xa;hash / verify password&#xa;issue JWT tokens" vertex="1">
+          <mxGeometry height="64" width="230" x="20" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-sec" parent="auth-mod" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" value="core/security.py&#xa;HS256 · access 30 min · refresh 7 days&#xa;core/dependencies.py → get_current_user" vertex="1">
+          <mxGeometry height="64" width="230" x="20" y="272" as="geometry" />
+        </mxCell>
+        <mxCell id="ea1" edge="1" parent="auth-mod" source="auth-router" style="edgeStyle=orthogonalEdgeStyle;" target="auth-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea2" edge="1" parent="auth-mod" source="auth-svc" style="edgeStyle=orthogonalEdgeStyle;" target="auth-sec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-mod" parent="be" style="swimlane;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;startSize=28;" value="Generator Module  /generate" vertex="1">
+          <mxGeometry height="370" width="580" x="310" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-router" parent="gen-mod" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" value="router.py&#xa;POST /generate → 202 (job queued)&#xa;GET  /generate/jobs/:id (poll)" vertex="1">
+          <mxGeometry height="72" width="240" x="20" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-svc" parent="gen-mod" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" value="service.py&#xa;submit() → create_job + dispatch()&#xa;get_status() → read JobState" vertex="1">
+          <mxGeometry height="64" width="240" x="20" y="156" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-tasks" parent="gen-mod" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" value="tasks.py&#xa;_JOB_STORE (in-memory, TTL 1h)&#xa;run_pipeline() · run_research()&#xa;_persist() → MongoDB&#xa;cleanup loop every 5 min" vertex="1">
+          <mxGeometry height="84" width="240" x="20" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-prompts" parent="gen-mod" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" value="prompts.py&#xa;build_ba_prompt()&#xa;build_qa_prompt()&#xa;build_review_prompt()&#xa;build_research_prompt()" vertex="1">
+          <mxGeometry height="96" width="240" x="310" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="gen-caller" parent="gen-mod" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" value="llm_caller.py&#xa;call(provider, prompt, system)&#xa;_with_retry() · 4 attempts: 5→15→30s&#xa;parse_json() + json_repair fallback" vertex="1">
+          <mxGeometry height="80" width="240" x="310" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="eg1" edge="1" parent="gen-mod" source="gen-router" style="edgeStyle=orthogonalEdgeStyle;" target="gen-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eg2" edge="1" parent="gen-mod" source="gen-svc" style="edgeStyle=orthogonalEdgeStyle;" target="gen-tasks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eg3" edge="1" parent="gen-mod" source="gen-tasks" style="edgeStyle=orthogonalEdgeStyle;" target="gen-prompts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eg4" edge="1" parent="gen-mod" source="gen-tasks" style="edgeStyle=orthogonalEdgeStyle;" target="gen-caller">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="hist-mod" parent="be" style="swimlane;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;startSize=28;" value="History Module  /history" vertex="1">
+          <mxGeometry height="370" width="290" x="910" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="hist-router" parent="hist-mod" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" value="router.py&#xa;GET  /history (list)&#xa;GET  /history/:id (detail)&#xa;DELETE /history/:id&#xa;POST /history/:id/favorite" vertex="1">
+          <mxGeometry height="96" width="250" x="20" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="hist-svc" parent="hist-mod" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" value="service.py&#xa;list() — fetch limit×3, dedup by session_id&#xa;get() — fetch siblings for research&#xa;delete() — delete_many by session_id&#xa;toggle_favorite()" vertex="1">
+          <mxGeometry height="100" width="250" x="20" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="eh1" edge="1" parent="hist-mod" source="hist-router" style="edgeStyle=orthogonalEdgeStyle;" target="hist-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pipe" parent="1" style="swimlane;fontStyle=1;fontSize=13;fillColor=#e1d5e7;strokeColor=#9673a6;startSize=36;" value="Pipeline Mode  (3 sequential LLM stages)" vertex="1">
+          <mxGeometry height="180" width="1220" x="20" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="pipe" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="Stage 1&#xa;Gemini&#xa;Senior Business Analyst&#xa;→ BA spec (plain text)" vertex="1">
+          <mxGeometry height="96" width="190" x="40" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="pipe" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="Stage 2&#xa;GPT-4o&#xa;Senior QA Engineer&#xa;→ draft test cases (JSON)" vertex="1">
+          <mxGeometry height="96" width="190" x="310" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="p3a" parent="pipe" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="Stage 3a&#xa;Claude&#xa;Elite Quality Auditor&#xa;→ final test suite (JSON)" vertex="1">
+          <mxGeometry height="96" width="190" x="580" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="p3b" parent="pipe" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Stage 3b — fallback&#xa;GPT-4o&#xa;Elite Quality Auditor&#xa;→ final test suite (JSON)" vertex="1">
+          <mxGeometry height="96" width="200" x="860" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="ep1" edge="1" parent="pipe" source="p1" style="edgeStyle=orthogonalEdgeStyle;" target="p2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ep2" edge="1" parent="pipe" source="p2" style="edgeStyle=orthogonalEdgeStyle;" target="p3a" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ep3" edge="1" parent="pipe" source="p3a" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d79b00;fontSize=10;" target="p3b" value="529 / overloaded">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="res" parent="1" style="swimlane;fontStyle=1;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;startSize=36;" value="Research Mode  (N providers in parallel, independent results)" vertex="1">
+          <mxGeometry height="160" width="1220" x="20" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" parent="res" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="OpenAI GPT-4o&#xa;BA + QA (combined)&#xa;→ test suite JSON" vertex="1">
+          <mxGeometry height="80" width="200" x="100" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" parent="res" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" value="Google Gemini&#xa;BA + QA (combined)&#xa;→ test suite JSON" vertex="1">
+          <mxGeometry height="80" width="200" x="500" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" parent="res" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="Anthropic Claude&#xa;BA + QA (combined)&#xa;→ test suite JSON" vertex="1">
+          <mxGeometry height="80" width="200" x="900" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="res-note" parent="res" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=2;strokeColor=#d6b656;" value="All 3 share one session_id → grouped as one record in History" vertex="1">
+          <mxGeometry height="30" width="600" x="300" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ext" parent="1" style="swimlane;fontStyle=1;fontSize=13;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;startSize=36;" value="External Services" vertex="1">
+          <mxGeometry height="160" width="1220" x="20" y="1340" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-mongo" parent="ext" style="shape=cylinder3;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="MongoDB&#xa;autoqa_gen&#xa;users · history" vertex="1">
+          <mxGeometry height="96" width="160" x="40" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-oai" parent="ext" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="OpenAI API&#xa;gpt-4o" vertex="1">
+          <mxGeometry height="76" width="170" x="340" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-gem" parent="ext" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" value="Google Gemini API&#xa;gemini-2.0-flash" vertex="1">
+          <mxGeometry height="76" width="170" x="620" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="ext-ant" parent="ext" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" value="Anthropic API&#xa;claude-sonnet-4-6" vertex="1">
+          <mxGeometry height="76" width="170" x="900" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="xfe-auth" edge="1" parent="1" source="fe-api-lib" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;fontSize=10;" target="auth-router" value="POST /auth/*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xfe-gen" edge="1" parent="1" source="fe-api-lib" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;fontSize=10;" target="gen-router" value="POST /generate&#xa;GET /jobs/:id (polling)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xfe-hist" edge="1" parent="1" source="fe-api-lib" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;fontSize=10;" target="hist-router" value="GET / DELETE / POST /history/*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xgen-pipe" edge="1" parent="1" source="gen-caller" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9673a6;fontSize=10;" target="p1" value="Pipeline mode">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xgen-res" edge="1" parent="1" source="gen-caller" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;fontSize=10;" target="r1" value="Research mode">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xp1-gem" edge="1" parent="1" source="p1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d6b656;fontSize=10;" target="ext-gem" value="Stage 1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xp2-oai" edge="1" parent="1" source="p2" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#82b366;fontSize=10;" target="ext-oai" value="Stage 2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xp3a-ant" edge="1" parent="1" source="p3a" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#b85450;fontSize=10;" target="ext-ant" value="Stage 3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xp3b-oai" edge="1" parent="1" source="p3b" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d79b00;fontSize=10;" target="ext-oai" value="fallback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xr1-oai" edge="1" parent="1" source="r1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#82b366;" target="ext-oai" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xr2-gem" edge="1" parent="1" source="r2" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d6b656;" target="ext-gem" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xr3-ant" edge="1" parent="1" source="r3" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#b85450;" target="ext-ant" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xauth-mongo" edge="1" parent="1" source="auth-svc" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;fontSize=10;" target="ext-mongo" value="users">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xgen-mongo" edge="1" parent="1" source="gen-tasks" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;fontSize=10;" target="ext-mongo" value="_persist()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="xhist-mongo" edge="1" parent="1" source="hist-svc" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;fontSize=10;" target="ext-mongo" value="history">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

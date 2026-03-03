@@ -1,0 +1,232 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.4">
+  <diagram id="generator-diagram" name="generator">
+    <mxGraphModel dx="1412" dy="978" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="4" parent="1" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" value="generator" vertex="1">
+          <mxGeometry height="838" width="1232" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="150" parent="4" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="JobStatusResponse" vertex="1">
+          <mxGeometry height="206" width="376" x="407" y="393" as="geometry" />
+        </mxCell>
+        <mxCell id="151" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ job_id: str" vertex="1">
+          <mxGeometry height="18" width="520" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="152" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ status: JobStatus" vertex="1">
+          <mxGeometry height="18" width="520" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="153" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ progress: str" vertex="1">
+          <mxGeometry height="18" width="520" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="154" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ result: GenerationResult?" vertex="1">
+          <mxGeometry height="18" width="520" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="155" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ history_id: str?" vertex="1">
+          <mxGeometry height="18" width="520" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="156" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ research_results: list[ResearchProviderResult]?" vertex="1">
+          <mxGeometry height="18" width="520" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="157" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ elapsed_seconds: float?" vertex="1">
+          <mxGeometry height="18" width="520" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="158" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ usage: StageUsage?" vertex="1">
+          <mxGeometry height="18" width="520" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="159" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ error: str?" vertex="1">
+          <mxGeometry height="18" width="260" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="160" parent="150" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ created_at: datetime" vertex="1">
+          <mxGeometry height="18" width="260" x="260" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="140" parent="4" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="JobSubmittedResponse" vertex="1">
+          <mxGeometry height="44" width="220" x="50" y="555" as="geometry" />
+        </mxCell>
+        <mxCell id="141" parent="140" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ job_id: str" vertex="1">
+          <mxGeometry height="18" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="170" parent="4" style="swimlane;startSize=26;fillColor=#f0f0f0;strokeColor=#000000;fontStyle=1;fontSize=11;" value="&lt;&lt;dataclass&gt;&gt; CallResult" vertex="1">
+          <mxGeometry height="98" width="300" x="767" y="695" as="geometry" />
+        </mxCell>
+        <mxCell id="171" parent="170" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ text: str" vertex="1">
+          <mxGeometry height="18" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="172" parent="170" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ prompt_tokens: int" vertex="1">
+          <mxGeometry height="18" width="300" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="173" parent="170" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ completion_tokens: int" vertex="1">
+          <mxGeometry height="18" width="300" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="174" parent="170" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ total_tokens: int  [property]" vertex="1">
+          <mxGeometry height="18" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="120" parent="4" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="StageUsage" vertex="1">
+          <mxGeometry height="98" width="220" x="340" y="189" as="geometry" />
+        </mxCell>
+        <mxCell id="121" parent="120" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ ba: int" vertex="1">
+          <mxGeometry height="18" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="122" parent="120" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ qa: int" vertex="1">
+          <mxGeometry height="18" width="220" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="123" parent="120" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ review: int" vertex="1">
+          <mxGeometry height="18" width="220" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="124" parent="120" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ total_tokens: int" vertex="1">
+          <mxGeometry height="18" width="220" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e306" edge="1" parent="4" source="150" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="120" value="has">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="200" parent="4" style="swimlane;startSize=26;fillColor=#e1d5e7;strokeColor=#000000;fontStyle=1;fontSize=11;" value="GeneratorService" vertex="1">
+          <mxGeometry height="116" width="560" x="68" y="686" as="geometry" />
+        </mxCell>
+        <mxCell id="201" parent="200" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="- _db: AsyncIOMotorDatabase" vertex="1">
+          <mxGeometry height="18" width="560" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="202" parent="200" style="line;strokeColor=#000000;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="4" width="560" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="203" parent="200" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ submit(req: GenerateRequest, user_id: str): JobSubmittedResponse" vertex="1">
+          <mxGeometry height="18" width="560" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="204" parent="200" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ get_status(job_id: str): JobStatusResponse  [static]" vertex="1">
+          <mxGeometry height="18" width="560" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="205" parent="200" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="- _require_keys(providers: list[LLMProvider]): None  [static]" vertex="1">
+          <mxGeometry height="18" width="560" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e302" edge="1" parent="4" source="200" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="150" value="creates">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e303" edge="1" parent="4" source="200" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="140" value="creates">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="80" parent="1" style="swimlane;startSize=26;fillColor=#fff2cc;strokeColor=#000000;fontStyle=1;fontSize=11;" value="&lt;&lt;enum&gt;&gt; LLMProvider" vertex="1">
+          <mxGeometry height="80" width="200" x="60" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="81" parent="80" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="OPENAI = &quot;openai&quot;" vertex="1">
+          <mxGeometry height="18" width="200" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="82" parent="80" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="GEMINI = &quot;gemini&quot;" vertex="1">
+          <mxGeometry height="18" width="200" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="83" parent="80" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="CLAUDE = &quot;claude&quot;" vertex="1">
+          <mxGeometry height="18" width="200" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="90" parent="1" style="swimlane;startSize=26;fillColor=#fff2cc;strokeColor=#000000;fontStyle=1;fontSize=11;" value="&lt;&lt;enum&gt;&gt; GenerationMode" vertex="1">
+          <mxGeometry height="62" width="220" x="280" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="91" parent="90" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="PIPELINE = &quot;pipeline&quot;" vertex="1">
+          <mxGeometry height="18" width="220" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="92" parent="90" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="RESEARCH = &quot;research&quot;" vertex="1">
+          <mxGeometry height="18" width="220" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="100" parent="1" style="swimlane;startSize=26;fillColor=#fff2cc;strokeColor=#000000;fontStyle=1;fontSize=11;" value="&lt;&lt;enum&gt;&gt; JobStatus" vertex="1">
+          <mxGeometry height="98" width="200" x="520" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="101" parent="100" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="PENDING = &quot;pending&quot;" vertex="1">
+          <mxGeometry height="18" width="200" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="102" parent="100" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="RUNNING = &quot;running&quot;" vertex="1">
+          <mxGeometry height="18" width="200" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="103" parent="100" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="SUCCESS = &quot;success&quot;" vertex="1">
+          <mxGeometry height="18" width="200" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="104" parent="100" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="FAILURE = &quot;failure&quot;" vertex="1">
+          <mxGeometry height="18" width="200" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="110" parent="1" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="GenerateRequest" vertex="1">
+          <mxGeometry height="98" width="249" x="60" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="111" parent="110" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ requirement: str" vertex="1">
+          <mxGeometry height="18" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="112" parent="110" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ language: str" vertex="1">
+          <mxGeometry height="18" width="300" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="113" parent="110" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ mode: GenerationMode" vertex="1">
+          <mxGeometry height="18" width="300" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="114" parent="110" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ providers: list[LLMProvider]" vertex="1">
+          <mxGeometry height="18" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e301" edge="1" parent="1" source="200" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="110" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e304" edge="1" parent="1" source="180" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="120" value="has">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e305" edge="1" parent="1" source="180" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="130" value="has list">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e307" edge="1" parent="1" source="110" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="90" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e308" edge="1" parent="1" source="110" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="80" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e309" edge="1" parent="1" source="150" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="100" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e310" edge="1" parent="1" source="180" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="100" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="130" parent="1" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="ResearchProviderResult" vertex="1">
+          <mxGeometry height="116" width="300" x="843.5" y="492" as="geometry" />
+        </mxCell>
+        <mxCell id="131" parent="130" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ provider: str" vertex="1">
+          <mxGeometry height="18" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="132" parent="130" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ result: GenerationResult?" vertex="1">
+          <mxGeometry height="18" width="300" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="133" parent="130" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ usage: int" vertex="1">
+          <mxGeometry height="18" width="300" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="134" parent="130" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ elapsed_seconds: float" vertex="1">
+          <mxGeometry height="18" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="135" parent="130" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ error: str?" vertex="1">
+          <mxGeometry height="18" width="300" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="180" parent="1" style="swimlane;startSize=26;fillColor=#f0f0f0;strokeColor=#000000;fontStyle=1;fontSize=11;" value="&lt;&lt;dataclass&gt;&gt; JobState" vertex="1">
+          <mxGeometry height="206" width="409" x="789" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="181" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ job_id: str" vertex="1">
+          <mxGeometry height="18" width="520" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="182" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ status: JobStatus" vertex="1">
+          <mxGeometry height="18" width="520" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="183" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ progress: str" vertex="1">
+          <mxGeometry height="18" width="520" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="184" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ result: GenerationResult?" vertex="1">
+          <mxGeometry height="18" width="520" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="185" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ history_id: str?" vertex="1">
+          <mxGeometry height="18" width="520" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="186" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ research_results: list[ResearchProviderResult]?" vertex="1">
+          <mxGeometry height="18" width="520" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="187" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ elapsed_seconds: float?" vertex="1">
+          <mxGeometry height="18" width="520" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="188" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ usage: StageUsage?" vertex="1">
+          <mxGeometry height="18" width="520" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="189" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ error: str?" vertex="1">
+          <mxGeometry height="18" width="260" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="190" parent="180" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ created_at: datetime" vertex="1">
+          <mxGeometry height="18" width="260" x="260" y="170" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

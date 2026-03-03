@@ -1,8 +1,9 @@
 """
 Generator router.
 
-POST /generate           → submits job, returns {job_id} immediately (202)
-GET  /generate/jobs/{id} → polls job status and retrieves result when ready
+POST   /generate           → submits job, returns {job_id} immediately (202)
+GET    /generate/jobs/{id} → polls job status and retrieves result when ready
+DELETE /generate/jobs/{id} → cancels a running job
 """
 
 from fastapi import APIRouter, Depends
@@ -53,9 +54,19 @@ async def submit(                               # ← async: required for asynci
 )
 async def poll_job(job_id: str, _: dict = Depends(get_current_user)):
     """
-    Job state transitions: `pending` → `running` → `success | failure`
+    Job state transitions: `pending` → `running` → `success | failure | cancelled`
 
     - **Pipeline**: result in `result` field, `history_id` points to saved record.
     - **Research**: results in `research_results[]`, one entry per provider.
     """
     return GeneratorService.get_status(job_id)
+
+
+@router.delete(
+    "/jobs/{job_id}",
+    status_code=200,
+    summary="Cancel a running job",
+)
+async def cancel_job(job_id: str, _: dict = Depends(get_current_user)):
+    """Cancel a pending or running job. No-op if already finished."""
+    return GeneratorService.cancel(job_id)

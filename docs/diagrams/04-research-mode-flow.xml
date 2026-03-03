@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+  <diagram name="Research Mode Flow" id="dia-4">
+    <mxGraphModel dx="1086" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="680" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="rm-title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;" value="Luồng xử lý Research Mode (Parallel — asyncio.gather)" vertex="1">
+          <mxGeometry height="40" width="900" x="80" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-inp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Input&lt;/b&gt;&#xa;User Requirement&#xa;mode=research&#xa;providers: [openai,&#xa;gemini, claude]" vertex="1">
+          <mxGeometry height="130" width="140" x="20" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-fork" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="&lt;b&gt;asyncio.gather&lt;/b&gt;&#xa;(parallel dispatch)" vertex="1">
+          <mxGeometry height="100" width="150" x="230" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#23a26d;" value="&lt;b&gt;_call_one(openai)&lt;/b&gt;&#xa;&#xa;OpenAI GPT-4o&#xa;&#xa;1 LLM call&#xa;Sinh test cases trực tiếp" vertex="1">
+          <mxGeometry height="130" width="190" x="470" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#4285f4;" value="&lt;b&gt;_call_one(gemini)&lt;/b&gt;&#xa;&#xa;Google Gemini 2.0 Flash&#xa;&#xa;1 LLM call&#xa;Sinh test cases trực tiếp" vertex="1">
+          <mxGeometry height="130" width="190" x="470" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;_call_one(claude)&lt;/b&gt;&#xa;&#xa;Anthropic Claude 3.5&#xa;&#xa;1 LLM call&#xa;Sinh test cases trực tiếp" vertex="1">
+          <mxGeometry height="130" width="190" x="470" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-join" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="gather&#xa;complete" vertex="1">
+          <mxGeometry height="100" width="120" x="740" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-agg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;b&gt;Research Results&lt;/b&gt;&#xa;&#xa;research_results: [&#xa;  {provider, result,&#xa;   success, usage},&#xa;  ...&#xa;]" vertex="1">
+          <mxGeometry height="160" width="170" x="916" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-note" parent="1" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;" value="Mỗi provider chạy trong _call_one() — lỗi được bắt riêng, không ảnh hưởng provider khác — trả về {success: false, error: ...}" vertex="1">
+          <mxGeometry height="40" width="700" x="215" y="563" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e1" edge="1" parent="1" source="rm-inp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="rm-fork" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e2" edge="1" parent="1" source="rm-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="rm-p1" value="async">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e3" edge="1" parent="1" source="rm-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="rm-p2" value="async">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e4" edge="1" parent="1" source="rm-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="rm-p3" value="async">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e5" edge="1" parent="1" source="rm-p1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="rm-join" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e6" edge="1" parent="1" source="rm-p2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="rm-join" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e7" edge="1" parent="1" source="rm-p3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="rm-join" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-e8" edge="1" parent="1" source="rm-join" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="rm-agg" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

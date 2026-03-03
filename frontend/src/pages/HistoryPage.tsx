@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   History, Star, Trash2, ChevronRight,
   Clock, FileText, Loader2, XCircle, Filter,
@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { historyApi, type HistoryItem, type HistoryDetail } from "@/lib/api";
 import { TestCaseCard } from "@/components/TestCaseCard";
+import { FilenameDialog } from "@/components/FilenameDialog";
+import { SortBar, sortCases, filterCases, getCategories, toggleSort, type SortState } from "@/components/SortBar";
 import { downloadJSON, downloadExcel } from "@/lib/export";
 
 const MODE_STYLES: Record<string, { label: string; badge: string; border: string }> = {
@@ -13,10 +15,20 @@ const MODE_STYLES: Record<string, { label: string; badge: string; border: string
   research: { label: "Research", badge: "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border border-violet-100 dark:border-violet-800/30", border: "border-l-violet-500" },
 };
 
+const PROVIDER_LABELS: Record<string, string> = { openai: "GPT-4o", gemini: "Gemini", claude: "Claude" };
+
 const TYPE_LABELS: Record<string, string> = { standard: "Standard", bdd: "BDD", api: "API" };
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-US", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+function formatElapsed(sec: number) {
+  return sec < 60 ? `${sec.toFixed(1)}s` : `${Math.floor(sec / 60)}m ${(sec % 60).toFixed(0)}s`;
+}
+
+function formatTokens(n: number) {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}k tokens` : `${n} tokens`;
 }
 
 // ── Detail drawer ─────────────────────────────────────────────────────────────
@@ -24,23 +36,59 @@ function formatDate(iso: string) {
 function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
   const [detail, setDetail] = useState<HistoryDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [exportDialog, setExportDialog] = useState<{ type: "json" | "excel"; name: string } | null>(null);
+  const [sort, setSort] = useState<SortState | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [cardGen, setCardGen] = useState(0);
+
+  // Lock body scroll while drawer is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  // Reset category filter + collapse all cards when switching providers in research mode
+  useEffect(() => { setCategoryFilter(null); setCardGen((g) => g + 1); }, [selectedProvider]);
+
+  const openExportDialog = (type: "json" | "excel") => {
+    if (!detail) return;
+    const p = selectedProvider ?? detail.provider;
+    const providerLabel = PROVIDER_LABELS[p] ?? p;
+    const name = detail.mode === "research"
+      ? `TestSuite_Research_${providerLabel}`
+      : "TestSuite_Standard";
+    setExportDialog({ type, name });
+  };
 
   useEffect(() => {
-    historyApi.get(id).then(setDetail).finally(() => setLoading(false));
+    historyApi.get(id).then((d) => {
+      setDetail(d);
+      if (d.all_results && d.all_results.length > 0) {
+        setSelectedProvider(d.all_results[0].provider);
+      }
+    }).finally(() => setLoading(false));
   }, [id]);
 
-  const items = detail
-    ? ((detail.result.test_cases ?? []).length > 0 ? detail.result.test_cases : (detail.result.scenarios ?? []))
+  const isResearch = !!(detail?.mode === "research" && detail.all_results && detail.all_results.length > 1);
+  const activeResult = isResearch && selectedProvider
+    ? (detail!.all_results!.find((r) => r.provider === selectedProvider) ?? detail!.result)
+    : detail?.result ?? null;
+
+  const rawItems = activeResult
+    ? (activeResult.test_cases ?? [])
     : [];
+  const categories = getCategories(rawItems as Record<string, unknown>[]);
+  const items = sortCases(filterCases(rawItems as Record<string, unknown>[], categoryFilter), sort) as typeof rawItems;
 
   const modeStyle = MODE_STYLES[detail?.mode ?? "pipeline"] ?? MODE_STYLES.pipeline;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 overflow-hidden" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-5xl bg-white dark:bg-slate-900 shadow-2xl rounded-2xl overflow-y-auto animate-slide-up mb-8"
-        style={{ maxHeight: "calc(100vh - 80px)" }}
+        className="relative w-full max-w-5xl bg-white dark:bg-slate-900 shadow-2xl rounded-2xl overflow-y-auto overscroll-contain animate-slide-up mb-8"
+        style={{ maxHeight: "calc(100vh - 80px)", scrollbarGutter: "stable" } as React.CSSProperties}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with gradient */}
@@ -49,18 +97,20 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
             <div className="min-w-0">
               {detail && (
                 <>
-                  <h2 className="text-base font-bold text-white line-clamp-2">{detail.result.test_suite_name}</h2>
+                  <h2 className="text-base font-bold text-white line-clamp-2">
+                    {activeResult?.test_suite_name ?? detail.result.test_suite_name}
+                  </h2>
                   <p className="text-white/80 text-xs mt-0.5">{formatDate(detail.created_at)}</p>
                 </>
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              {detail && (
+              {detail && activeResult && (
                 <>
-                  <button className="btn-secondary text-xs bg-white/10 border-white/20 text-white hover:bg-white/20" onClick={() => downloadJSON(detail.result, undefined)}>
+                  <button className="btn-secondary text-xs bg-white/10 border-white/20 text-white hover:bg-white/20" onClick={() => openExportDialog("json")}>
                     <FileJson className="w-3.5 h-3.5" /> JSON
                   </button>
-                  <button className="btn-secondary text-xs bg-white/10 border-white/20 text-white hover:bg-white/20" onClick={() => downloadExcel(detail.result, undefined)}>
+                  <button className="btn-secondary text-xs bg-white/10 border-white/20 text-white hover:bg-white/20" onClick={() => openExportDialog("excel")}>
                     <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
                   </button>
                 </>
@@ -85,14 +135,31 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
               <div className="flex flex-wrap gap-2">
                 <span className={`badge ${modeStyle.badge}`}>{modeStyle.label}</span>
                 <span className="badge bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                  {TYPE_LABELS[detail.test_type] ?? detail.test_type}
-                </span>
-                <span className="badge bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                   {detail.language}
                 </span>
                 <span className="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/30">
-                  {detail.total_count} test cases
+                  {(activeResult?.total_count ?? detail.total_count)} test cases
                 </span>
+                {/* Per-provider stats in research mode; overall stats in pipeline mode */}
+                {(() => {
+                  const stats = isResearch && selectedProvider && detail.provider_stats
+                    ? detail.provider_stats[selectedProvider]
+                    : detail;
+                  return (
+                    <>
+                      {stats?.elapsed_seconds != null && (
+                        <span className="badge bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400 flex items-center gap-1">
+                          <Clock className="w-3 h-3" />{formatElapsed(stats.elapsed_seconds)}
+                        </span>
+                      )}
+                      {(stats?.total_tokens ?? 0) > 0 && (
+                        <span className="badge bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400">
+                          {formatTokens(stats!.total_tokens)}
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
 
               {/* Requirement */}
@@ -101,33 +168,60 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{detail.requirement}</p>
               </div>
 
-              {/* Review summary */}
-              {detail.result.review_summary && (
-                <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { label: "Reviewed", value: detail.result.review_summary.cases_reviewed, color: "text-slate-800 dark:text-slate-100" },
-                    { label: "Added", value: detail.result.review_summary.cases_added, color: "text-emerald-600 dark:text-emerald-400" },
-                    { label: "Modified", value: detail.result.review_summary.cases_modified, color: "text-amber-600 dark:text-amber-400" },
-                    { label: "Coverage", value: (detail.result.review_summary.coverage_score ?? "medium").toUpperCase(), color: "text-brand-600 dark:text-brand-400" },
-                  ].map(({ label, value, color }) => (
-                    <div key={label} className="card p-3 text-center">
-                      <p className={`text-xl font-bold ${color}`}>{value}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-                    </div>
+              {/* Research provider tabs */}
+              {isResearch && (
+                <div className="flex gap-1 border-b border-slate-200 dark:border-slate-700">
+                  {detail.all_results!.map((r) => (
+                    <button
+                      key={r.provider}
+                      onClick={() => setSelectedProvider(r.provider)}
+                      className={`px-3 py-2 text-xs font-medium rounded-t-lg border-b-2 -mb-px transition-colors ${
+                        selectedProvider === r.provider
+                          ? "border-brand-500 text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20"
+                          : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                      }`}
+                    >
+                      {PROVIDER_LABELS[r.provider] ?? r.provider}
+                      <span className="ml-1.5 text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded-full">
+                        {r.total_count}
+                      </span>
+                    </button>
                   ))}
                 </div>
               )}
 
               {/* Test cases */}
+              {items.length > 0 && (
+                <SortBar
+                  sort={sort}
+                  onToggle={(k) => { setSort((p) => toggleSort(p, k)); setCardGen((g) => g + 1); }}
+                  onReset={() => { setSort(null); setCategoryFilter(null); setCardGen((g) => g + 1); }}
+                  categories={categories}
+                  categoryFilter={categoryFilter}
+                  onCategoryFilter={(cat) => { setCategoryFilter(cat); setCardGen((g) => g + 1); }}
+                  total={items.length}
+                />
+              )}
               <div className="space-y-2">
                 {items.map((tc, i) => (
-                  <TestCaseCard key={i} tc={tc as Record<string, unknown>} index={i} />
+                  <TestCaseCard key={`${i}-${cardGen}`} tc={tc as Record<string, unknown>} index={i} />
                 ))}
               </div>
             </>
           )}
         </div>
       </div>
+      {exportDialog && activeResult && (
+        <FilenameDialog
+          defaultName={exportDialog.name}
+          extension={exportDialog.type === "json" ? "json" : "xlsx"}
+          onConfirm={(filename) => {
+            if (exportDialog.type === "json") downloadJSON(activeResult, undefined, filename);
+            else downloadExcel(activeResult, undefined, filename);
+          }}
+          onClose={() => setExportDialog(null)}
+        />
+      )}
     </div>
   );
 }
@@ -293,10 +387,24 @@ export default function HistoryPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <Clock className="w-3 h-3 text-slate-400" />
                     <span className="text-xs text-slate-400 dark:text-slate-500">{formatDate(item.created_at)}</span>
+                    {item.elapsed_seconds != null && (
+                      <span className="text-xs text-slate-400 dark:text-slate-500">{formatElapsed(item.elapsed_seconds)}</span>
+                    )}
+                    {item.total_tokens > 0 && (
+                      <span className="text-xs text-slate-400 dark:text-slate-500">{formatTokens(item.total_tokens)}</span>
+                    )}
                     <span className={`badge ${modeStyle.badge}`}>{modeStyle.label}</span>
-                    <span className="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/30">
-                      {item.total_count} cases
-                    </span>
+                    {item.mode === "research" ? (
+                      item.providers.map((p) => (
+                        <span key={p} className="badge bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                          {PROVIDER_LABELS[p] ?? p}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/30">
+                        {item.total_count} cases
+                      </span>
+                    )}
                   </div>
                 </div>
 
