@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 
 const PRIORITY_CONFIG: Record<string, { badge: string; dot: string; border: string }> = {
@@ -27,6 +27,13 @@ function CopyButton({ text }: { text: string }) {
 
 export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index: number }) {
   const [open, setOpen] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (open && contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [open]);
 
   const id = String(tc.test_case_id ?? tc.id ?? `TC-${index + 1}`);
   const title = String(tc.title ?? "Untitled");
@@ -66,8 +73,8 @@ export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index
         {/* ID — fixed width, truncate long IDs */}
         <span className="text-xs font-mono text-slate-400 dark:text-slate-500 w-28 shrink-0 truncate" title={id}>{id}</span>
 
-        {/* Title — min-w-0 ensures truncate works */}
-        <span className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{title}</span>
+        {/* Title — clamp to 2 lines when collapsed, full text when expanded */}
+        <span title={title} className={`flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-200 ${open ? "" : "line-clamp-2"}`}>{title}</span>
 
         {/* Priority badge */}
         <span className={`badge shrink-0 ${cfg.badge}`}>{priority}</span>
@@ -88,7 +95,7 @@ export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index
       </button>
 
       {open && (
-        <div className="px-5 pb-5 pt-2 space-y-4 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-700/50 animate-fade-in">
+        <div ref={contentRef} className="px-5 pb-5 pt-2 space-y-4 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-700/50 animate-fade-in">
 
           {preconditions.length > 0 && (
             <div>

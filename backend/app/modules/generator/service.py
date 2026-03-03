@@ -16,6 +16,7 @@ from app.modules.generator import tasks as task_engine
 from app.modules.generator.schema import (
     GenerateRequest,
     GenerationMode,
+    JobStatus,
     JobStatusResponse,
     JobSubmittedResponse,
     LLMProvider,
@@ -68,9 +69,23 @@ class GeneratorService:
             result=job.result,
             history_id=job.history_id,
             research_results=job.research_results,
+            elapsed_seconds=job.elapsed_seconds,
+            usage=job.usage,
             error=job.error,
             created_at=job.created_at,
         )
+
+    # ── Cancel ───────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def cancel(job_id: str) -> dict:
+        job = task_engine.get_job(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail="Job not found.")
+        if job.status in (JobStatus.SUCCESS, JobStatus.FAILURE, JobStatus.CANCELLED):
+            return {"cancelled": False, "status": job.status.value}
+        task_engine.cancel_job(job_id)
+        return {"cancelled": True, "job_id": job_id}
 
     # ── Internal ──────────────────────────────────────────────────────────────
 

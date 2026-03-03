@@ -2,9 +2,9 @@
 Role-based prompt templates for the two-mode workflow.
 
 Mode A — Optimized Pipeline (3 sequential LLM calls):
-  Stage 1  build_ba_prompt()      → Gemini    as Senior Business Analyst
-  Stage 2  build_qa_prompt()      → GPT-4o    as Senior QA Engineer
-  Stage 3  build_review_prompt()  → Claude    as Elite Quality Auditor
+  Stage 1  build_ba_prompt()      → Claude   as Senior Business Analyst / QA Architect
+  Stage 2  build_qa_prompt()      → GPT-4o   as Expert QA Engineer
+  Stage 3  build_review_prompt()  → Gemini   as Senior QA Lead (final review)
 
 Mode B — Research (N parallel LLM calls):
   build_research_prompt()         → any model, combined BA + QA role
@@ -17,194 +17,226 @@ Rules:
 # MODE A — OPTIMIZED PIPELINE
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# ── Stage 1: Gemini as Senior Business Analyst ────────────────────────────────
+# ── Stage 1: GPT-4o as Senior Business Analyst / QA Architect ─────────────────
 
-SYSTEM_BA = "You are a Senior Business Analyst."
+SYSTEM_BA = "You are a senior business analyst and QA architect."
 
 _BA_TMPL = """\
-Task: Analyze the following user's functional description and extract structured \
-requirements and edge cases.
+Your job is to analyze a natural language feature description and extract only \
+the essential information needed for test case generation.
 
-User Description:
-\"\"\"{requirement}\"\"\"
+## Output Language
+All values in your JSON output must be written in: {language}
+(Keys must always remain in English)
 
-Analysis Process:
-1. User Flow Mapping: Define the step-by-step journey.
-2. Business Rules: Identify constraints (data types, length, security protocols).
-3. Input Validation: List all criteria for valid/invalid data.
-4. Exception Handling: Predict system failures (timeouts, database errors).
+## Your Tasks
+Analyze the feature description and extract:
+1. Business rules — explicit and implicit rules that govern the feature
+2. Constraints — validation rules, limits, permissions, data formats
+3. User flows — all paths a user can take through the feature
+4. Test scenarios — high-level scenario names grouped by category
+5. Ambiguities — unclear requirements that may affect test coverage
 
-Output Requirements: Be concise and technical. NO conversational filler. \
-Focus strictly on the logic tree.\
+## Output Format (JSON)
+{{
+  "business_rules": [
+    "One short sentence per rule"
+  ],
+  "constraints": [
+    "One short sentence per constraint"
+  ],
+  "flows": {{
+    "happy_paths": ["One short sentence per flow"],
+    "alternative_flows": ["One short sentence per flow"],
+    "exception_flows": ["One short sentence per flow"]
+  }},
+  "scenarios": {{
+    "functional": ["Scenario name only"],
+    "boundary": ["Scenario name only"],
+    "negative": ["Scenario name only"],
+    "ui_ux": [],
+    "security": [],
+    "performance": []
+  }},
+  "ambiguities": [
+    "One short question per ambiguity"
+  ]
+}}
+
+## Rules
+- Each array item must be 1 short sentence only — no nested objects, no bullet points
+- Use [] for categories with no applicable scenarios
+- Do NOT generate detailed test cases — scenario names only
+- Do NOT include feature summary, entities, or any field outside the schema above
+- Be exhaustive on scenarios — missing a scenario here = missing test coverage later
+- Output ONLY the JSON object. No explanation, no markdown code blocks.
+  Start your response with "{{" and end with "}}"
+
+## Feature Description:
+{requirement}\
 """
 
 
-# ── Stage 2: GPT-4o as Senior QA Engineer ────────────────────────────────────
+# ── Stage 2: Gemini as Expert QA Engineer ────────────────────────────────────
 
-SYSTEM_QA = "You are a Senior QA Engineer."
+SYSTEM_QA = "You are an expert QA engineer specializing in comprehensive test case design."
 
 _QA_TMPL = """\
-Task: Generate comprehensive test suite covering all scenarios based on the \
-following Business Rules and user's functional description. Ensuring full \
-coverage of business requirements, user interface (UI), performance, security, \
-and usability. Adhering to the principles of accuracy, comprehensibility, \
-independence, and high reusability. Returns only a single valid block of JSON data.
+You will receive a structured feature analysis and must generate a complete \
+test suite covering all scenarios.
 
-Business Rules:
-{ba_spec}
+## Output Language
+All human-readable values (title, preconditions, steps, expected_result,
+test_data values) must be written in: {language}
+(JSON keys must always remain in English)
 
-User Description:
-\"\"\"{requirement}\"\"\"
+## Input
+A JSON object containing feature analysis and scenario outlines.
 
-Language Output: {language}
+## Your Tasks
+For EACH scenario in the outline, generate detailed test cases covering:
+- All happy paths
+- All boundary and edge cases (min, max, just-inside, just-outside)
+- All negative and error cases
+- UI/UX flows (if present in outline)
+- Security scenarios (if present in outline)
+- Performance hints (if present in outline)
 
-Output Format (JSON):
+## Quantity Guideline
+- Aim for quality over quantity
+- Maximum 25 test cases unless feature is very complex
+- Prefer 1 well-written test case over 3 redundant ones
+- If scenarios exceed 25, prioritize: High priority first, then Medium, then Low
+
+## Output Format (JSON)
 {{
-  "test_suite_name": "string",
-  "description": "string (1 sentence max)",
+  "test_suite_name": "Short feature name",
+  "description": "One sentence describing the scope of this test suite",
   "test_cases": [
     {{
-      "test_case_id": "string",
-      "title": "string",
+      "test_case_id": "TC_001",
+      "title": "...",
       "priority": "High | Medium | Low",
-      "category": "Functional | UI/UX | Negative | Security",
-      "preconditions": ["string"],
-      "steps": ["string"],
-      "expected_result": "string",
-      "test_data": {{}}
+      "category": "Functional | UI/UX | Negative | Security | Performance",
+      "preconditions": ["..."],
+      "steps": ["1. ...", "2. ...", "3. ..."],
+      "expected_result": "...",
+      "test_data": {{"field": "value"}}
     }}
   ],
   "total_count": 0
-}}\
+}}
+
+## Priority Rules
+- High   → Core happy paths, critical failures, security breaches
+- Medium → Alternative flows, important edge cases
+- Low    → Minor UI details, low-impact edge cases
+
+## Category Rules
+- Functional  → Business logic, data processing, CRUD operations
+- UI/UX       → Layout, navigation, responsiveness, usability
+- Negative    → Invalid input, unauthorized access, error handling
+- Security    → Authentication, authorization, injection, data exposure
+- Performance → Load time, response time, concurrent users
+
+## Format Rules
+- steps: array of strings, each formatted as "1. action", "2. action"...
+- test_data: key-value with specific realistic values, {{}} if not applicable
+- expected_result: one clear paragraph describing the verifiable outcome
+- total_count: must equal exactly the number of items in test_cases array
+- At least 20% of test cases must be Negative category
+- Use specific realistic test data — never use placeholders like "abc123" or "test@test.com"
+- If input has flagged ambiguities, generate for the most likely interpretation
+  and add a note in expected_result referencing the ambiguity
+
+## Self-Review Before Output
+Before returning, review your output and:
+- Remove duplicate or near-duplicate test cases
+- Ensure all steps are atomic (one action per step)
+- Verify total_count matches actual array length
+- Replace all placeholder test data with realistic values
+- Confirm no test case has vague expected_result
+- Confirm at least 20% are Negative category
+
+## IMPORTANT
+Your response must be ONLY the JSON object.
+No explanation, no markdown code blocks, no preamble.
+Start your response with "{{" and end with "}}"
+
+## Input Analysis:
+{ba_spec}\
 """
 
-_QA_BDD_TMPL = """\
-Task: Generate comprehensive BDD scenarios based on the following Business Rules \
-and user's functional description. Ensuring full coverage of all user flows, \
-business rules, and edge cases. Returns only a single valid block of JSON data.
 
-Business Rules:
-{ba_spec}
-
-User Description:
-\"\"\"{requirement}\"\"\"
-
-Language Output: {language}
-
-Output Format (JSON):
-{{
-  "test_suite_name": "string",
-  "description": "string (1 sentence max)",
-  "test_cases": [],
-  "scenarios": [
-    {{
-      "id": "SC-001",
-      "title": "string",
-      "type": "Scenario | Scenario Outline",
-      "tags": ["@smoke"],
-      "gherkin": "Given ...\\nWhen ...\\nThen ...",
-      "examples": null
-    }}
-  ],
-  "total_count": 0
-}}\
-"""
-
-_QA_API_TMPL = """\
-Task: Generate comprehensive API test cases based on the following Business Rules \
-and API specification. Ensuring full coverage of all endpoints, HTTP status codes, \
-and edge cases. Returns only a single valid block of JSON data.
-
-Business Rules:
-{ba_spec}
-
-API Specification:
-\"\"\"{requirement}\"\"\"
-
-Language Output: {language}
-
-Output Format (JSON):
-{{
-  "test_suite_name": "string",
-  "description": "string (1 sentence max)",
-  "scenarios": [],
-  "test_cases": [
-    {{
-      "test_case_id": "string",
-      "title": "string",
-      "method": "GET | POST | PUT | DELETE | PATCH",
-      "endpoint": "string",
-      "headers": {{}},
-      "request_body": null,
-      "expected_status": 200,
-      "expected_result": "string",
-      "expected_response": {{}},
-      "category": "Functional | Negative | Security",
-      "priority": "High | Medium | Low"
-    }}
-  ],
-  "total_count": 0
-}}\
-"""
-
-_QA_MAP: dict[str, str] = {
-    "standard": _QA_TMPL,
-    "bdd": _QA_BDD_TMPL,
-    "api": _QA_API_TMPL,
-}
-
-
-# ── Stage 3: Claude as Elite Quality Auditor ──────────────────────────────────
+# ── Stage 3: Claude as Senior QA Lead (final review & standardization) ────────
 
 SYSTEM_REVIEWER = (
-    "You are an Elite Quality Auditor. "
-    "You will receive analysis from the Business Analyst (BA) and test cases from the QA Engineer."
+    "You are a senior QA lead performing final review and standardization of "
+    "a generated test suite before delivery to the development team."
 )
 
 _REVIEW_TMPL = """\
-Task:
-• Check if there are illogical, or unreasonable cases and correct them.
-• Edge Case Mining: Consider extreme scenarios: Race Conditions (Multiple requests \
-simultaneously); API Latency/Timeouts (Weak network, slow response); Security \
-(Injections, token leaks via URL/Response); Data Integrity (Junk data, Unicode \
-characters, SQL injection in input); UX/UI.
-• Refine the terminology to meet ISO/IEEE standards for software testing.
-• Eliminate duplicate or irrelevant test cases.
-• Then return the final complete set of test cases, preserving the formatting.
-• Returns only a single valid block of JSON data.
+## Output Language
+All human-readable values (title, preconditions, steps, expected_result,
+test_data values) must be written in: {language}
+(JSON keys must always remain in English)
 
-BA's analysis:
-{ba_spec}
+## Inputs
+You will receive:
+1. Original feature description (user's raw input)
+2. Raw test suite JSON (from generator)
 
-Test cases from QA:
-{qa_cases}
+## Your Tasks
 
-Language Output: {language}
+### Phase 1 — Quality Review
+- Remove exact duplicates
+- Merge near-duplicates → keep the more detailed one
+- Identify and fill coverage gaps vs the feature description
+- Add missing critical test cases if found (High priority flows only)
+- Fix any vague steps or unverifiable expected results
 
-Output Format (JSON):
+### Phase 2 — Standardization
+- Re-index all test_case_id sequentially: TC_001, TC_002, TC_003...
+- Normalize priority: only allow "High | Medium | Low"
+- Validate category: only allow "Functional | UI/UX | Negative | Security | Performance"
+- Ensure steps are formatted as numbered strings: "1. ...", "2. ..."
+- Ensure test_data uses realistic specific values, not placeholders
+- Verify total_count matches the actual number of test cases
+
+### Phase 3 — Output
+Produce the finalized test suite in the exact schema below.
+
+## Output Format (JSON)
 {{
-  "test_suite_name": "string",
-  "description": "string (1 sentence max)",
-  "review_summary": {{
-    "cases_reviewed": 0,
-    "cases_added": 0,
-    "cases_modified": 0,
-    "coverage_score": "high | medium | low"
-  }},
+  "test_suite_name": "Short feature name",
+  "description": "One sentence describing the scope of this test suite",
   "test_cases": [
     {{
-      "test_case_id": "string",
-      "title": "string",
+      "test_case_id": "TC_001",
+      "title": "...",
       "priority": "High | Medium | Low",
-      "category": "Functional | UI/UX | Negative | Security",
-      "preconditions": ["string"],
-      "steps": ["string"],
-      "expected_result": "string",
-      "test_data": {{}}
+      "category": "Functional | UI/UX | Negative | Security | Performance",
+      "preconditions": ["..."],
+      "steps": ["1. ...", "2. ...", "3. ..."],
+      "expected_result": "...",
+      "test_data": {{"field": "value"}}
     }}
   ],
   "total_count": 0
-}}\
+}}
+
+## Rules
+- Do NOT remove test cases without a clear reason (duplicate or redundant)
+- Only add new test cases for High priority gaps — do not over-generate
+- total_count must equal exactly len(test_cases)
+- Output ONLY the JSON object. No explanation, no markdown code blocks.
+  Start your response with "{{" and end with "}}"
+
+## Input 1 — Original Feature Description:
+{requirement}
+
+## Input 2 — Raw Test Suite:
+{qa_cases}\
 """
 
 
@@ -212,54 +244,80 @@ Output Format (JSON):
 # MODE B — RESEARCH (combined BA + QA role, each model works independently)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-SYSTEM_RESEARCH = (
-    "You are a Senior Business Analyst and an expert Software Quality Assurance Engineer "
-    "specialized in designing comprehensive test suites for enterprise-level applications."
-)
+SYSTEM_RESEARCH = "You are an expert QA engineer. Your task is to analyze a feature description and generate a complete test suite in a single pass."
 
 _RESEARCH_TMPL = """\
-Task:
-• Analyze the following user's functional description and extract structured \
-requirements and edge cases.
-• Generate a detailed set of Test Cases based on those rules. Ensuring full \
-coverage of business requirements, user interface (UI), performance, security, \
-and usability. Adhering to the principles of accuracy, comprehensibility, \
-independence, and high reusability.
-• Consider extreme scenarios: Race Conditions (Multiple requests simultaneously); \
-API Latency/Timeouts (Weak network, slow response); Security (Injections, token \
-leaks via URL/Response); Data Integrity (Junk data, Unicode characters, SQL \
-injection in input); UX/UI.
-• Refine the terminology to meet ISO/IEEE standards for software testing.
-• Returns only a single valid block of JSON data.
-• Analysis Process:
-  1. User Flow Mapping: Define the step-by-step journey.
-  2. Business Rules: Identify constraints (data types, length, security protocols).
-  3. Input Validation: List all criteria for valid/invalid data.
-  4. Exception Handling: Predict system failures (timeouts, database errors).
+## Output Language
+All human-readable values must be written in: {language}
+(JSON keys must always remain in English)
 
-User Description:
-\"\"\"{requirement}\"\"\"
+## Your Tasks
+Work through these steps internally (do NOT output intermediate steps):
 
-Language Output: {language}
+1. Analyze the feature description:
+   - Identify entities, business rules, and constraints
+   - Map all user flows: happy paths, alternative flows, error flows
+   - Detect boundary conditions and edge cases
 
-Output Format (JSON):
+2. Generate comprehensive test cases covering:
+   - All happy paths
+   - Boundary / edge cases (min, max, just-inside, just-outside)
+   - Negative / error cases (invalid input, missing data, wrong permissions)
+   - UI/UX scenarios (if applicable)
+   - Security scenarios (if applicable)
+   - Performance hints (if applicable)
+
+3. Self-review before outputting:
+   - Remove duplicates
+   - Ensure at least 20% of test cases are Negative category
+   - Verify total_count matches actual number of test cases
+   - Replace any placeholder test data with specific realistic values
+
+## Output Format (JSON)
 {{
-  "test_suite_name": "string",
-  "description": "string (1 sentence max)",
+  "test_suite_name": "Short feature name",
+  "description": "One sentence describing the scope of this test suite",
   "test_cases": [
     {{
-      "test_case_id": "string",
-      "title": "string",
+      "test_case_id": "TC_001",
+      "title": "...",
       "priority": "High | Medium | Low",
-      "category": "Functional | UI/UX | Negative | Security",
-      "preconditions": ["string"],
-      "steps": ["string"],
-      "expected_result": "string",
-      "test_data": {{}}
+      "category": "Functional | UI/UX | Negative | Security | Performance",
+      "preconditions": ["..."],
+      "steps": ["1. ...", "2. ...", "3. ..."],
+      "expected_result": "...",
+      "test_data": {{"field": "value"}}
     }}
   ],
   "total_count": 0
-}}\
+}}
+
+## Priority Rules
+- High   → Core happy paths, critical failures, security breaches
+- Medium → Alternative flows, important edge cases
+- Low    → Minor UI details, low-impact edge cases
+
+## Category Rules
+- Functional  → Business logic, data processing, CRUD operations
+- UI/UX       → Layout, navigation, responsiveness, usability
+- Negative    → Invalid input, unauthorized access, error handling
+- Security    → Authentication, authorization, injection, data exposure
+- Performance → Load time, response time, concurrent users
+
+## Format Rules
+- steps: array of strings, each formatted as "1. action", "2. action"...
+- test_data: key-value with specific realistic values (real email, real phone number format,
+  real boundary numbers...), use {{}} if not applicable
+- expected_result: one clear paragraph describing the verifiable outcome
+- total_count: must equal exactly the number of items in test_cases
+
+## IMPORTANT
+Your response must be ONLY the JSON object.
+No explanation, no markdown code blocks, no preamble.
+Start your response with "{{" and end with "}}"
+
+## Feature Description:
+{requirement}\
 """
 
 
@@ -268,46 +326,29 @@ Output Format (JSON):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-def build_ba_prompt(requirement: str) -> str:
-    """Stage 1 — Gemini as Senior Business Analyst."""
-    return _BA_TMPL.format(requirement=requirement)
+def build_ba_prompt(requirement: str, language: str) -> str:
+    """Stage 1 — Claude as Senior Business Analyst / QA Architect."""
+    return _BA_TMPL.format(requirement=requirement, language=language)
 
 
-def build_qa_prompt(
-    requirement: str,
-    ba_spec: str,
-    test_type: str,
-    language: str,
-) -> str:
-    """Stage 2 — GPT-4o as Senior QA Engineer."""
-    template = _QA_MAP.get(test_type, _QA_TMPL)
-    return template.format(
-        requirement=requirement,
-        ba_spec=ba_spec,
-        language=language,
-    )
+def build_qa_prompt(ba_spec: str, language: str) -> str:
+    """Stage 2 — GPT-4o as Expert QA Engineer (takes BA analysis as input)."""
+    return _QA_TMPL.format(ba_spec=ba_spec, language=language)
 
 
 def build_review_prompt(
-    ba_spec: str,
+    requirement: str,
     qa_cases: str,
     language: str,
 ) -> str:
-    """Stage 3 — Claude as Elite Quality Auditor."""
+    """Stage 3 — Claude as Senior QA Lead (final review & standardization)."""
     return _REVIEW_TMPL.format(
-        ba_spec=ba_spec,
+        requirement=requirement,
         qa_cases=qa_cases,
         language=language,
     )
 
 
-def build_research_prompt(
-    requirement: str,
-    test_type: str,  # reserved — research currently uses standard format only
-    language: str,
-) -> str:
+def build_research_prompt(requirement: str, language: str) -> str:
     """Research mode — combined BA + QA, fully independent generation."""
-    return _RESEARCH_TMPL.format(
-        requirement=requirement,
-        language=language,
-    )
+    return _RESEARCH_TMPL.format(requirement=requirement, language=language)

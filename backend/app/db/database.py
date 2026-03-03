@@ -57,6 +57,16 @@ async def create_indexes() -> None:
         name="history_user_favorite",
     )
 
+    # ── ai_log ────────────────────────────────────────────────────────────────
+    await db["ai_log"].create_index(
+        [("user_id", ASCENDING), ("created_at", DESCENDING)],
+        name="ai_log_user_date",
+    )
+    await db["ai_log"].create_index(
+        [("history_id", ASCENDING)],
+        name="ai_log_history_id",
+    )
+
     logger.info("[DB] Indexes created / verified.")
 
 

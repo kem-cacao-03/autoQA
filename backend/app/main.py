@@ -9,6 +9,20 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
+# Configure app-namespace logging explicitly.
+# logging.basicConfig() is a no-op if uvicorn has already added handlers to the
+# root logger — so we attach directly to the "app" logger instead.
+_app_log = logging.getLogger("app")
+if not _app_log.handlers:
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter(
+        "%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
+        datefmt="%H:%M:%S",
+    ))
+    _app_log.addHandler(_h)
+_app_log.setLevel(logging.INFO)
+_app_log.propagate = False  # avoid duplicates if root already has a handler
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

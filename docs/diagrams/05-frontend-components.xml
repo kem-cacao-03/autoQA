@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+  <diagram name="Frontend Component Tree" id="dia-5">
+    <mxGraphModel dx="1284" dy="827" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;" value="Cây thành phần Frontend (React Component Tree)" vertex="1">
+          <mxGeometry height="40" width="750" x="150" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="l0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;BrowserRouter&lt;/b&gt;&#xa;(React Router v6)" vertex="1">
+          <mxGeometry height="55" width="200" x="440" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;AuthProvider&lt;/b&gt;&#xa;AuthContext — user state + auth events" vertex="1">
+          <mxGeometry height="55" width="250" x="415" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;QueryClientProvider&lt;/b&gt;&#xa;TanStack Query v5 — server state cache" vertex="1">
+          <mxGeometry height="55" width="280" x="400" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;App&lt;/b&gt;&#xa;Routes — public vs protected" vertex="1">
+          <mxGeometry height="55" width="220" x="430" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="l4a" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;" value="&lt;b&gt;Public Routes&lt;/b&gt;&#xa;(no auth required)" vertex="1">
+          <mxGeometry height="55" width="190" x="140" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="l4b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;ProtectedRoute&lt;/b&gt;&#xa;JWT guard → redirect /login if no token" vertex="1">
+          <mxGeometry height="55" width="250" x="720" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="l5a1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;LoginPage&lt;/b&gt;&#xa;/login" vertex="1">
+          <mxGeometry height="55" width="140" x="50" y="605" as="geometry" />
+        </mxCell>
+        <mxCell id="l5a2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;RegisterPage&lt;/b&gt;&#xa;/register" vertex="1">
+          <mxGeometry height="55" width="140" x="220" y="605" as="geometry" />
+        </mxCell>
+        <mxCell id="l5b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Layout&lt;/b&gt;&#xa;Sidebar + Header + &lt;Outlet /&gt;" vertex="1">
+          <mxGeometry height="55" width="250" x="720" y="605" as="geometry" />
+        </mxCell>
+        <mxCell id="l6a" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;GeneratorPage&lt;/b&gt;&#xa;/generator&#xa;(main feature)" vertex="1">
+          <mxGeometry height="65" width="155" x="570" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="l6b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;HistoryPage&lt;/b&gt;&#xa;/history&#xa;(list + search + fav)" vertex="1">
+          <mxGeometry height="65" width="155" x="745" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="l6c" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;ProfilePage&lt;/b&gt;&#xa;/profile&#xa;(settings + password)" vertex="1">
+          <mxGeometry height="65" width="155" x="920" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="shared" parent="1" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=10;" value="&lt;b&gt;Shared Components:&lt;/b&gt; Button · Badge · Spinner · Modal · GeneratedTestView · StageUsageTable · HistoryCard" vertex="1">
+          <mxGeometry height="55" width="480" x="40" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="l0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="l1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="l2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="l3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l4a" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="l3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l4b" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="l4a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l5a1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="l4a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l5a2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="l4b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l5b" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="l5b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l6a" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="l5b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l6b" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="l5b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;" target="l6c" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

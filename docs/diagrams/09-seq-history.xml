@@ -1,0 +1,351 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+
+  <!-- ═══════════════ UC11: Xem & quản lý lịch sử ═══════════════ -->
+  <diagram name="UC11 — Xem lịch sử" id="seq-uc11">
+    <mxGraphModel dx="900" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="870" pageHeight="510" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc11-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC11 — Xem &amp; quản lý lịch sử" vertex="1">
+          <mxGeometry x="25" y="8" width="820" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc11-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc11-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc11-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="History API (FastAPI)" vertex="1">
+          <mxGeometry x="410" y="50" width="160" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc11-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="615" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc11-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="480" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc11-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="480" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc11-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="90" as="sourcePoint"/><mxPoint x="490" y="480" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc11-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="690" y="90" as="sourcePoint"/><mxPoint x="690" y="480" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc11-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Điều hướng đến trang Lịch sử (/history)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc11-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. GET /history?page=1&amp;limit=20  [Bearer token]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="490" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc11-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="3. JWT middleware: verify &amp; extract user_id" vertex="1">
+          <mxGeometry x="410" y="198" width="220" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc11-m4" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="4. find({user_id}).sort({created_at:-1}).skip(0).limit(20)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="255" as="sourcePoint"/><mxPoint x="690" y="255" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc11-m5" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="5. [{_id, requirement, mode, created_at, is_favorite, usage_summary}]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="310" as="sourcePoint"/><mxPoint x="490" y="310" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc11-m6" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="6. 200 OK {items: [...], total, page, limit}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="365" as="sourcePoint"/><mxPoint x="290" y="365" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc11-m7" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="7. Render danh sách HistoryCard (paginated)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="420" as="sourcePoint"/><mxPoint x="100" y="420" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC12: Tìm kiếm theo yêu cầu ═══════════════ -->
+  <diagram name="UC12 — Tìm kiếm" id="seq-uc12">
+    <mxGraphModel dx="900" dy="550" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="870" pageHeight="470" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc12-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC12 — Tìm kiếm lịch sử theo yêu cầu" vertex="1">
+          <mxGeometry x="25" y="8" width="820" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc12-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc12-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc12-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="History API (FastAPI)" vertex="1">
+          <mxGeometry x="410" y="50" width="160" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc12-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="615" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc12-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc12-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc12-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="90" as="sourcePoint"/><mxPoint x="490" y="440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc12-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="690" y="90" as="sourcePoint"/><mxPoint x="690" y="440" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc12-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Nhập từ khóa vào ô tìm kiếm">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc12-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. GET /history?search=keyword  [Bearer token]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="490" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc12-m3" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="3. find({user_id, requirement: {$regex: keyword, $options: 'i'}})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="230" as="sourcePoint"/><mxPoint x="690" y="230" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc12-m4" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="4. [matched items]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="285" as="sourcePoint"/><mxPoint x="490" y="285" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc12-m5" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="5. 200 OK {items: [...], total}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="340" as="sourcePoint"/><mxPoint x="290" y="340" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc12-m6" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="6. Cập nhật danh sách (highlight từ khóa tìm kiếm)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="395" as="sourcePoint"/><mxPoint x="100" y="395" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC13: Lọc theo yêu thích ═══════════════ -->
+  <diagram name="UC13 — Lọc yêu thích" id="seq-uc13">
+    <mxGraphModel dx="900" dy="550" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="870" pageHeight="470" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc13-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC13 — Lọc lịch sử theo yêu thích" vertex="1">
+          <mxGeometry x="25" y="8" width="820" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc13-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc13-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc13-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="History API (FastAPI)" vertex="1">
+          <mxGeometry x="410" y="50" width="160" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc13-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="615" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc13-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc13-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc13-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="90" as="sourcePoint"/><mxPoint x="490" y="440" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc13-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="690" y="90" as="sourcePoint"/><mxPoint x="690" y="440" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc13-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Click toggle &quot;Chỉ hiện yêu thích&quot; (filter ON)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc13-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. GET /history?favorite=true  [Bearer token]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="490" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc13-m3" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="3. find({user_id, is_favorite: true}).sort({created_at: -1})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="230" as="sourcePoint"/><mxPoint x="690" y="230" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc13-m4" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="4. [favorite items only]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="285" as="sourcePoint"/><mxPoint x="490" y="285" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc13-m5" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="5. 200 OK {items: [...], total}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="340" as="sourcePoint"/><mxPoint x="290" y="340" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc13-m6" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="6. Cập nhật danh sách (chỉ hiển thị mục yêu thích)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="395" as="sourcePoint"/><mxPoint x="100" y="395" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC14: Xem chi tiết lịch sử ═══════════════ -->
+  <diagram name="UC14 — Xem chi tiết" id="seq-uc14">
+    <mxGraphModel dx="900" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="870" pageHeight="510" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc14-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC14 — Xem chi tiết lịch sử" vertex="1">
+          <mxGeometry x="25" y="8" width="820" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc14-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc14-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc14-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="History API (FastAPI)" vertex="1">
+          <mxGeometry x="410" y="50" width="160" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc14-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="615" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc14-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="480" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc14-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="480" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc14-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="90" as="sourcePoint"/><mxPoint x="490" y="480" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc14-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="690" y="90" as="sourcePoint"/><mxPoint x="690" y="480" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc14-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Click vào HistoryCard để xem chi tiết">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc14-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. GET /history/{id}  [Bearer token]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="490" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc14-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="3. JWT middleware: verify &amp; extract user_id" vertex="1">
+          <mxGeometry x="410" y="198" width="220" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc14-m4" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="4. findOne({_id: id, user_id})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="255" as="sourcePoint"/><mxPoint x="690" y="255" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc14-m5" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="5. {_id, requirement, mode, test_cases[], review_summary, usage[], created_at}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="310" as="sourcePoint"/><mxPoint x="490" y="310" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc14-m6" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="6. 200 OK (full document)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="365" as="sourcePoint"/><mxPoint x="290" y="365" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc14-m7" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="7. Render GeneratedTestView + StageUsageTable + review_summary">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="420" as="sourcePoint"/><mxPoint x="100" y="420" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC15: Xóa lịch sử ═══════════════ -->
+  <diagram name="UC15 — Xóa lịch sử" id="seq-uc15">
+    <mxGraphModel dx="900" dy="650" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="870" pageHeight="610" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc15-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC15 — Xóa lịch sử" vertex="1">
+          <mxGeometry x="25" y="8" width="820" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc15-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc15-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc15-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="History API (FastAPI)" vertex="1">
+          <mxGeometry x="410" y="50" width="160" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc15-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="615" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc15-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="575" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc15-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="575" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc15-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="90" as="sourcePoint"/><mxPoint x="490" y="575" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc15-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="690" y="90" as="sourcePoint"/><mxPoint x="690" y="575" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc15-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Click nút Xóa trên HistoryCard">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc15-m2" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="2. Hiển thị hộp thoại xác nhận: &quot;Bạn có chắc muốn xóa?&quot;">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="100" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc15-m3" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="3. Xác nhận Xóa">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="230" as="sourcePoint"/><mxPoint x="290" y="230" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc15-m4" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="4. DELETE /history/{id}  [Bearer token]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="285" as="sourcePoint"/><mxPoint x="490" y="285" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc15-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="5. JWT middleware: verify &amp; extract user_id" vertex="1">
+          <mxGeometry x="410" y="308" width="220" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc15-m6" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="6. deleteOne({_id: id, user_id})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="365" as="sourcePoint"/><mxPoint x="690" y="365" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc15-m7" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="7. {deletedCount: 1}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="420" as="sourcePoint"/><mxPoint x="490" y="420" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc15-m8" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="8. 200 OK">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="475" as="sourcePoint"/><mxPoint x="290" y="475" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc15-m9" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="9. Xóa item khỏi danh sách, hiển thị toast &quot;Đã xóa thành công&quot;">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="530" as="sourcePoint"/><mxPoint x="100" y="530" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <!-- ═══════════════ UC16: Đánh dấu / bỏ yêu thích ═══════════════ -->
+  <diagram name="UC16 — Đánh dấu yêu thích" id="seq-uc16">
+    <mxGraphModel dx="900" dy="650" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="870" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="uc16-t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC16 — Đánh dấu / bỏ yêu thích" vertex="1">
+          <mxGeometry x="25" y="8" width="820" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="uc16-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry x="25" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc16-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry x="215" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc16-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="History API (FastAPI)" vertex="1">
+          <mxGeometry x="410" y="50" width="160" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc16-p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="MongoDB Atlas" vertex="1">
+          <mxGeometry x="615" y="50" width="150" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="uc16-l1" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="100" y="90" as="sourcePoint"/><mxPoint x="100" y="585" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc16-l2" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="290" y="90" as="sourcePoint"/><mxPoint x="290" y="585" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc16-l3" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="490" y="90" as="sourcePoint"/><mxPoint x="490" y="585" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="uc16-l4" parent="1" style="endArrow=none;dashed=1;strokeColor=#aaaaaa;html=1;" edge="1" value=""><mxGeometry relative="1" as="geometry"><mxPoint x="690" y="90" as="sourcePoint"/><mxPoint x="690" y="585" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="uc16-m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="1. Click icon ⭐ (toggle yêu thích)">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="120" as="sourcePoint"/><mxPoint x="290" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc16-m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="2. PATCH /history/{id}/favorite  [Bearer token]">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="175" as="sourcePoint"/><mxPoint x="490" y="175" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc16-n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" value="3. JWT middleware: verify &amp; extract user_id" vertex="1">
+          <mxGeometry x="410" y="198" width="220" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc16-m4" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="4. findOne({_id: id, user_id})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="255" as="sourcePoint"/><mxPoint x="690" y="255" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc16-m5" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="5. {is_favorite: current_value}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="310" as="sourcePoint"/><mxPoint x="490" y="310" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc16-m6" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;" edge="1" value="6. updateOne({$set: {is_favorite: !current_value}})">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="365" as="sourcePoint"/><mxPoint x="690" y="365" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc16-m7" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="7. {acknowledged: true, modifiedCount: 1}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="420" as="sourcePoint"/><mxPoint x="490" y="420" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc16-m8" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="8. 200 OK {is_favorite: new_value}">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="490" y="475" as="sourcePoint"/><mxPoint x="290" y="475" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="uc16-m9" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;fontSize=11;" edge="1" value="9. Toggle icon ⭐ (filled) / ☆ (empty), cập nhật UI">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="530" as="sourcePoint"/><mxPoint x="100" y="530" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+</mxfile>

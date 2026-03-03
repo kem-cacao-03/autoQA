@@ -3,14 +3,17 @@ import {
   Zap, FlaskConical,
   Clock, Cpu, CheckCircle, XCircle,
   Loader2, FileJson, FileSpreadsheet,
-  Globe, Sparkles,
+  Globe, Sparkles, X, ListChecks, Square,
 } from "lucide-react";
 import {
-  type GenerationMode, type LLMProvider, type TestType,
+  type GenerationMode, type LLMProvider,
   type ResearchProviderResult, type StageUsage,
 } from "@/lib/api";
-import { useGenerator } from "@/contexts/GeneratorContext";
+import { useGenerator, type QueueItem } from "@/contexts/GeneratorContext";
 import { TestCaseCard } from "@/components/TestCaseCard";
+import { FilenameDialog } from "@/components/FilenameDialog";
+import { ProviderLogo } from "@/components/ProviderLogo";
+import { SortBar, sortCases, filterCases, getCategories, toggleSort, type SortState } from "@/components/SortBar";
 import { downloadJSON, downloadExcel } from "@/lib/export";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -23,26 +26,26 @@ const PROVIDER_LABELS: Record<LLMProvider, string> = {
 
 const PROVIDER_STYLES: Record<string, { bg: string; text: string; ring: string }> = {
   openai: { bg: "bg-emerald-500", text: "text-white", ring: "ring-emerald-300" },
-  gemini: { bg: "bg-blue-500", text: "text-white", ring: "ring-blue-300" },
-  claude: { bg: "bg-violet-500", text: "text-white", ring: "ring-violet-300" },
-  ba: { bg: "bg-blue-500", text: "text-white", ring: "ring-blue-300" },
-  qa: { bg: "bg-emerald-500", text: "text-white", ring: "ring-emerald-300" },
-  reviewer: { bg: "bg-violet-500", text: "text-white", ring: "ring-violet-300" },
+  gemini: { bg: "bg-blue-500",    text: "text-white", ring: "ring-blue-300"    },
+  claude: { bg: "bg-violet-500",  text: "text-white", ring: "ring-violet-300"  },
+  ba:       { bg: "bg-emerald-500", text: "text-white", ring: "ring-emerald-300" },
+  qa:       { bg: "bg-blue-500",    text: "text-white", ring: "ring-blue-300"    },
+  reviewer: { bg: "bg-violet-500",  text: "text-white", ring: "ring-violet-300"  },
 };
 
 const PIPELINE_STEPS = [
-  { key: "ba", label: "Business Analyst", model: "Gemini", icon: "BA" },
-  { key: "qa", label: "QA Engineer", model: "GPT-4o", icon: "QA" },
-  { key: "reviewer", label: "Quality Auditor", model: "Claude", icon: "CR" },
+  { key: "ba",       label: "Business Analyst", model: "GPT-4o",  icon: "BA" },
+  { key: "qa",       label: "QA Engineer",       model: "Gemini",  icon: "QA" },
+  { key: "reviewer", label: "Quality Auditor",   model: "Claude",  icon: "CR" },
 ];
 
 const STAGE_INFO: Record<string, { model: string; role: string; color: string }> = {
-  ba: { model: "Gemini", role: "Business Analyst", color: "bg-blue-500" },
-  qa: { model: "GPT-4o", role: "QA Engineer", color: "bg-emerald-500" },
-  reviewer: { model: "Claude", role: "Quality Auditor", color: "bg-violet-500" },
-  openai: { model: "GPT-4o", role: "Research", color: "bg-emerald-500" },
-  gemini: { model: "Gemini", role: "Research", color: "bg-blue-500" },
-  claude: { model: "Claude", role: "Research", color: "bg-violet-500" },
+  ba:       { model: "GPT-4o",  role: "Business Analyst", color: "bg-emerald-500" },
+  qa:       { model: "Gemini",  role: "QA Engineer",      color: "bg-blue-500"    },
+  reviewer: { model: "Claude",  role: "Quality Auditor",  color: "bg-violet-500"  },
+  openai:   { model: "GPT-4o",  role: "Research",         color: "bg-emerald-500" },
+  gemini:   { model: "Gemini",  role: "Research",         color: "bg-blue-500"    },
+  claude:   { model: "Claude",  role: "Research",         color: "bg-violet-500"  },
 };
 
 interface DashRow {
@@ -68,7 +71,7 @@ function PipelineStepIndicator({ progress }: { progress: number }) {
   return (
     <div className="flex items-center gap-0">
       {PIPELINE_STEPS.map((step, i) => {
-        const done = i < activeIndex;
+        const done   = i < activeIndex;
         const active = i === activeIndex;
         const styles = PROVIDER_STYLES[step.key];
         return (
@@ -77,10 +80,11 @@ function PipelineStepIndicator({ progress }: { progress: number }) {
               <div className={`h-px w-8 sm:w-12 transition-all duration-500 ${done ? "bg-brand-400" : "bg-slate-200 dark:bg-slate-700"}`} />
             )}
             <div className="flex flex-col items-center gap-1">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all duration-300 ring-2 ring-offset-2 dark:ring-offset-slate-900 ${done ? `${styles.bg} ${styles.text} ${styles.ring} opacity-60` :
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all duration-300 ring-2 ring-offset-2 dark:ring-offset-slate-900 ${
+                done   ? `${styles.bg} ${styles.text} ${styles.ring} opacity-60` :
                 active ? `${styles.bg} ${styles.text} ${styles.ring} shadow-lg animate-pulse` :
-                  "bg-slate-100 dark:bg-slate-700 text-slate-400 ring-transparent"
-                }`}>
+                         "bg-slate-100 dark:bg-slate-700 text-slate-400 ring-transparent"
+              }`}>
                 {done ? <CheckCircle className="w-4 h-4" /> : step.icon}
               </div>
               <div className="text-center">
@@ -117,7 +121,7 @@ function UsageDashboard({
   } else if (mode === "research" && researchResults?.length) {
     for (const r of researchResults) {
       if (!r.usage) continue;
-      const u = r.usage;
+      const u    = r.usage;
       const info = STAGE_INFO[r.provider] ?? { model: r.provider, role: "Research", color: "bg-slate-400" };
       rows.push({ key: r.provider, model: info.model, role: info.role, color: info.color, prompt: u.prompt_tokens, completion: u.completion_tokens, total: u.total_tokens, duration: u.duration_seconds });
     }
@@ -126,7 +130,7 @@ function UsageDashboard({
   if (!rows.length && elapsed == null) return null;
 
   const totalTokens = rows.reduce((s, r) => s + r.total, 0);
-  const maxTokens = rows.length > 0 ? Math.max(...rows.map((r) => r.total)) : 1;
+  const maxTokens   = rows.length > 0 ? Math.max(...rows.map((r) => r.total)) : 1;
 
   return (
     <div className="card p-5 animate-fade-in space-y-4">
@@ -179,39 +183,219 @@ function UsageDashboard({
   );
 }
 
+// ── Queue panel ────────────────────────────────────────────────────────────────
+
+function QueueItemRow({
+  item, onDismiss, onCancel,
+}: {
+  item: QueueItem;
+  onDismiss: () => void;
+  onCancel: () => void;
+}) {
+  const isActive    = item.status === "submitting" || item.status === "running";
+  const isDone      = item.status === "success" || item.status === "failure" || item.status === "cancelled";
+  const isCancelled = item.status === "cancelled";
+  const truncReq    = item.requirement.length > 110
+    ? item.requirement.slice(0, 110) + "…"
+    : item.requirement;
+
+  return (
+    <div className="flex items-start gap-3 px-4 py-3">
+      {/* Status icon */}
+      <div className="shrink-0 mt-0.5">
+        {isActive
+          ? <Loader2 className="w-4 h-4 animate-spin text-brand-500" />
+          : item.status === "success"
+            ? <CheckCircle className="w-4 h-4 text-emerald-500" />
+            : isCancelled
+              ? <Square className="w-4 h-4 text-slate-400" />
+              : <XCircle className="w-4 h-4 text-rose-500" />
+        }
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0 space-y-1.5">
+        <div className="flex items-start gap-2 flex-wrap">
+          <span className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed flex-1 min-w-0">
+            {truncReq}
+          </span>
+          <span className={`badge shrink-0 ${
+            item.mode === "pipeline"
+              ? "bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 border border-brand-100 dark:border-brand-800/30"
+              : "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border border-violet-100 dark:border-violet-800/30"
+          }`}>
+            {item.mode === "pipeline" ? "Standard" : "Research"}
+          </span>
+        </div>
+
+        {/* Running state */}
+        {item.status === "submitting" && (
+          <p className="text-[11px] text-slate-400">Submitting…</p>
+        )}
+        {item.status === "running" && (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-3">
+              {item.mode === "pipeline" && item.progress > 0 && (
+                <PipelineStepIndicator progress={item.progress} />
+              )}
+              {item.progress > 0 && (
+                <span className="text-[11px] font-semibold text-brand-600 dark:text-brand-400 tabular-nums ml-auto shrink-0">
+                  {item.progress}%
+                </span>
+              )}
+            </div>
+            {item.progress > 0 && <ProgressBar value={item.progress} />}
+          </div>
+        )}
+
+        {/* Cancelled message */}
+        {isCancelled && (
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">Cancelled</p>
+        )}
+
+        {/* Failure message */}
+        {item.status === "failure" && item.error && (
+          <p className="text-[11px] text-rose-500 dark:text-rose-400 line-clamp-2">{item.error}</p>
+        )}
+
+        {/* Success summary */}
+        {item.status === "success" && item.lastPollResponse?.result && (
+          <p className="text-[11px] text-emerald-600 dark:text-emerald-400">
+            {item.lastPollResponse.result.total_count} test cases generated
+          </p>
+        )}
+      </div>
+
+      {/* Cancel button for running items */}
+      {item.status === "running" && (
+        <button
+          onClick={onCancel}
+          className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-rose-200 text-rose-400 hover:border-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:border-rose-800/50 dark:text-rose-500/70 dark:hover:border-rose-600 dark:hover:text-rose-400 dark:hover:bg-rose-900/20 transition-all duration-150"
+          title="Stop this job"
+        >
+          <Square className="w-3 h-3 fill-current" />
+          Stop
+        </button>
+      )}
+
+      {/* Dismiss button for completed items */}
+      {isDone && (
+        <button
+          onClick={onDismiss}
+          className="shrink-0 p-1 rounded text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-300 transition-colors"
+          title="Dismiss"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function QueuePanel({ queue, dismiss, cancel, clearDone }: {
+  queue: QueueItem[];
+  dismiss: (id: string) => void;
+  cancel: (id: string) => void;
+  clearDone: () => void;
+}) {
+  const runningCount = queue.filter(q => q.status === "running" || q.status === "submitting").length;
+  const doneCount    = queue.filter(q => q.status === "success" || q.status === "failure" || q.status === "cancelled").length;
+
+  return (
+    <div className="card overflow-hidden animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700">
+        <div className="flex items-center gap-2">
+          <ListChecks className="w-4 h-4 text-brand-500" />
+          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Queue</span>
+          {runningCount > 0 && (
+            <span className="badge bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 border border-brand-100 dark:border-brand-800/30 animate-pulse">
+              {runningCount} running
+            </span>
+          )}
+        </div>
+        {doneCount > 0 && (
+          <button
+            onClick={clearDone}
+            className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+          >
+            Clear done
+          </button>
+        )}
+      </div>
+
+      {/* Items — newest first */}
+      <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
+        {[...queue].reverse().map(item => (
+          <QueueItemRow
+            key={item.queueId}
+            item={item}
+            onDismiss={() => dismiss(item.queueId)}
+            onCancel={() => cancel(item.queueId)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function GeneratorPage() {
-  // ── Job state from context (survives navigation) ──────────────────────────
-  const { jobStatus, loading, error, jobMode, submit } = useGenerator();
+  const { queue, submit, cancel, dismiss, clearDone } = useGenerator();
 
-  // ── Form state (local) ────────────────────────────────────────────────────
-  // Initialize mode from localStorage so the toggle reflects the active job
-  const [mode, setMode] = useState<GenerationMode>(() => {
-    try {
-      const s = localStorage.getItem("autoqa_active_job");
-      if (s) return (JSON.parse(s) as { mode?: GenerationMode }).mode ?? "pipeline";
-    } catch { /* ignore */ }
-    return "pipeline";
-  });
-  const [providers, setProviders] = useState<Set<LLMProvider>>(new Set(["openai", "gemini", "claude"]));
-  const [testType] = useState<TestType>("standard");
+  // ── Form state (fully local — resets after each submit) ──────────────────
+  const [mode, setMode]             = useState<GenerationMode>("pipeline");
+  const [providers, setProviders]   = useState<Set<LLMProvider>>(
+    () => new Set(["openai", "gemini", "claude"] as LLMProvider[])
+  );
   const [requirement, setRequirement] = useState("");
-  const [language, setLanguage] = useState("Vietnamese");
-  const [activeTab, setActiveTab] = useState<string>("openai");
+  const [language, setLanguage]       = useState("Vietnamese");
+  const [activeTab, setActiveTab]     = useState<string>("openai");
+
+  // ── Derive active result from queue ─────────────────────────────────────
+  // Show the most recently submitted job that succeeded
+  const latestSuccess = [...queue].reverse().find(q => q.status === "success") ?? null;
+  const jobStatus     = latestSuccess?.lastPollResponse ?? null;
+  const jobMode       = latestSuccess?.mode ?? "pipeline";
+  const hasResult     = !!latestSuccess;
+  const researchResults = jobStatus?.research_results;
 
   // Auto-select first research tab when results arrive
-  const researchResults = jobStatus?.research_results;
   useEffect(() => {
     if (researchResults?.length) setActiveTab(researchResults[0].provider);
   }, [researchResults]);
 
+  // ── Sort / filter ─────────────────────────────────────────────────────────
+  const [sort, setSort]                 = useState<SortState | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [cardGen, setCardGen]           = useState(0);
+
+  // Reset category filter + collapse cards when switching research tabs
+  useEffect(() => { setCategoryFilter(null); setCardGen((g) => g + 1); }, [activeTab]);
+
   // ── Derived values ────────────────────────────────────────────────────────
-  const pipelineResult = jobStatus?.result;
-  const hasResult = jobStatus?.status === "success";
-  const items = pipelineResult
-    ? ((pipelineResult.test_cases ?? []).length > 0 ? pipelineResult.test_cases : (pipelineResult.scenarios ?? []))
-    : [];
+  const pipelineResult    = jobStatus?.result;
+  const rawItems          = pipelineResult ? (pipelineResult.test_cases ?? []) : [];
+  const pipelineCategories = getCategories(rawItems as Record<string, unknown>[]);
+  const items             = sortCases(filterCases(rawItems as Record<string, unknown>[], categoryFilter), sort) as typeof rawItems;
+
+  // ── Export dialog ─────────────────────────────────────────────────────────
+  const [exportDialog, setExportDialog] = useState<{ type: "json" | "excel"; name: string } | null>(null);
+
+  const openExportDialog = (type: "json" | "excel") => {
+    if (!latestSuccess) return;
+    let name: string;
+    if (jobMode === "research" && researchResults?.length) {
+      const providerNames = researchResults
+        .map((r) => PROVIDER_LABELS[r.provider as LLMProvider] ?? r.provider)
+        .join("_");
+      name = `TestSuite_Research_${providerNames}`;
+    } else {
+      name = "TestSuite_Standard";
+    }
+    setExportDialog({ type, name });
+  };
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const toggleProvider = (p: LLMProvider) => {
@@ -223,9 +407,12 @@ export default function GeneratorPage() {
     });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    await submit({ requirement, mode, test_type: testType, language, providers: Array.from(providers) });
+    const params = { requirement, mode, language, providers: Array.from(providers) };
+    // Reset form immediately — submit is fire-and-forget
+    setRequirement("");
+    submit(params);
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -243,7 +430,7 @@ export default function GeneratorPage() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">Generate Test Cases</h1>
           <p className="text-brand-100 text-sm max-w-lg leading-relaxed">
-            Describe your requirements — our 3-stage AI pipeline (Gemini → GPT-4o → Claude) generates a complete, verified test suite.
+            Describe your requirements — our 3-stage AI pipeline (GPT-4o → Gemini → Claude) generates a complete, verified test suite.
           </p>
           <div className="flex items-center gap-2 mt-5 flex-wrap">
             {PIPELINE_STEPS.map((step, i) => {
@@ -273,7 +460,7 @@ export default function GeneratorPage() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer select-none transition-all duration-200 ${mode === m
                 ? "bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-md shadow-brand-500/20"
                 : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50"
-                }`}
+              }`}
             >
               {m === "pipeline" ? <Zap className="w-3.5 h-3.5" /> : <FlaskConical className="w-3.5 h-3.5" />}
               {m === "pipeline" ? "Standard" : "Research"}
@@ -285,25 +472,25 @@ export default function GeneratorPage() {
         {mode === "research" && (
           <div className="card p-5 animate-fade-in">
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-              Select models to compare
+              Select models
             </label>
             <div className="flex flex-wrap gap-3">
               {(["openai", "gemini", "claude"] as LLMProvider[]).map((p) => {
-                const providerConfig: Record<string, { icon: string; selectedBg: string; selectedBorder: string; selectedText: string; iconBg: string; checkColor: string }> = {
-                  openai: { icon: "GP", selectedBg: "bg-emerald-50 dark:bg-emerald-900/20", selectedBorder: "border-emerald-400 dark:border-emerald-600", selectedText: "text-emerald-700 dark:text-emerald-400", iconBg: "bg-emerald-500", checkColor: "text-emerald-500" },
-                  gemini: { icon: "GE", selectedBg: "bg-blue-50 dark:bg-blue-900/20", selectedBorder: "border-blue-400 dark:border-blue-600", selectedText: "text-blue-700 dark:text-blue-400", iconBg: "bg-blue-500", checkColor: "text-blue-500" },
-                  claude: { icon: "CL", selectedBg: "bg-violet-50 dark:bg-violet-900/20", selectedBorder: "border-violet-400 dark:border-violet-600", selectedText: "text-violet-700 dark:text-violet-400", iconBg: "bg-violet-500", checkColor: "text-violet-500" },
+                const providerConfig: Record<string, { selectedBg: string; selectedBorder: string; selectedText: string; iconBg: string; checkColor: string }> = {
+                  openai: { selectedBg: "bg-emerald-50 dark:bg-emerald-900/20", selectedBorder: "border-emerald-400 dark:border-emerald-600", selectedText: "text-emerald-700 dark:text-emerald-400", iconBg: "bg-emerald-500", checkColor: "text-emerald-500" },
+                  gemini: { selectedBg: "bg-blue-50 dark:bg-blue-900/20",       selectedBorder: "border-blue-400 dark:border-blue-600",       selectedText: "text-blue-700 dark:text-blue-400",       iconBg: "bg-blue-500",    checkColor: "text-blue-500"    },
+                  claude: { selectedBg: "bg-violet-50 dark:bg-violet-900/20",   selectedBorder: "border-violet-400 dark:border-violet-600",   selectedText: "text-violet-700 dark:text-violet-400",   iconBg: "bg-violet-500",  checkColor: "text-violet-500"  },
                 };
-                const cfg = providerConfig[p];
+                const cfg  = providerConfig[p];
                 const isOn = providers.has(p);
                 return (
                   <label key={p} className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none ${isOn
                     ? `${cfg.selectedBg} ${cfg.selectedBorder} shadow-sm`
                     : "border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500"
-                    }`}>
+                  }`}>
                     <input type="checkbox" className="sr-only" checked={isOn} onChange={() => toggleProvider(p)} />
-                    <div className={`w-6 h-6 rounded-lg ${cfg.iconBg} flex items-center justify-center shadow-sm shrink-0`}>
-                      <span className="text-white text-[9px] font-bold">{cfg.icon}</span>
+                    <div className={`w-7 h-7 rounded-lg ${cfg.iconBg} flex items-center justify-center shadow-sm shrink-0`}>
+                      <ProviderLogo provider={p} className="w-4 h-4 text-white" />
                     </div>
                     <p className={`text-sm font-semibold ${isOn ? cfg.selectedText : "text-slate-700 dark:text-slate-300"}`}>
                       {PROVIDER_LABELS[p]}
@@ -349,43 +536,16 @@ export default function GeneratorPage() {
             </select>
           </div>
 
-          {/* Step indicator while loading */}
-          {loading && (
-            <div className="space-y-4 animate-fade-in p-4 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700">
-              <div className="flex items-center justify-between">
-                {mode === "pipeline" && (
-                  <PipelineStepIndicator progress={jobStatus?.progress ?? 0} />
-                )}
-                <span className={`text-sm font-bold text-brand-600 dark:text-brand-400 tabular-nums ${mode === "research" ? "ml-auto" : ""}`}>
-                  {jobStatus?.progress ?? 0}%
-                </span>
-              </div>
-              <ProgressBar value={jobStatus?.progress ?? 0} />
-            </div>
-          )}
-
           {/* Submit */}
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 text-base">
-            {loading
-              ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing…</>
-              : <><Zap className="w-5 h-5" /> Generate Test Cases</>
-            }
+          <button type="submit" className="btn-primary w-full py-3.5 text-base">
+            <Zap className="w-5 h-5" /> Generate Test Cases
           </button>
         </div>
       </form>
 
-      {/* ── Error ── */}
-      {error && (
-        <div className="flex items-center gap-3 card p-4 border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 animate-fade-in">
-          <XCircle className="w-5 h-5 shrink-0" />
-          <span className="text-sm">{error}</span>
-        </div>
-      )}
-      {jobStatus?.status === "failure" && (
-        <div className="flex items-center gap-3 card p-4 border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 animate-fade-in">
-          <XCircle className="w-5 h-5 shrink-0" />
-          <span className="text-sm">{jobStatus.error ?? "An error occurred during processing."}</span>
-        </div>
+      {/* ── Queue panel ── */}
+      {queue.length > 0 && (
+        <QueuePanel queue={queue} dismiss={dismiss} cancel={cancel} clearDone={clearDone} />
       )}
 
       {/* ── Results ── */}
@@ -409,16 +569,16 @@ export default function GeneratorPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="btn-secondary text-xs" onClick={() => downloadJSON(pipelineResult, researchResults)}>
+              <button className="btn-secondary text-xs" onClick={() => openExportDialog("json")}>
                 <FileJson className="w-3.5 h-3.5" /> JSON
               </button>
-              <button className="btn-secondary text-xs" onClick={() => downloadExcel(pipelineResult, researchResults)}>
+              <button className="btn-secondary text-xs" onClick={() => openExportDialog("excel")}>
                 <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
               </button>
             </div>
           </div>
 
-          {/* Usage dashboard — uses jobMode (mode of the completed job) */}
+          {/* Usage dashboard */}
           <UsageDashboard
             usage={jobStatus?.usage}
             elapsed={jobStatus?.elapsed_seconds}
@@ -426,29 +586,23 @@ export default function GeneratorPage() {
             researchResults={researchResults}
           />
 
-          {/* Review summary */}
-          {pipelineResult?.review_summary && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-fade-in">
-              {[
-                { label: "Reviewed", value: pipelineResult.review_summary.cases_reviewed, color: "text-slate-800 dark:text-slate-100" },
-                { label: "Added", value: pipelineResult.review_summary.cases_added, color: "text-emerald-600 dark:text-emerald-400" },
-                { label: "Modified", value: pipelineResult.review_summary.cases_modified, color: "text-amber-600 dark:text-amber-400" },
-                { label: "Coverage", value: (pipelineResult.review_summary.coverage_score ?? "medium").toUpperCase(), color: "text-brand-600 dark:text-brand-400" },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="card p-4 text-center">
-                  <p className={`text-2xl font-bold ${color}`}>{value}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{label}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
           {/* Pipeline test cases */}
           {jobMode === "pipeline" && items.length > 0 && (
-            <div className="space-y-2">
-              {items.map((tc, i) => (
-                <TestCaseCard key={i} tc={tc as Record<string, unknown>} index={i} />
-              ))}
+            <div className="space-y-3">
+              <SortBar
+                sort={sort}
+                onToggle={(k) => { setSort((p) => toggleSort(p, k)); setCardGen((g) => g + 1); }}
+                onReset={() => { setSort(null); setCategoryFilter(null); setCardGen((g) => g + 1); }}
+                categories={pipelineCategories}
+                categoryFilter={categoryFilter}
+                onCategoryFilter={(cat) => { setCategoryFilter(cat); setCardGen((g) => g + 1); }}
+                total={items.length}
+              />
+              <div className="space-y-2">
+                {items.map((tc, i) => (
+                  <TestCaseCard key={`${i}-${cardGen}`} tc={tc as Record<string, unknown>} index={i} />
+                ))}
+              </div>
             </div>
           )}
 
@@ -465,7 +619,7 @@ export default function GeneratorPage() {
                       className={`px-4 py-2.5 text-sm font-semibold rounded-t-xl transition-all duration-200 flex items-center gap-2 cursor-pointer select-none border-b-2 -mb-px ${activeTab === r.provider
                         ? "border-brand-500 text-brand-600 dark:text-brand-400 bg-brand-50/50 dark:bg-brand-900/10"
                         : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                        }`}
+                      }`}
                     >
                       <div className={`w-2 h-2 rounded-full ${styles.bg}`} />
                       {PROVIDER_LABELS[r.provider as LLMProvider] ?? r.provider}
@@ -476,18 +630,39 @@ export default function GeneratorPage() {
                       )}
                       {r.success
                         ? <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                        : <XCircle className="w-3.5 h-3.5 text-rose-500" />
+                        : <XCircle    className="w-3.5 h-3.5 text-rose-500" />
                       }
                     </button>
                   );
                 })}
               </div>
               {researchResults.filter((r) => r.provider === activeTab).map((r) => (
-                <div key={r.provider} className="p-4 space-y-2 animate-fade-in">
+                <div key={r.provider} className="p-4 space-y-3 animate-fade-in">
                   {r.success && r.result ? (
-                    r.result.test_cases.map((tc, i) => (
-                      <TestCaseCard key={i} tc={tc as Record<string, unknown>} index={i} />
-                    ))
+                    <>
+                      {(() => {
+                        const tabCategories = getCategories(r.result.test_cases as Record<string, unknown>[]);
+                        const tabItems      = sortCases(filterCases(r.result.test_cases as Record<string, unknown>[], categoryFilter), sort);
+                        return (
+                          <>
+                            <SortBar
+                              sort={sort}
+                              onToggle={(k) => { setSort((p) => toggleSort(p, k)); setCardGen((g) => g + 1); }}
+                              onReset={() => { setSort(null); setCategoryFilter(null); setCardGen((g) => g + 1); }}
+                              categories={tabCategories}
+                              categoryFilter={categoryFilter}
+                              onCategoryFilter={(cat) => { setCategoryFilter(cat); setCardGen((g) => g + 1); }}
+                              total={tabItems.length}
+                            />
+                            <div className="space-y-2">
+                              {tabItems.map((tc, i) => (
+                                <TestCaseCard key={`${i}-${cardGen}`} tc={tc as Record<string, unknown>} index={i} />
+                              ))}
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </>
                   ) : (
                     <div className="flex items-center gap-2 text-rose-500 dark:text-rose-400 py-6 justify-center">
                       <XCircle className="w-5 h-5" />
@@ -499,6 +674,18 @@ export default function GeneratorPage() {
             </div>
           )}
         </div>
+      )}
+
+      {exportDialog && (
+        <FilenameDialog
+          defaultName={exportDialog.name}
+          extension={exportDialog.type === "json" ? "json" : "xlsx"}
+          onConfirm={(filename) => {
+            if (exportDialog.type === "json") downloadJSON(pipelineResult, researchResults, filename);
+            else downloadExcel(pipelineResult, researchResults, filename);
+          }}
+          onClose={() => setExportDialog(null)}
+        />
       )}
     </div>
   );

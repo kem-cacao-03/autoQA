@@ -4,15 +4,13 @@ const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 export type GenerationMode = "pipeline" | "research";
 export type LLMProvider = "openai" | "gemini" | "claude";
-export type TestType = "standard" | "bdd" | "api";
-export type JobStatus = "pending" | "running" | "success" | "failure";
+export type JobStatus = "pending" | "running" | "success" | "failure" | "cancelled";
 
 // ── Request / response shapes ─────────────────────────────────────────────────
 
 export interface GenerateRequest {
   requirement: string;
   mode: GenerationMode;
-  test_type: TestType;
   language: string;
   providers: LLMProvider[];
 }
@@ -25,23 +23,13 @@ export interface StageUsage {
   duration_seconds?: number;
 }
 
-export interface ReviewSummary {
-  cases_reviewed: number;
-  cases_added: number;
-  cases_modified: number;
-  coverage_score: "high" | "medium" | "low";
-}
-
 export interface GenerationResult {
   test_suite_name: string;
   description: string;
   test_cases: Record<string, unknown>[];
-  scenarios: Record<string, unknown>[];
   total_count: number;
   provider: string;
-  test_type: string;
   mode: string;
-  review_summary?: ReviewSummary;
 }
 
 export interface ResearchProviderResult {
@@ -75,16 +63,21 @@ export interface HistoryItem {
   id: string;
   requirement: string;
   provider: string;
-  test_type: string;
+  providers: string[];
+  session_id?: string;
   mode: string;
   language: string;
   total_count: number;
   is_favorite: boolean;
   created_at: string;
+  total_tokens: number;
+  elapsed_seconds?: number;
 }
 
 export interface HistoryDetail extends HistoryItem {
   result: GenerationResult;
+  all_results?: GenerationResult[];
+  provider_stats?: Record<string, { total_tokens: number; elapsed_seconds?: number }>;
 }
 
 export interface TokenResponse {
@@ -194,6 +187,12 @@ export const generatorApi = {
 
   getJobStatus: (jobId: string) =>
     request<JobStatusResponse>(`/generate/jobs/${jobId}`),
+
+  cancelJob: (jobId: string) =>
+    request<{ cancelled: boolean; job_id?: string; status?: string }>(
+      `/generate/jobs/${jobId}`,
+      { method: "DELETE" },
+    ),
 };
 
 // ── History ───────────────────────────────────────────────────────────────────

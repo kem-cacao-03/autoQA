@@ -1,0 +1,236 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+  <diagram name="Use Case Diagram" id="dia-6">
+    <mxGraphModel dx="1500" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="uc-title" parent="1"
+          style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;"
+          value="Biểu đồ Use Case — Hệ thống AutoQA-Gen" vertex="1">
+          <mxGeometry height="35" width="900" x="300" y="8" as="geometry" />
+        </mxCell>
+
+        <!-- System Boundary -->
+        <mxCell id="sys-bnd" parent="1"
+          style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;strokeWidth=2;fillColor=none;verticalAlign=top;fontStyle=1;fontSize=13;arcSize=2;"
+          value="&lt;&lt;System&gt;&gt;  AutoQA-Gen" vertex="1">
+          <mxGeometry height="835" width="1270" x="115" y="40" as="geometry" />
+        </mxCell>
+
+        <!-- Actor: Người dùng (left) -->
+        <mxCell id="ac-user" parent="1"
+          style="shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;verticalLabelPosition=bottom;verticalAlign=top;"
+          value="Người dùng" vertex="1">
+          <mxGeometry height="75" width="50" x="27" y="410" as="geometry" />
+        </mxCell>
+
+        <!-- Actor: Hệ thống LLM (right) -->
+        <mxCell id="ac-llm" parent="1"
+          style="shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;verticalLabelPosition=bottom;verticalAlign=top;"
+          value="Hệ thống LLM&#xa;(OpenAI / Gemini / Claude)" vertex="1">
+          <mxGeometry height="75" width="70" x="1425" y="390" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-group 1: Quản lý tài khoản -->
+        <mxCell id="sg-auth" parent="1"
+          style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#6c8ebf;fillColor=#EBF3FB;verticalAlign=top;fontStyle=1;fontSize=11;arcSize=4;"
+          value="Quản lý tài khoản" vertex="1">
+          <mxGeometry height="475" width="270" x="135" y="65" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-group 2: Sinh test cases -->
+        <mxCell id="sg-gen" parent="1"
+          style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#82b366;fillColor=#EBF7EA;verticalAlign=top;fontStyle=1;fontSize=11;arcSize=4;"
+          value="Sinh test cases" vertex="1">
+          <mxGeometry height="780" width="390" x="430" y="65" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-group 3: Quản lý lịch sử -->
+        <mxCell id="sg-hist" parent="1"
+          style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#d79b00;fillColor=#FFF9EC;verticalAlign=top;fontStyle=1;fontSize=11;arcSize=4;"
+          value="Quản lý lịch sử" vertex="1">
+          <mxGeometry height="720" width="320" x="845" y="65" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════ USE CASES: Auth ═══════════════ -->
+        <mxCell id="uc01" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;"
+          value="Đăng ký tài khoản" vertex="1">
+          <mxGeometry height="50" width="245" x="148" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="uc02" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;"
+          value="Đăng nhập" vertex="1">
+          <mxGeometry height="50" width="245" x="148" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="uc03" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;"
+          value="Đăng xuất" vertex="1">
+          <mxGeometry height="50" width="245" x="148" y="262" as="geometry" />
+        </mxCell>
+        <mxCell id="uc04" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;"
+          value="Cập nhật thông tin cá nhân" vertex="1">
+          <mxGeometry height="50" width="245" x="148" y="339" as="geometry" />
+        </mxCell>
+        <mxCell id="uc05" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;"
+          value="Đổi mật khẩu" vertex="1">
+          <mxGeometry height="50" width="245" x="148" y="416" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════ USE CASES: Generator ═══════════════ -->
+        <mxCell id="uc06" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;"
+          value="Sinh test cases" vertex="1">
+          <mxGeometry height="65" width="310" x="460" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="uc07" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;"
+          value="Sinh theo Pipeline&#xa;(BA Agent → Generator → Reviewer)" vertex="1">
+          <mxGeometry height="65" width="310" x="460" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="uc08" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;"
+          value="Sinh theo Research&#xa;(3 providers chạy song song)" vertex="1">
+          <mxGeometry height="65" width="310" x="460" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="uc09" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;"
+          value="Theo dõi tiến trình (polling)" vertex="1">
+          <mxGeometry height="55" width="310" x="460" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="uc10" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;"
+          value="Xem kết quả &amp; token usage" vertex="1">
+          <mxGeometry height="55" width="310" x="460" y="752" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════ USE CASES: History ═══════════════ -->
+        <mxCell id="uc11" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;"
+          value="Xem &amp; quản lý lịch sử" vertex="1">
+          <mxGeometry height="55" width="285" x="858" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="uc12" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;"
+          value="Tìm kiếm theo yêu cầu" vertex="1">
+          <mxGeometry height="50" width="285" x="858" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="uc13" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;"
+          value="Lọc theo yêu thích" vertex="1">
+          <mxGeometry height="50" width="285" x="858" y="332" as="geometry" />
+        </mxCell>
+        <mxCell id="uc14" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;"
+          value="Xem chi tiết lịch sử" vertex="1">
+          <mxGeometry height="55" width="285" x="858" y="447" as="geometry" />
+        </mxCell>
+        <mxCell id="uc15" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;"
+          value="Xóa lịch sử" vertex="1">
+          <mxGeometry height="55" width="285" x="858" y="552" as="geometry" />
+        </mxCell>
+        <mxCell id="uc16" parent="1"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;"
+          value="Đánh dấu / bỏ yêu thích" vertex="1">
+          <mxGeometry height="55" width="285" x="858" y="657" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════ ASSOCIATIONS: User → Auth ═══════════════ -->
+        <mxCell id="as01" edge="1" parent="1" source="ac-user" target="uc01"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as02" edge="1" parent="1" source="ac-user" target="uc02"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as03" edge="1" parent="1" source="ac-user" target="uc03"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as04" edge="1" parent="1" source="ac-user" target="uc04"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as05" edge="1" parent="1" source="ac-user" target="uc05"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ASSOCIATION: User → Generator main UC -->
+        <mxCell id="as06" edge="1" parent="1" source="ac-user" target="uc06"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ASSOCIATIONS: User → History UCs -->
+        <mxCell id="as07" edge="1" parent="1" source="ac-user" target="uc11"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as08" edge="1" parent="1" source="ac-user" target="uc14"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as09" edge="1" parent="1" source="ac-user" target="uc15"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as10" edge="1" parent="1" source="ac-user" target="uc16"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════ INCLUDE: Generator ═══════════════ -->
+        <mxCell id="in01" edge="1" parent="1" source="uc06" target="uc07"
+          style="endArrow=open;endFill=0;dashed=1;html=1;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;"
+          value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="in02" edge="1" parent="1" source="uc06" target="uc08"
+          style="endArrow=open;endFill=0;dashed=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+          value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="in03" edge="1" parent="1" source="uc06" target="uc09"
+          style="endArrow=open;endFill=0;dashed=1;html=1;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;"
+          value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="in04" edge="1" parent="1" source="uc09" target="uc10"
+          style="endArrow=open;endFill=0;dashed=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+          value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════ INCLUDE: History ═══════════════ -->
+        <mxCell id="in05" edge="1" parent="1" source="uc11" target="uc12"
+          style="endArrow=open;endFill=0;dashed=1;html=1;exitX=0.4;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;"
+          value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="in06" edge="1" parent="1" source="uc11" target="uc13"
+          style="endArrow=open;endFill=0;dashed=1;html=1;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.6;entryY=0;entryDx=0;entryDy=0;"
+          value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════ ASSOCIATIONS: LLM ═══════════════ -->
+        <mxCell id="as-llm1" edge="1" parent="1" source="uc07" target="ac-llm"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="as-llm2" edge="1" parent="1" source="uc08" target="ac-llm"
+          style="endArrow=none;html=1;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

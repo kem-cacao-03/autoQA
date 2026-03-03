@@ -1,0 +1,847 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.6.0" pages="5">
+  <diagram name="UC06 — Tổng quan" id="seq-uc06">
+    <mxGraphModel dx="1086" dy="752" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1060" pageHeight="660" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC06 — Sinh test cases (Tổng quan)" vertex="1">
+          <mxGeometry height="35" width="1020" x="20" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry height="40" width="110" x="20" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1">
+          <mxGeometry height="40" width="130" x="170" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="FastAPI" vertex="1">
+          <mxGeometry height="40" width="110" x="350" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" value="Background Task&#xa;(asyncio)" vertex="1">
+          <mxGeometry height="40" width="130" x="510" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="LLM APIs&#xa;(GPT-4o / Gemini / Claude)" vertex="1">
+          <mxGeometry height="40" width="160" x="695" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="MongoDB" vertex="1">
+          <mxGeometry height="40" width="110" x="910" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="90" as="sourcePoint" />
+            <mxPoint x="75" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235" y="90" as="sourcePoint" />
+            <mxPoint x="235" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="405" y="90" as="sourcePoint" />
+            <mxPoint x="405" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="575" y="90" as="sourcePoint" />
+            <mxPoint x="575" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l5" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="775" y="90" as="sourcePoint" />
+            <mxPoint x="775" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l6" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="965" y="90" as="sourcePoint" />
+            <mxPoint x="965" y="635" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="Nhập requirement, chọn mode &amp; language">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="130" as="sourcePoint" />
+            <mxPoint x="235" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="POST /generate {requirement, mode, language, providers}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235" y="158" as="sourcePoint" />
+            <mxPoint x="405" y="158" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="create_job() + dispatch(mode)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="405" y="183" as="sourcePoint" />
+            <mxPoint x="575" y="183" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" value="202 {job_id, status: pending}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="405" y="207" as="sourcePoint" />
+            <mxPoint x="235" y="207" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl-std" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=left;" value="[Standard Mode]  GPT-4o (BA) → Gemini (QA) → Claude (Reviewer) — tuần tự" vertex="1">
+          <mxGeometry height="24" width="565" x="450" y="232" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#d79b00;" value="Stage 1→2→3 (sequential)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="575" y="267" as="sourcePoint" />
+            <mxPoint x="775" y="267" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl-res" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;align=left;" value="[Research Mode]  GPT-4o ∥ Gemini ∥ Claude — asyncio.gather (song song)" vertex="1">
+          <mxGeometry height="24" width="565" x="450" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="m6" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#9673a6;" value="parallel calls">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="575" y="343" as="sourcePoint" />
+            <mxPoint x="775" y="343" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="insert history {result, total_tokens, elapsed_seconds[, session_id]}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="575" y="383" as="sourcePoint" />
+            <mxPoint x="965" y="383" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbl-poll" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontStyle=2;" value="poll every 2s until success / failure / cancelled" vertex="1">
+          <mxGeometry height="18" width="290" x="175" y="418" as="geometry" />
+        </mxCell>
+        <mxCell id="m8" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="GET /generate/jobs/{job_id}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235" y="438" as="sourcePoint" />
+            <mxPoint x="405" y="438" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" edge="1" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" value="{status, progress, result / research_results}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="405" y="462" as="sourcePoint" />
+            <mxPoint x="235" y="462" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" edge="1" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" value="Hiển thị kết quả">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235" y="490" as="sourcePoint" />
+            <mxPoint x="75" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n-cancel" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;align=left;" value="[Cancel] User nhấn Stop&#xa;→ DELETE /generate/jobs/{id}&#xa;→ task.cancel() → CancelledError&#xa;→ status: cancelled" vertex="1">
+          <mxGeometry height="60" width="175" x="20" y="337" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="UC07 — Pipeline Mode" id="seq-uc07">
+    <mxGraphModel dx="900" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC07 — Sinh test cases: Pipeline Mode (Standard)  —  GPT-4o → Gemini → Claude" vertex="1" parent="1">
+          <mxGeometry x="20" y="8" width="1360" height="35" as="geometry" />
+        </mxCell>
+        <!-- Participants -->
+        <mxCell id="p1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1" parent="1">
+          <mxGeometry x="170" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="FastAPI" vertex="1" parent="1">
+          <mxGeometry x="335" y="50" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" value="Background Task&#xa;(asyncio)" vertex="1" parent="1">
+          <mxGeometry x="495" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="GPT-4o&#xa;(BA / Fallback)" vertex="1" parent="1">
+          <mxGeometry x="670" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="Gemini&#xa;(QA Engineer)" vertex="1" parent="1">
+          <mxGeometry x="840" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" value="Claude&#xa;(Senior QA Reviewer)" vertex="1" parent="1">
+          <mxGeometry x="1010" y="50" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p8" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="MongoDB" vertex="1" parent="1">
+          <mxGeometry x="1205" y="50" width="110" height="40" as="geometry" />
+        </mxCell>
+        <!-- Lifelines (cx: 75,230,390,555,730,900,1080,1260) -->
+        <mxCell id="l1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="90" as="sourcePoint" />
+            <mxPoint x="75" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="90" as="sourcePoint" />
+            <mxPoint x="230" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="90" as="sourcePoint" />
+            <mxPoint x="390" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="90" as="sourcePoint" />
+            <mxPoint x="555" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l5" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="90" as="sourcePoint" />
+            <mxPoint x="730" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l6" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="90" as="sourcePoint" />
+            <mxPoint x="900" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l7" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1080" y="90" as="sourcePoint" />
+            <mxPoint x="1080" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l8" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1260" y="90" as="sourcePoint" />
+            <mxPoint x="1260" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Submit -->
+        <mxCell id="m1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="Submit (requirement, Standard, language)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="130" as="sourcePoint" />
+            <mxPoint x="230" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="POST /generate {mode: pipeline}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="155" as="sourcePoint" />
+            <mxPoint x="390" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="create_job() → dispatch(PIPELINE)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="180" as="sourcePoint" />
+            <mxPoint x="555" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="202 {job_id, status:pending}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="205" y2="205" as="sourcePoint" />
+            <mxPoint x="230" y="205" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Stage 1 -->
+        <mxCell id="s1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;align=left;" value="Stage 1 — GPT-4o  (Business Analyst)  [progress: 5% → 30%]" vertex="1" parent="1">
+          <mxGeometry x="450" y="228" width="900" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#d79b00;" edge="1" value="build_ba_prompt(requirement, language)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="263" as="sourcePoint" />
+            <mxPoint x="730" y="263" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#d79b00;" edge="1" value="JSON {business_rules, constraints, flows, scenarios, ambiguities}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="290" as="sourcePoint" />
+            <mxPoint x="555" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n1" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;" value="strip_fences(cr_ba.text)&#xa;→ ba_spec_text" vertex="1" parent="1">
+          <mxGeometry x="450" y="303" width="145" height="32" as="geometry" />
+        </mxCell>
+        <!-- Stage 2 -->
+        <mxCell id="s2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=left;" value="Stage 2 — Gemini  (QA Engineer)  [progress: 30% → 65%]" vertex="1" parent="1">
+          <mxGeometry x="450" y="350" width="900" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m7" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#d6b656;" edge="1" value="build_qa_prompt(ba_spec_text, language)  [max 25 test cases, self-review]" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="385" as="sourcePoint" />
+            <mxPoint x="900" y="385" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#d6b656;" edge="1" value="JSON {test_suite_name, test_cases[], total_count}  (raw)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="413" as="sourcePoint" />
+            <mxPoint x="555" y="413" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n2" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;align=left;" value="strip_fences(cr_qa.text)&#xa;→ qa_cases" vertex="1" parent="1">
+          <mxGeometry x="450" y="425" width="145" height="32" as="geometry" />
+        </mxCell>
+        <!-- Stage 3 -->
+        <mxCell id="s3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;align=left;" value="Stage 3 — Claude  (Senior QA Lead / Reviewer)  [progress: 65% → 90%]" vertex="1" parent="1">
+          <mxGeometry x="450" y="472" width="900" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m9" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#b85450;" edge="1" value="build_review_prompt(requirement, qa_cases, language)  [Phase1: review, Phase2: standardize]" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="507" as="sourcePoint" />
+            <mxPoint x="1080" y="507" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- alt: Claude ok -->
+        <mxCell id="alt-ok-bg" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;opacity=30;fontSize=10;fontStyle=1;align=left;" value="[alt] Claude success" vertex="1" parent="1">
+          <mxGeometry x="450" y="528" width="900" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="m10" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#b85450;" edge="1" value="JSON final test suite {test_cases[], total_count}  (reviewed &amp; standardized)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1080" y="547" as="sourcePoint" />
+            <mxPoint x="555" y="547" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- alt: Claude fails -->
+        <mxCell id="alt-fail-bg" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;opacity=40;fontSize=10;fontStyle=1;align=left;" value="[alt] Claude unavailable after retries → fallback GPT-4o" vertex="1" parent="1">
+          <mxGeometry x="450" y="568" width="900" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="m11" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#d79b00;" edge="1" value="same review_prompt (fallback)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="590" as="sourcePoint" />
+            <mxPoint x="730" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#d79b00;" edge="1" value="JSON final test suite" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="610" as="sourcePoint" />
+            <mxPoint x="555" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Persist -->
+        <mxCell id="s4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;align=left;" value="Persist + complete  [progress: 90% → 100%]" vertex="1" parent="1">
+          <mxGeometry x="450" y="640" width="900" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m13" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="insert history {result, total_tokens=Σ(stage1+2+3), elapsed_seconds}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="675" as="sourcePoint" />
+            <mxPoint x="1260" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m14" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="{history_id}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1260" y="698" as="sourcePoint" />
+            <mxPoint x="555" y="698" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n3" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;align=left;" value="_update(SUCCESS, 100%,&#xa;result, history_id, usage[])" vertex="1" parent="1">
+          <mxGeometry x="450" y="710" width="185" height="35" as="geometry" />
+        </mxCell>
+        <!-- Poll result -->
+        <mxCell id="m15" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="GET /generate/jobs/{job_id}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="775" as="sourcePoint" />
+            <mxPoint x="390" y="775" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m16" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="{status:success, result, history_id, elapsed_seconds, usage[]}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="800" as="sourcePoint" />
+            <mxPoint x="230" y="800" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m17" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="Hiển thị test cases" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="830" as="sourcePoint" />
+            <mxPoint x="75" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="UC08 — Research Mode" id="seq-uc08">
+    <mxGraphModel dx="900" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC08 — Sinh test cases: Research Mode (N model chạy song song)" vertex="1" parent="1">
+          <mxGeometry x="20" y="8" width="1260" height="35" as="geometry" />
+        </mxCell>
+        <!-- Participants -->
+        <mxCell id="p1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)" vertex="1" parent="1">
+          <mxGeometry x="170" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="FastAPI" vertex="1" parent="1">
+          <mxGeometry x="335" y="50" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" value="Background Task&#xa;(asyncio)" vertex="1" parent="1">
+          <mxGeometry x="490" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" value="GPT-4o" vertex="1" parent="1">
+          <mxGeometry x="660" y="50" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" value="Gemini" vertex="1" parent="1">
+          <mxGeometry x="815" y="50" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" value="Claude" vertex="1" parent="1">
+          <mxGeometry x="970" y="50" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p8" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="MongoDB" vertex="1" parent="1">
+          <mxGeometry x="1150" y="50" width="110" height="40" as="geometry" />
+        </mxCell>
+        <!-- Lifelines (cx: 75,230,390,550,710,865,1020,1205) -->
+        <mxCell id="l1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="90" as="sourcePoint" />
+            <mxPoint x="75" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="90" as="sourcePoint" />
+            <mxPoint x="230" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="90" as="sourcePoint" />
+            <mxPoint x="390" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="90" as="sourcePoint" />
+            <mxPoint x="550" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l5" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="90" as="sourcePoint" />
+            <mxPoint x="710" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l6" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="865" y="90" as="sourcePoint" />
+            <mxPoint x="865" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l7" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1020" y="90" as="sourcePoint" />
+            <mxPoint x="1020" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l8" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1205" y="90" as="sourcePoint" />
+            <mxPoint x="1205" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Submit -->
+        <mxCell id="m1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="Submit (requirement, Research, providers=[openai,gemini,claude], language)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="130" as="sourcePoint" />
+            <mxPoint x="230" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="POST /generate {mode: research}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="155" as="sourcePoint" />
+            <mxPoint x="390" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="create_job() → dispatch(RESEARCH)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="180" as="sourcePoint" />
+            <mxPoint x="550" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="202 {job_id, status:pending}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="205" as="sourcePoint" />
+            <mxPoint x="230" y="205" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Parallel block header -->
+        <mxCell id="par-lbl" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;align=left;" value="par — asyncio.gather(*[_call_one(p) for p in providers])  [mỗi provider nhận cùng build_research_prompt, tự phân tích + sinh]" vertex="1" parent="1">
+          <mxGeometry x="440" y="228" width="820" height="22" as="geometry" />
+        </mxCell>
+        <!-- GPT-4o parallel call -->
+        <mxCell id="m5" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#d79b00;" edge="1" value="build_research_prompt(requirement, language)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="265" as="sourcePoint" />
+            <mxPoint x="710" y="265" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#d79b00;" edge="1" value="JSON {test_suite_name, test_cases[], total_count}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="288" as="sourcePoint" />
+            <mxPoint x="550" y="288" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Gemini parallel call -->
+        <mxCell id="m7" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#d6b656;" edge="1" value="build_research_prompt(requirement, language)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="313" as="sourcePoint" />
+            <mxPoint x="865" y="313" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#d6b656;" edge="1" value="JSON {test_suite_name, test_cases[], total_count}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="865" y="336" as="sourcePoint" />
+            <mxPoint x="550" y="336" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Claude parallel call -->
+        <mxCell id="m9" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#b85450;" edge="1" value="build_research_prompt(requirement, language)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="361" as="sourcePoint" />
+            <mxPoint x="1020" y="361" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#b85450;" edge="1" value="JSON {test_suite_name, test_cases[], total_count}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1020" y="384" as="sourcePoint" />
+            <mxPoint x="550" y="384" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Error note -->
+        <mxCell id="n1" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;align=left;" value="Provider lỗi → success=False&#xa;Không ảnh hưởng provider khác&#xa;Kết quả lỗi vẫn được trả về" vertex="1" parent="1">
+          <mxGeometry x="440" y="398" width="195" height="48" as="geometry" />
+        </mxCell>
+        <!-- Persist -->
+        <mxCell id="s-per" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;align=left;" value="Persist — mỗi provider thành công → 1 document riêng, cùng session_id  [total_tokens + elapsed_seconds per provider]" vertex="1" parent="1">
+          <mxGeometry x="440" y="460" width="820" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m11" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="insert {provider:openai, result, total_tokens, elapsed_seconds, session_id}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="494" as="sourcePoint" />
+            <mxPoint x="1205" y="494" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="insert {provider:gemini, result, total_tokens, elapsed_seconds, session_id}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="518" as="sourcePoint" />
+            <mxPoint x="1205" y="518" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m13" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="insert {provider:claude, result, total_tokens, elapsed_seconds, session_id}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="542" as="sourcePoint" />
+            <mxPoint x="1205" y="542" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n2" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;align=left;" value="_update(SUCCESS, 100%,&#xa;research_results=[...],&#xa;usage=[per-provider])" vertex="1" parent="1">
+          <mxGeometry x="440" y="558" width="185" height="45" as="geometry" />
+        </mxCell>
+        <!-- Poll result -->
+        <mxCell id="m14" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="GET /generate/jobs/{job_id}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="640" as="sourcePoint" />
+            <mxPoint x="390" y="640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m15" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="{status:success, research_results:[{provider, result, usage}], elapsed_seconds}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="665" as="sourcePoint" />
+            <mxPoint x="230" y="665" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m16" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="Hiển thị tabs: GPT-4o | Gemini | Claude" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="693" as="sourcePoint" />
+            <mxPoint x="75" y="693" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- History note -->
+        <mxCell id="n3" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;" value="History: 3 docs cùng session_id&#xa;GET /history/{id} →&#xa;all_results[] + provider_stats{&#xa;  openai:{tokens, elapsed},&#xa;  gemini:{tokens, elapsed},&#xa;  claude:{tokens, elapsed}&#xa;}" vertex="1" parent="1">
+          <mxGeometry x="50" y="635" width="185" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="UC09 — Polling &amp; Cancel" id="seq-uc09">
+    <mxGraphModel dx="883" dy="611" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="870" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC09 — Polling (every 2s) &amp; Cancel (Stop button)" vertex="1">
+          <mxGeometry height="35" width="830" x="20" y="8" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1">
+          <mxGeometry height="40" width="120" x="20" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)&#xa;GeneratorContext" vertex="1">
+          <mxGeometry height="40" width="140" x="185" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="FastAPI" vertex="1">
+          <mxGeometry height="40" width="110" x="385" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" value="Background Task&#xa;(asyncio)" vertex="1">
+          <mxGeometry height="40" width="130" x="555" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="80" y="90" as="sourcePoint" />
+            <mxPoint x="80" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="90" as="sourcePoint" />
+            <mxPoint x="255" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="90" as="sourcePoint" />
+            <mxPoint x="440" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="90" as="sourcePoint" />
+            <mxPoint x="620" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="loop-lbl" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8treaty;strokeColor=#6c8ebf;fillColor=#dae8fc;fontSize=11;fontStyle=1;align=left;" value="loop — setInterval every 2s  (in-flight guard: chỉ 1 poll / job cùng lúc)" vertex="1">
+          <mxGeometry height="22" width="430" x="165" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="GET /generate/jobs/{job_id}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="155" as="sourcePoint" />
+            <mxPoint x="440" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" edge="1" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" value="{status, progress, result?}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="178" as="sourcePoint" />
+            <mxPoint x="255" y="178" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="alt1-bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;opacity=40;fontSize=10;fontStyle=1;align=left;" value="[alt] status = running → update progress bar, tiếp tục poll" vertex="1">
+          <mxGeometry height="25" width="430" x="165" y="196" as="geometry" />
+        </mxCell>
+        <mxCell id="alt2-bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;opacity=40;fontSize=10;fontStyle=1;align=left;" value="[alt] status = success → dừng poll, lưu result, hiển thị kết quả" vertex="1">
+          <mxGeometry height="25" width="430" x="165" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="alt3-bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;opacity=40;fontSize=10;fontStyle=1;align=left;" value="[alt] status = failure → dừng poll, hiển thị lỗi" vertex="1">
+          <mxGeometry height="25" width="430" x="165" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="alt4-bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;opacity=40;fontSize=10;fontStyle=1;align=left;" value="[alt] status = cancelled → dừng poll, hiển thị Cancelled" vertex="1">
+          <mxGeometry height="25" width="430" x="165" y="292" as="geometry" />
+        </mxCell>
+        <mxCell id="n-queue" parent="1" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;" value="Multi-job Queue:&#xa;• Mỗi Generate thêm 1 item vào queue&#xa;• Poll loop dùng 1 interval chung&#xa;• In-flight Set ngăn poll trùng lặp&#xa;• Mỗi item có queueId riêng" vertex="1">
+          <mxGeometry height="80" width="195" x="650" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cancel-lbl" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=left;" value="Cancel Flow — User nhấn Stop button" vertex="1">
+          <mxGeometry height="25" width="830" x="20" y="355" as="geometry" />
+        </mxCell>
+        <mxCell id="m3" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="Nhấn Stop (rose border button)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="80" y="395" as="sourcePoint" />
+            <mxPoint x="255" y="395" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#b85450;" value="Optimistic update → setQueue(status=cancelled)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="420" as="sourcePoint" />
+            <mxPoint x="255" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="self1" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#b85450;exitX=1;exitY=0.5;" value="optimistic cancel">
+          <mxGeometry relative="1" x="0.4146" y="-21" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="255" y="415" as="sourcePoint" />
+            <mxPoint x="255" y="456" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="DELETE /generate/jobs/{job_id}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="460" as="sourcePoint" />
+            <mxPoint x="440" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" value="cancel_job(job_id) → task.cancel()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="485" as="sourcePoint" />
+            <mxPoint x="620" y="485" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n-cancelled" parent="1" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;align=left;" value="asyncio.CancelledError raised&#xa;→ _update(CANCELLED,&#xa;error=&#39;Cancelled by user&#39;)&#xa;→ task removed from _TASK_STORE" vertex="1">
+          <mxGeometry height="60" width="200" x="530" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="m7" edge="1" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" value="{cancelled: true, job_id}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="575" as="sourcePoint" />
+            <mxPoint x="255" y="575" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" edge="1" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" value="Next poll xác nhận status=cancelled">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="605" as="sourcePoint" />
+            <mxPoint x="80" y="605" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n-idempotent" parent="1" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;align=left;" value="Idempotent: nếu job đã SUCCESS /&#xa;FAILURE / CANCELLED → trả về&#xa;{cancelled:false, status:...}" vertex="1">
+          <mxGeometry height="55" width="195" x="650" y="445" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="UC10 — Kết quả &amp; Token" id="seq-uc10">
+    <mxGraphModel dx="900" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" value="UC10 — Xem kết quả &amp; thống kê token / thời gian (History)" vertex="1" parent="1">
+          <mxGeometry x="20" y="8" width="860" height="35" as="geometry" />
+        </mxCell>
+        <!-- Participants -->
+        <mxCell id="p1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontColor=#333;" value="Người dùng" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" value="Frontend (React)&#xa;HistoryPage" vertex="1" parent="1">
+          <mxGeometry x="185" y="50" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="FastAPI&#xa;HistoryService" vertex="1" parent="1">
+          <mxGeometry x="390" y="50" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" value="MongoDB" vertex="1" parent="1">
+          <mxGeometry x="595" y="50" width="110" height="40" as="geometry" />
+        </mxCell>
+        <!-- Lifelines (cx: 80,255,455,650) -->
+        <mxCell id="l1" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="80" y="90" as="sourcePoint" />
+            <mxPoint x="80" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l2" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="90" as="sourcePoint" />
+            <mxPoint x="255" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l3" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="90" as="sourcePoint" />
+            <mxPoint x="455" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l4" style="endArrow=none;dashed=1;html=1;strokeColor=#CCCCCC;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="650" y="90" as="sourcePoint" />
+            <mxPoint x="650" y="675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- ── History List ── -->
+        <mxCell id="s1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;align=left;" value="Xem danh sách History" vertex="1" parent="1">
+          <mxGeometry x="70" y="118" width="720" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="Vào trang History" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="80" y="153" as="sourcePoint" />
+            <mxPoint x="255" y="153" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="GET /history?skip=0&amp;limit=50" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="175" as="sourcePoint" />
+            <mxPoint x="455" y="175" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="find({user_id}).sort(-created_at)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="197" as="sourcePoint" />
+            <mxPoint x="650" y="197" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="docs[ {total_tokens, elapsed_seconds, ...} ]" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="650" y="220" as="sourcePoint" />
+            <mxPoint x="455" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n-agg" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;" value="Research: agg_tokens=Σ(providers)&#xa;agg_elapsed=max(providers)" vertex="1" parent="1">
+          <mxGeometry x="460" y="233" width="195" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="[ HistoryItem{total_tokens, elapsed_seconds, ...} ]" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="277" as="sourcePoint" />
+            <mxPoint x="255" y="277" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="List row: date · elapsed · tokens · mode badge" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="303" as="sourcePoint" />
+            <mxPoint x="80" y="303" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- ── History Detail ── -->
+        <mxCell id="s2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;align=left;" value="Xem chi tiết (click vào item → Detail Drawer)" vertex="1" parent="1">
+          <mxGeometry x="70" y="330" width="720" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m7" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="Click vào history item" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="80" y="365" as="sourcePoint" />
+            <mxPoint x="255" y="365" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="GET /history/{id}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="388" as="sourcePoint" />
+            <mxPoint x="455" y="388" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;" edge="1" value="find({_id, user_id})" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="410" as="sourcePoint" />
+            <mxPoint x="650" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="main doc" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="650" y="433" as="sourcePoint" />
+            <mxPoint x="455" y="433" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Research siblings -->
+        <mxCell id="m11" style="endArrow=block;endFill=1;html=1;strokeWidth=1.5;strokeColor=#9673a6;" edge="1" value="[research] find({session_id}).sort(provider)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="455" as="sourcePoint" />
+            <mxPoint x="650" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;strokeColor=#9673a6;" edge="1" value="sibling docs [openai, gemini, claude]" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="650" y="478" as="sourcePoint" />
+            <mxPoint x="455" y="478" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n-stats" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;" value="provider_stats = {&#xa;  openai:{tokens, elapsed},&#xa;  gemini:{tokens, elapsed},&#xa;  claude:{tokens, elapsed}&#xa;}" vertex="1" parent="1">
+          <mxGeometry x="460" y="490" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m13" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="HistoryDetail{result, all_results[], provider_stats{}, total_tokens, elapsed_seconds}" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="455" y="562" as="sourcePoint" />
+            <mxPoint x="255" y="562" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m14" style="endArrow=block;endFill=1;dashed=1;html=1;strokeWidth=1.5;" edge="1" value="Drawer: badges elapsed + tokens (per provider tab nếu research)" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="255" y="590" as="sourcePoint" />
+            <mxPoint x="80" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Summary note -->
+        <mxCell id="n-summary" style="shape=note;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;align=left;" value="Pipeline: total_tokens=Σ(stage1+2+3)&#xa;elapsed_seconds=wall time toàn bộ pipeline&#xa;&#xa;Research: mỗi provider lưu riêng&#xa;total_tokens=call_result.total_tokens&#xa;elapsed_seconds=duration per provider&#xa;&#xa;Hiển thị: badge Clock + formatElapsed()&#xa;badge tokens + formatTokens()" vertex="1" parent="1">
+          <mxGeometry x="660" y="330" width="210" height="140" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

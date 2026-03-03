@@ -1,0 +1,357 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.6.0" pages="2">
+  <diagram name="Pipeline Mode" id="pipe">
+    <mxGraphModel dx="2824" dy="1956" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" parent="1" style="shape=pool;fontStyle=1;fontSize=13;startSize=40;" value="" vertex="1">
+          <mxGeometry height="1382" width="1852" x="124" y="524" as="geometry" />
+        </mxCell>
+        <mxCell id="lu" parent="pool" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;horizontal=0;" value="User" vertex="1">
+          <mxGeometry height="1340" width="285" x="-46" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p-start" parent="lu" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" value="Start" vertex="1">
+          <mxGeometry height="40" width="149.37207094645646" x="75.00162128393693" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p-cred" parent="lu" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="Enter email&#xa;&amp; password" vertex="1">
+          <mxGeometry height="50" width="194.1836922303934" x="69.99581064196846" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="p-form" parent="lu" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="Fill requirement&#xa;Mode: Pipeline&#xa;Click Generate" vertex="1">
+          <mxGeometry height="60" width="194.1836922303934" x="69.99581064196846" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="p-view-user" parent="lu" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="Review test suite&#xa;Download / Share" vertex="1">
+          <mxGeometry height="60" width="194.1836922303934" x="22.405810641968465" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="p-end" parent="lu" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" value="End" vertex="1">
+          <mxGeometry height="40" width="149.37207094645646" x="44.81162128393693" y="1290" as="geometry" />
+        </mxCell>
+        <mxCell id="lf" parent="pool" style="swimlane;startSize=40;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;horizontal=0;" value="Frontend (React)" vertex="1">
+          <mxGeometry height="1340" width="298.7441418929129" x="238.99531351433026" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p-login-fe" parent="lf" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="POST /auth/login&#xa;{ email, password }" vertex="1">
+          <mxGeometry height="50" width="209.12089932503903" x="70.00162128393693" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="p-jwt" parent="lf" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Store JWT in localStorage&#xa;AuthContext updated" vertex="1">
+          <mxGeometry height="50" width="209.12089932503903" x="70.00162128393693" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="p-submit-fe" parent="lf" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="POST /generate&#xa;{ requirement, mode,&#xa;  language }" vertex="1">
+          <mxGeometry height="60" width="209.12089932503903" x="70.00162128393693" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="p-poll-fe" parent="lf" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Receive job_id&#xa;Poll GET /jobs/:id (2s)" vertex="1">
+          <mxGeometry height="50" width="209.12089932503903" x="65.00162128393693" y="468" as="geometry" />
+        </mxCell>
+        <mxCell id="p-display-fe" parent="lf" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Stop polling&#xa;Render test cases&#xa;Enable JSON / Excel export" vertex="1">
+          <mxGeometry height="60" width="209.12089932503903" x="44.81162128393693" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="lb" parent="pool" style="swimlane;startSize=40;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;horizontal=0;" value="Backend API (FastAPI)" vertex="1">
+          <mxGeometry height="1340" width="298.7441418929129" x="537.7394554072432" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p-login-be" parent="lb" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="Verify password (bcrypt)&#xa;Issue JWT tokens&#xa;access 30min · refresh 7d" vertex="1">
+          <mxGeometry height="60" width="238.99531351433026" x="49.26441418929129" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="p-create-be" parent="lb" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="Validate request (JWT)&#xa;create_job() → job_id&#xa;dispatch() → create_task" vertex="1">
+          <mxGeometry height="60" width="238.99531351433026" x="49.26441418929129" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="p-202-be" parent="lb" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="Return 202&#xa;{ job_id, status: pending }" vertex="1">
+          <mxGeometry height="50" width="238.99531351433026" x="49.26441418929129" y="468" as="geometry" />
+        </mxCell>
+        <mxCell id="p-return-be" parent="lb" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="GET /jobs/:id response&#xa;{ status: success,&#xa;  result, history_id }" vertex="1">
+          <mxGeometry height="60" width="238.99531351433026" x="29.874414189291283" y="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="lj" parent="pool" style="swimlane;startSize=40;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;horizontal=0;" value="Async Job Engine (tasks.py)" vertex="1">
+          <mxGeometry height="1340" width="303.52" x="836.48" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p-run-job" parent="lj" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" value="run_pipeline() begins&#xa;status = RUNNING&#xa;progress = 5%" vertex="1">
+          <mxGeometry height="60" width="238.99531351433026" x="52.52441418929128" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="p-p30" parent="lj" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" value="BA spec received&#xa;build_qa_prompt()&#xa;progress = 30%" vertex="1">
+          <mxGeometry height="54" width="238.99531351433026" x="52.52441418929128" y="539" as="geometry" />
+        </mxCell>
+        <mxCell id="p-p65" parent="lj" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" value="QA draft received&#xa;build_review_prompt()&#xa;progress = 65%" vertex="1">
+          <mxGeometry height="54" width="238.99531351433026" x="52.52441418929128" y="712" as="geometry" />
+        </mxCell>
+        <mxCell id="p-deci" parent="lj" style="rhombus;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" value="Claude&#xa;available?" vertex="1">
+          <mxGeometry height="70" width="209.12089932503903" x="62.52162128393693" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="p-parse" parent="lj" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;align=left;spacingLeft=6;" value="parse_json() result text&#xa;  1. strip markdown fences&#xa;  2. fix escape sequences&#xa;  3. remove trailing commas&#xa;  4. json_repair (fallback)&#xa;_build_result() → GenerationResult&#xa;progress = 90%" vertex="1">
+          <mxGeometry height="110" width="242.09" x="52.519999999999996" y="952" as="geometry" />
+        </mxCell>
+        <mxCell id="p-ok-job" parent="lj" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" value="status = SUCCESS&#xa;progress = 100%&#xa;result stored in JobState" vertex="1">
+          <mxGeometry height="60" width="238.99531351433026" x="52.52441418929128" y="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="ll" parent="pool" style="swimlane;startSize=40;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;horizontal=0;" value="LLM APIs" vertex="1">
+          <mxGeometry height="1340" width="348.21" x="1142" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="p-stage1-llm" parent="ll" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" value="Stage 1 · Gemini&#xa;gemini-2.0-flash&#xa;SYSTEM_BA · build_ba_prompt()&#xa;→ BA Spec (plain text)" vertex="1">
+          <mxGeometry height="76" width="279" x="61.32" y="463" as="geometry" />
+        </mxCell>
+        <mxCell id="p-stage2-llm" parent="ll" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Stage 2 · GPT-4o&#xa;gpt-4o&#xa;SYSTEM_QA · build_qa_prompt()&#xa;response_format: json_object&#xa;→ Draft test cases (JSON)" vertex="1">
+          <mxGeometry height="86" width="280.68" x="61.32" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="p-stage3a-llm" parent="ll" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" value="Stage 3a · Claude&#xa;claude-sonnet-4-6&#xa;SYSTEM_REVIEWER · build_review_prompt()&#xa;_with_retry() · 4 attempts&#xa;delays: 5s → 15s → 30s&#xa;→ Final test suite (JSON)" vertex="1">
+          <mxGeometry height="100" width="277.5" x="63.5" y="718" as="geometry" />
+        </mxCell>
+        <mxCell id="p-stage3b-llm" parent="ll" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" value="Stage 3b · GPT-4o fallback&#xa;gpt-4o&#xa;Same SYSTEM_REVIEWER prompt&#xa;→ Final test suite (JSON)" vertex="1">
+          <mxGeometry height="76" width="279.68" x="61.32" y="863" as="geometry" />
+        </mxCell>
+        <mxCell id="lm" parent="pool" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;horizontal=0;" value="MongoDB" vertex="1">
+          <mxGeometry height="1340" width="308.3110599078341" x="1490.208940092166" y="42" as="geometry" />
+        </mxCell>
+        <mxCell id="p-persist-db" parent="lm" style="shape=cylinder3;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="INSERT history doc&#xa;{&#xa;  result, mode, language,&#xa;  user_id, session_id,&#xa;  test_type: standard&#xa;}" vertex="1">
+          <mxGeometry height="100" width="224.0581064196847" x="66.145441978374" y="955" as="geometry" />
+        </mxCell>
+        <mxCell id="p-sep1" parent="pool" style="text;html=1;align=center;strokeColor=none;fillColor=none;fontSize=10;fontStyle=3;fontColor=#888888;" value="─────────── Generation begins ───────────" vertex="1">
+          <mxGeometry height="20" width="1135.227739193069" x="298.7441418929129" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="pe1" edge="1" parent="1" source="p-start" style="edgeStyle=orthogonalEdgeStyle;" target="p-cred">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe2" edge="1" parent="1" source="p-cred" style="edgeStyle=orthogonalEdgeStyle;" target="p-login-fe">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe3" edge="1" parent="1" source="p-login-fe" style="edgeStyle=orthogonalEdgeStyle;" target="p-login-be">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe4" edge="1" parent="1" source="p-login-be" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-jwt" value="JWT tokens">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe5" edge="1" parent="1" source="p-jwt" style="edgeStyle=orthogonalEdgeStyle;" target="p-form">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe6" edge="1" parent="1" source="p-form" style="edgeStyle=orthogonalEdgeStyle;" target="p-submit-fe">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe7" edge="1" parent="1" source="p-submit-fe" style="edgeStyle=orthogonalEdgeStyle;" target="p-create-be">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe8" edge="1" parent="1" source="p-create-be" style="edgeStyle=orthogonalEdgeStyle;" target="p-202-be">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe9" edge="1" parent="1" source="p-202-be" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-poll-fe" value="202 {job_id}">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe10" edge="1" parent="1" source="p-create-be" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#9673a6;fontSize=9;" target="p-run-job" value="asyncio.create_task">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe11" edge="1" parent="1" source="p-run-job" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-stage1-llm" value="call(&#39;gemini&#39;,...)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe12" edge="1" parent="1" source="p-stage1-llm" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-p30" value="BA spec text">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe13" edge="1" parent="1" source="p-p30" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-stage2-llm" value="call(&#39;openai&#39;,...)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe14" edge="1" parent="1" source="p-stage2-llm" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-p65" value="draft JSON">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe15" edge="1" parent="1" source="p-p65" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-stage3a-llm" value="call(&#39;claude&#39;,...)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe16" edge="1" parent="1" source="p-stage3a-llm" style="edgeStyle=orthogonalEdgeStyle;" target="p-deci">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe17" edge="1" parent="1" source="p-deci" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;fontSize=9;" target="p-parse" value="Yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe18" edge="1" parent="1" source="p-deci" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d79b00;fontSize=9;" target="p-stage3b-llm" value="No / 529">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe19" edge="1" parent="1" source="p-stage3b-llm" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;fontSize=9;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" target="p-parse" value="fallback result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe20" edge="1" parent="1" source="p-parse" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-persist-db" value="_persist()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe21" edge="1" parent="1" source="p-parse" style="edgeStyle=orthogonalEdgeStyle;" target="p-ok-job">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe22" edge="1" parent="1" source="p-ok-job" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-return-be" value="on next poll">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe23" edge="1" parent="1" source="p-return-be" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" target="p-display-fe" value="result JSON">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe24" edge="1" parent="1" source="p-display-fe" style="edgeStyle=orthogonalEdgeStyle;" target="p-view-user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pe25" edge="1" parent="1" source="p-view-user" style="edgeStyle=orthogonalEdgeStyle;" target="p-end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Research Mode" id="res">
+    <mxGraphModel dx="1400" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <!-- POOL -->
+        <mxCell id="rpool" value="AutoQA-Gen — Research Mode Flow (N providers in parallel)" style="shape=pool;fontStyle=1;fontSize=13;startSize=40;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1200" height="1020" as="geometry" />
+        </mxCell>
+        <!-- ── LANES ── -->
+        <mxCell id="rlu" value="User" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;horizontal=0;" vertex="1" parent="rpool">
+          <mxGeometry x="0" y="40" width="160" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="rlf" value="Frontend (React)" style="swimlane;startSize=40;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;horizontal=0;" vertex="1" parent="rpool">
+          <mxGeometry x="160" y="40" width="200" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="rlb" value="Backend + Job Engine" style="swimlane;startSize=40;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;horizontal=0;" vertex="1" parent="rpool">
+          <mxGeometry x="360" y="40" width="220" height="980" as="geometry" />
+        </mxCell>
+        <!-- Sub-lanes for 3 parallel providers -->
+        <mxCell id="rloai" value="OpenAI GPT-4o" style="swimlane;startSize=40;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;horizontal=0;" vertex="1" parent="rpool">
+          <mxGeometry x="580" y="40" width="180" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="rlgem" value="Google Gemini" style="swimlane;startSize=40;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;horizontal=0;" vertex="1" parent="rpool">
+          <mxGeometry x="760" y="40" width="180" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="rlant" value="Anthropic Claude" style="swimlane;startSize=40;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;horizontal=0;" vertex="1" parent="rpool">
+          <mxGeometry x="940" y="40" width="180" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="rldb" value="MongoDB" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;horizontal=0;" vertex="1" parent="rpool">
+          <mxGeometry x="1120" y="40" width="80" height="980" as="geometry" />
+        </mxCell>
+        <!-- ── PARALLEL LABEL ── -->
+        <mxCell id="r-parallel-label" value="asyncio.gather() — all 3 providers run simultaneously" style="text;html=1;align=center;strokeColor=#9673a6;fillColor=#e1d5e7;fontSize=11;fontStyle=3;rounded=1;" vertex="1" parent="rpool">
+          <mxGeometry x="570" y="344" width="560" height="30" as="geometry" />
+        </mxCell>
+        <!-- ── STEP SHAPES ── -->
+        <!-- START -->
+        <mxCell id="r-start" value="Start" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="rlu">
+          <mxGeometry x="30" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+        <!-- AUTH (y=140) -->
+        <mxCell id="r-auth-user" value="Login&#xa;(JWT obtained)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="rlu">
+          <mxGeometry x="15" y="140" width="130" height="50" as="geometry" />
+        </mxCell>
+        <!-- FORM (y=240) -->
+        <mxCell id="r-form" value="Fill requirement&#xa;Mode: Research&#xa;Select providers&#xa;Click Generate" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="rlu">
+          <mxGeometry x="15" y="240" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="r-submit-fe" value="POST /generate&#xa;{ requirement,&#xa;  mode: research,&#xa;  providers: [...] }" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="rlf">
+          <mxGeometry x="25" y="240" width="150" height="70" as="geometry" />
+        </mxCell>
+        <!-- POLL (y=360) -->
+        <mxCell id="r-poll-fe" value="Receive job_id&#xa;Poll GET /jobs/:id (2s)" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="rlf">
+          <mxGeometry x="25" y="420" width="150" height="50" as="geometry" />
+        </mxCell>
+        <!-- BACKEND (y=240) -->
+        <mxCell id="r-create-be" value="Validate (JWT)&#xa;create_job() → job_id&#xa;dispatch() → create_task&#xa;Return 202 {job_id}" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="rlb">
+          <mxGeometry x="20" y="240" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="r-run-be" value="run_research()&#xa;status = RUNNING&#xa;progress = 5%&#xa;research_session_id = uuid4()" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="rlb">
+          <mxGeometry x="20" y="360" width="180" height="70" as="geometry" />
+        </mxCell>
+        <!-- ── PARALLEL CALLS (y=460) ── -->
+        <!-- GPT-4o -->
+        <mxCell id="r-oai-call" value="call(&#39;openai&#39;,&#xa;build_research_prompt(),&#xa;SYSTEM_RESEARCH)&#xa;→ test suite JSON" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="rloai">
+          <mxGeometry x="10" y="460" width="160" height="80" as="geometry" />
+        </mxCell>
+        <!-- Gemini -->
+        <mxCell id="r-gem-call" value="call(&#39;gemini&#39;,&#xa;build_research_prompt(),&#xa;SYSTEM_RESEARCH)&#xa;→ test suite JSON" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="rlgem">
+          <mxGeometry x="10" y="460" width="160" height="80" as="geometry" />
+        </mxCell>
+        <!-- Claude -->
+        <mxCell id="r-ant-call" value="call(&#39;claude&#39;,&#xa;build_research_prompt(),&#xa;SYSTEM_RESEARCH)&#xa;_with_retry() ×4&#xa;→ test suite JSON" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="rlant">
+          <mxGeometry x="10" y="460" width="160" height="90" as="geometry" />
+        </mxCell>
+        <!-- parse_json (y=580) -->
+        <mxCell id="r-oai-parse" value="parse_json()&#xa;+ json_repair" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="rloai">
+          <mxGeometry x="10" y="580" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="r-gem-parse" value="parse_json()&#xa;+ json_repair" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="rlgem">
+          <mxGeometry x="10" y="580" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="r-ant-parse" value="parse_json()&#xa;+ json_repair" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="rlant">
+          <mxGeometry x="10" y="580" width="160" height="50" as="geometry" />
+        </mxCell>
+        <!-- GATHER results (y=670) -->
+        <mxCell id="r-gather" value="asyncio.gather() completes&#xa;Collect ResearchProviderResult[]&#xa;Assign shared session_id&#xa;_persist() each success" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="rlb">
+          <mxGeometry x="20" y="670" width="180" height="80" as="geometry" />
+        </mxCell>
+        <!-- MongoDB (y=680) -->
+        <mxCell id="r-db" value="3 docs inserted&#xa;same session_id" style="shape=cylinder3;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="rldb">
+          <mxGeometry x="5" y="680" width="70" height="80" as="geometry" />
+        </mxCell>
+        <!-- SUCCESS (y=790) -->
+        <mxCell id="r-ok-be" value="status = SUCCESS&#xa;progress = 100%&#xa;research_results[]&#xa;per-provider usage" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="rlb">
+          <mxGeometry x="20" y="790" width="180" height="70" as="geometry" />
+        </mxCell>
+        <!-- Display (y=820) -->
+        <mxCell id="r-display-fe" value="Stop polling&#xa;Show provider tabs&#xa;GPT-4o | Gemini | Claude&#xa;Enable export per provider" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="rlf">
+          <mxGeometry x="25" y="820" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="r-view-user" value="Compare results&#xa;per provider&#xa;Download / Share" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="rlu">
+          <mxGeometry x="15" y="820" width="130" height="60" as="geometry" />
+        </mxCell>
+        <!-- END -->
+        <mxCell id="r-end" value="End" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" vertex="1" parent="rlu">
+          <mxGeometry x="30" y="920" width="100" height="40" as="geometry" />
+        </mxCell>
+        <!-- ── EDGES ── -->
+        <mxCell id="re1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-start" target="r-auth-user" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-auth-user" target="r-form" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-form" target="r-submit-fe" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-submit-fe" target="r-create-be" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re5" value="202 {job_id}" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" edge="1" source="r-create-be" target="r-poll-fe" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re6" value="asyncio.create_task" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#9673a6;fontSize=9;" edge="1" source="r-create-be" target="r-run-be" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re7" value="parallel" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;fontSize=9;" edge="1" source="r-run-be" target="r-oai-call" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re8" value="parallel" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;fontSize=9;" edge="1" source="r-run-be" target="r-gem-call" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re9" value="parallel" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;fontSize=9;" edge="1" source="r-run-be" target="r-ant-call" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-oai-call" target="r-oai-parse" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-gem-call" target="r-gem-parse" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-ant-call" target="r-ant-parse" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re13" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-oai-parse" target="r-gather" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re14" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-gem-parse" target="r-gather" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re15" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-ant-parse" target="r-gather" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re16" value="_persist() ×N" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" edge="1" source="r-gather" target="r-db" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re17" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-gather" target="r-ok-be" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re18" value="result JSON" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;" edge="1" source="r-ok-be" target="r-display-fe" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re19" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-display-fe" target="r-view-user" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="re20" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="r-view-user" target="r-end" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

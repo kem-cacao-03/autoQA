@@ -1,0 +1,145 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.4">
+  <diagram id="history-core-diagram" name="history + core">
+    <mxGraphModel dx="1284" dy="889" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5" parent="1" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" value="history" vertex="1">
+          <mxGeometry height="596" width="479" x="126" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="240" parent="5" style="swimlane;startSize=26;fillColor=#e1d5e7;strokeColor=#000000;fontStyle=1;fontSize=11;" value="HistoryService" vertex="1">
+          <mxGeometry height="188" width="374" x="64" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="241" parent="240" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="- _col: AsyncIOMotorDatabase" vertex="1">
+          <mxGeometry height="18" width="460" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="242" parent="240" style="line;strokeColor=#000000;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="4" width="374" y="48" as="geometry" />
+        </mxCell>
+        <mxCell id="243" parent="240" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ list(user_id, skip, limit, favorites_only, search): list[HistoryItem]" vertex="1">
+          <mxGeometry height="18" width="460" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="244" parent="240" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ get(history_id: str, user_id: str): HistoryDetail" vertex="1">
+          <mxGeometry height="18" width="460" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="245" parent="240" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ delete(history_id: str, user_id: str): None" vertex="1">
+          <mxGeometry height="18" width="460" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="246" parent="240" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ toggle_favorite(history_id: str, user_id: str): HistoryItem" vertex="1">
+          <mxGeometry height="18" width="460" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="247" parent="240" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="- _to_item(doc: dict, providers): HistoryItem  [static]" vertex="1">
+          <mxGeometry height="18" width="460" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="248" parent="240" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="- _to_detail(doc: dict): HistoryDetail  [static]" vertex="1">
+          <mxGeometry height="18" width="460" y="144" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" value="core" vertex="1">
+          <mxGeometry height="393" width="303" x="700" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="60" parent="3" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="ReviewSummary" vertex="1">
+          <mxGeometry height="98" width="252.5" x="26.5" y="47" as="geometry" />
+        </mxCell>
+        <mxCell id="61" parent="60" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ cases_reviewed: int" vertex="1">
+          <mxGeometry height="18" width="460" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="62" parent="60" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ cases_added: int" vertex="1">
+          <mxGeometry height="18" width="460" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="63" parent="60" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ cases_modified: int" vertex="1">
+          <mxGeometry height="18" width="460" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="64" parent="60" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ coverage_score: str" vertex="1">
+          <mxGeometry height="18" width="460" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="70" parent="3" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="GenerationResult" vertex="1">
+          <mxGeometry height="188" width="253.5" x="28.5" y="188" as="geometry" />
+        </mxCell>
+        <mxCell id="71" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ test_suite_name: str" vertex="1">
+          <mxGeometry height="18" width="460" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="72" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ description: str" vertex="1">
+          <mxGeometry height="18" width="460" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="73" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ test_cases: list[dict]" vertex="1">
+          <mxGeometry height="18" width="460" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="74" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ total_count: int" vertex="1">
+          <mxGeometry height="18" width="460" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="75" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ provider: str" vertex="1">
+          <mxGeometry height="18" width="460" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="76" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ test_type: str" vertex="1">
+          <mxGeometry height="18" width="460" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="77" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ mode: str" vertex="1">
+          <mxGeometry height="18" width="460" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="78" parent="70" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ review_summary: ReviewSummary?" vertex="1">
+          <mxGeometry height="18" width="460" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="e310" edge="1" parent="3" source="70" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="60" value="has">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e309" edge="1" parent="1" source="230" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="70" value="has">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="210" parent="1" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="HistoryItem" vertex="1">
+          <mxGeometry height="224" width="146" x="147" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="211" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ id: str" vertex="1">
+          <mxGeometry height="18" width="460" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="212" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ requirement: str" vertex="1">
+          <mxGeometry height="18" width="460" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="213" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ provider: str" vertex="1">
+          <mxGeometry height="18" width="460" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="214" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ providers: list[str]" vertex="1">
+          <mxGeometry height="18" width="460" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="215" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ session_id: str?" vertex="1">
+          <mxGeometry height="18" width="460" y="98" as="geometry" />
+        </mxCell>
+        <mxCell id="216" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ test_type: str" vertex="1">
+          <mxGeometry height="18" width="460" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="217" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ mode: str" vertex="1">
+          <mxGeometry height="18" width="460" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="218" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ language: str" vertex="1">
+          <mxGeometry height="18" width="460" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="219" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ total_count: int" vertex="1">
+          <mxGeometry height="18" width="460" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="220" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ is_favorite: bool" vertex="1">
+          <mxGeometry height="18" width="460" y="188" as="geometry" />
+        </mxCell>
+        <mxCell id="221" parent="210" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ created_at: datetime" vertex="1">
+          <mxGeometry height="18" width="460" y="206" as="geometry" />
+        </mxCell>
+        <mxCell id="e312" edge="1" parent="1" source="240" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="230" value="returns">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e311" edge="1" parent="1" source="240" style="endArrow=open;endSize=8;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;" target="210" value="returns">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="230" parent="1" style="swimlane;startSize=26;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;fontSize=11;" value="HistoryDetail" vertex="1">
+          <mxGeometry height="62" width="236" x="355" y="167" as="geometry" />
+        </mxCell>
+        <mxCell id="231" parent="230" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ result: GenerationResult  [→ core]" vertex="1">
+          <mxGeometry height="18" width="460" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="232" parent="230" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;" value="+ all_results: list[GenerationResult]?  [→ core]" vertex="1">
+          <mxGeometry height="18" width="460" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="e300" edge="1" parent="1" source="230" style="endArrow=block;endFill=0;edgeStyle=orthogonalEdgeStyle;" target="210" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
