@@ -114,7 +114,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
 
   // ── 401: try to refresh, then retry once ──────────────────────────────────
-  if (res.status === 401 && path !== "/auth/refresh") {
+  // Auth endpoints handle their own 401s (wrong password, invalid token) —
+  // never intercept them here or the real error message gets swallowed.
+  if (res.status === 401 && !path.startsWith("/auth/")) {
     const refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken) {
       const refreshRes = await fetch(`${BASE}/auth/refresh`, {
@@ -138,7 +140,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     window.dispatchEvent(new Event("auth:expired"));
-    throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    throw new Error("Your session has expired. Please sign in again.");
   }
 
   if (!res.ok) throw await parseError(res);

@@ -106,6 +106,22 @@ async def cleanup_expired_jobs() -> int:
 
 # ── Shared helpers ────────────────────────────────────────────────────────────
 
+async def _call_with_fallback(
+    providers: list[str],
+    prompt: str,
+    system: str,
+) -> tuple[llm_caller.CallResult, str]:
+    """Try each provider in order; return (CallResult, provider_used) on first success."""
+    last_exc: Exception | None = None
+    for provider in providers:
+        try:
+            return await llm_caller.call(provider, prompt, system), provider
+        except Exception as exc:
+            logger.warning("[PIPELINE] %s failed, trying next provider: %s", provider, exc)
+            last_exc = exc
+    raise last_exc  # type: ignore[misc]
+
+
 def _make_stage_usage(stage: str, provider: str, cr: llm_caller.CallResult, duration: float | None = None) -> StageUsage:
     return StageUsage(
         stage=stage,
@@ -223,16 +239,16 @@ async def run_pipeline(
     try:
         # ── Stage 1: GPT-4o — Senior Business Analyst / QA Architect ──────────
         t_ba = datetime.now(timezone.utc)
-        cr_ba = await llm_caller.call(
-            provider="openai",
+        cr_ba, ba_provider = await _call_with_fallback(
+            ["openai", "claude"],
             prompt=prompts.build_ba_prompt(req.requirement, req.language),
             system=prompts.SYSTEM_BA,
         )
         dur_ba = (datetime.now(timezone.utc) - t_ba).total_seconds()
-        usage.append(_make_stage_usage("ba", "openai", cr_ba, dur_ba))
+        usage.append(_make_stage_usage("ba", ba_provider, cr_ba, dur_ba))
         logger.info(
-            "[PIPELINE] Stage 1 GPT-4o  (BA):       input=%6d  output=%5d  total=%6d  (%.1fs)",
-            cr_ba.prompt_tokens, cr_ba.completion_tokens, cr_ba.total_tokens, dur_ba,
+            "[PIPELINE] Stage 1 %-8s (BA):       input=%6d  output=%5d  total=%6d  (%.1fs)",
+            ba_provider, cr_ba.prompt_tokens, cr_ba.completion_tokens, cr_ba.total_tokens, dur_ba,
         )
         _update(job_id, progress=30)
 
@@ -241,49 +257,35 @@ async def run_pipeline(
 
         # ── Stage 2: Gemini — Expert QA Engineer ─────────────────────────────
         t_qa = datetime.now(timezone.utc)
-        cr_qa = await llm_caller.call(
-            provider="gemini",
-            prompt=prompts.build_qa_prompt(
-                ba_spec=ba_spec_text,
-                language=req.language,
-            ),
+        cr_qa, qa_provider = await _call_with_fallback(
+            ["gemini", "openai"],
+            prompt=prompts.build_qa_prompt(ba_spec=ba_spec_text, language=req.language),
             system=prompts.SYSTEM_QA,
         )
         dur_qa = (datetime.now(timezone.utc) - t_qa).total_seconds()
-        usage.append(_make_stage_usage("qa", "gemini", cr_qa, dur_qa))
+        usage.append(_make_stage_usage("qa", qa_provider, cr_qa, dur_qa))
         logger.info(
-            "[PIPELINE] Stage 2 Gemini  (QA):       input=%6d  output=%5d  total=%6d  (%.1fs)",
-            cr_qa.prompt_tokens, cr_qa.completion_tokens, cr_qa.total_tokens, dur_qa,
+            "[PIPELINE] Stage 2 %-8s (QA):       input=%6d  output=%5d  total=%6d  (%.1fs)",
+            qa_provider, cr_qa.prompt_tokens, cr_qa.completion_tokens, cr_qa.total_tokens, dur_qa,
         )
         _update(job_id, progress=65)
 
         # ── Stage 3: Claude — Senior QA Lead / Final Review (GPT-4o fallback) ─
         t_review = datetime.now(timezone.utc)
-        reviewer_prompt = prompts.build_review_prompt(
-            requirement=req.requirement,
-            qa_cases=llm_caller.strip_fences(cr_qa.text),
-            language=req.language,
+        cr_review, reviewer_provider = await _call_with_fallback(
+            ["claude", "openai"],
+            prompt=prompts.build_review_prompt(
+                requirement=req.requirement,
+                qa_cases=llm_caller.strip_fences(cr_qa.text),
+                language=req.language,
+            ),
+            system=prompts.SYSTEM_REVIEWER,
         )
-        try:
-            cr_review = await llm_caller.call(
-                provider="claude",
-                prompt=reviewer_prompt,
-                system=prompts.SYSTEM_REVIEWER,
-            )
-            reviewer_provider, reviewer_label = "claude", "Claude"
-        except Exception:
-            # Claude unavailable after retries — fall back to GPT-4o as reviewer
-            cr_review = await llm_caller.call(
-                provider="openai",
-                prompt=reviewer_prompt,
-                system=prompts.SYSTEM_REVIEWER,
-            )
-            reviewer_provider, reviewer_label = "openai", "GPT-4o (fallback)"
         dur_review = (datetime.now(timezone.utc) - t_review).total_seconds()
         usage.append(_make_stage_usage("reviewer", reviewer_provider, cr_review, dur_review))
         logger.info(
-            "[PIPELINE] Stage 3 %-18s input=%6d  output=%5d  total=%6d  (%.1fs)",
-            f"{reviewer_label} (Rev):", cr_review.prompt_tokens, cr_review.completion_tokens,
+            "[PIPELINE] Stage 3 %-8s (Rev):      input=%6d  output=%5d  total=%6d  (%.1fs)",
+            reviewer_provider, cr_review.prompt_tokens, cr_review.completion_tokens,
             cr_review.total_tokens, dur_review,
         )
         _update(job_id, progress=90)

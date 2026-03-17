@@ -165,7 +165,7 @@ async def _gemini(prompt: str, system: str) -> CallResult:
             raise RuntimeError(
                 f"Gemini ({settings.GEMINI_MODEL}) hit max_output_tokens — the generated "
                 "test suite is too large for this model. Switch to a model with a higher "
-                "output limit (e.g. gemini-2.5-flash-preview) via GEMINI_MODEL in .env."
+                "output limit (e.g. gemini-2.5-flash) via GEMINI_MODEL in .env."
             )
 
     meta = getattr(resp, "usage_metadata", None)
