@@ -52,12 +52,10 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
   useEffect(() => { setCategoryFilter(null); setCardGen((g) => g + 1); }, [selectedProvider]);
 
   const openExportDialog = (type: "json" | "excel") => {
-    if (!detail) return;
-    const p = selectedProvider ?? detail.provider;
-    const providerLabel = PROVIDER_LABELS[p] ?? p;
-    const name = detail.mode === "research"
-      ? `TestSuite_Research_${providerLabel}`
-      : "TestSuite_Standard";
+    if (!detail || !activeResult) return;
+    const suiteName = activeResult.test_suite_name ?? "Test_Suite";
+    const modeLabel = detail.mode === "pipeline" ? "standard" : detail.mode;
+    const name = `${suiteName.trim().replace(/[/\\:*?"<>|]/g, "").replace(/\s+/g, "_")}_${modeLabel}`;
     setExportDialog({ type, name });
   };
 
@@ -211,13 +209,19 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
           )}
         </div>
       </div>
-      {exportDialog && activeResult && (
+      {exportDialog && (isResearch ? !!detail?.all_results?.length : !!activeResult) && (
         <FilenameDialog
           defaultName={exportDialog.name}
           extension={exportDialog.type === "json" ? "json" : "xlsx"}
           onConfirm={(filename) => {
-            if (exportDialog.type === "json") downloadJSON(activeResult, undefined, filename);
-            else downloadExcel(activeResult, undefined, filename);
+            if (isResearch && detail?.all_results?.length) {
+              const allResearch = detail.all_results.map((r) => ({ provider: r.provider, result: r, success: true }));
+              if (exportDialog.type === "json") downloadJSON(undefined, allResearch, filename);
+              else downloadExcel(undefined, allResearch, filename);
+            } else {
+              if (exportDialog.type === "json") downloadJSON(activeResult, undefined, filename);
+              else downloadExcel(activeResult, undefined, filename);
+            }
           }}
           onClose={() => setExportDialog(null)}
         />
@@ -302,7 +306,7 @@ export default function HistoryPage() {
             type="text"
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="Search by requirement…"
+            placeholder="Search…"
             className="input pl-9 pr-9 text-sm"
           />
           {search && (

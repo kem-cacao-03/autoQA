@@ -349,6 +349,15 @@ def build_review_prompt(
     )
 
 
+def build_research_system(language: str) -> str:
+    """Research mode system prompt — includes language to ensure GPT-4o honours it."""
+    return (
+        "You are an expert QA engineer. Your task is to analyze a feature description "
+        f"and generate a complete test suite in a single pass. "
+        f"All human-readable content in your output MUST be written in {language}."
+    )
+
+
 def build_research_prompt(requirement: str, language: str) -> str:
     """Research mode — combined BA + QA, fully independent generation."""
     return _RESEARCH_TMPL.format(requirement=requirement, language=language)

@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     MONGODB_URL: str = "mongodb://localhost:27017"
     MONGODB_DB: str = "autoqa_gen"
 
+    # ── Elasticsearch ─────────────────────────────
+    ELASTICSEARCH_URL: str = "http://localhost:9200"
+
     # ── LLM Providers ────────────────────────────
     OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-4o"

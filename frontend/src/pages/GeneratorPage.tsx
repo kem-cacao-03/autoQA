@@ -385,15 +385,11 @@ export default function GeneratorPage() {
 
   const openExportDialog = (type: "json" | "excel") => {
     if (!latestSuccess) return;
-    let name: string;
-    if (jobMode === "research" && researchResults?.length) {
-      const providerNames = researchResults
-        .map((r) => PROVIDER_LABELS[r.provider as LLMProvider] ?? r.provider)
-        .join("_");
-      name = `TestSuite_Research_${providerNames}`;
-    } else {
-      name = "TestSuite_Standard";
-    }
+    const suiteName = jobMode === "research"
+      ? (researchResults?.find((r) => r.result)?.result?.test_suite_name ?? "Test_Suite")
+      : (pipelineResult?.test_suite_name ?? "Test_Suite");
+    const modeLabel = jobMode === "pipeline" ? "standard" : jobMode;
+    const name = `${suiteName.trim().replace(/[/\\:*?"<>|]/g, "").replace(/\s+/g, "_")}_${modeLabel}`;
     setExportDialog({ type, name });
   };
 

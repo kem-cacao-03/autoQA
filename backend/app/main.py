@@ -28,6 +28,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.database import close_db, connect_db, create_indexes
+from app.db.elastic import close_es, connect_es
 from app.modules.auth.router import router as auth_router
 from app.modules.generator.router import router as generator_router
 from app.modules.history.router import router as history_router
@@ -59,6 +60,7 @@ async def _job_cleanup_loop() -> None:
 async def lifespan(app: FastAPI):
     await connect_db()
     await create_indexes()
+    await connect_es()
     cleanup_task = asyncio.create_task(_job_cleanup_loop())
     try:
         yield
@@ -69,6 +71,7 @@ async def lifespan(app: FastAPI):
         except asyncio.CancelledError:
             pass
         await close_db()
+        await close_es()
 
 
 # ── App factory ───────────────────────────────────────────────────────────────

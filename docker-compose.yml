@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: autoqa_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    restart: unless-stopped
+
+  elasticsearch:
+    image: elasticsearch:8.13.0
+    container_name: autoqa_es
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongodata:
+  esdata:

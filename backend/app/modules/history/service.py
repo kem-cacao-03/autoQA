@@ -5,6 +5,7 @@ Imports GenerationResult from app.core.schemas (shared contract),
 NOT from generator/schema.py — that would create a cross-module dependency.
 """
 
+import logging
 from datetime import datetime
 
 from fastapi import HTTPException
@@ -12,6 +13,8 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.schemas import GenerationResult
 from app.modules.history.schema import HistoryDetail, HistoryItem
+
+logger = logging.getLogger(__name__)
 
 COLLECTION = "history"
 
@@ -87,7 +90,15 @@ class HistoryService:
         if favorites_only:
             query["is_favorite"] = True
         if search and search.strip():
-            query["requirement"] = {"$regex": search.strip(), "$options": "i"}
+            try:
+                from app.modules.history.indexer import search_ids
+                es_ids = await search_ids(user_id, search.strip())
+                if not es_ids:
+                    return []
+                query["_id"] = {"$in": es_ids}
+            except Exception as exc:
+                logger.warning("[ES] Search unavailable, falling back to MongoDB regex: %s", exc)
+                query["requirement"] = {"$regex": search.strip(), "$options": "i"}
 
         # Fetch extra docs to account for research deduplication (up to 3 per session).
         internal_limit = limit * 3
@@ -169,10 +180,19 @@ class HistoryService:
 
         session_id = doc.get("session_id")
         if session_id and doc.get("mode") == "research":
-            # Delete all provider docs belonging to this research session.
             await self._col.delete_many({"session_id": session_id, "user_id": user_id})
+            try:
+                from app.modules.history.indexer import delete_session
+                await delete_session(session_id, user_id)
+            except Exception as exc:
+                logger.warning("[ES] Failed to delete session %s from index: %s", session_id, exc)
         else:
             await self._col.delete_one({"_id": history_id, "user_id": user_id})
+            try:
+                from app.modules.history.indexer import delete_doc
+                await delete_doc(history_id)
+            except Exception as exc:
+                logger.warning("[ES] Failed to delete doc %s from index: %s", history_id, exc)
 
     # ── Toggle favourite ─────────────────────────────────────────────────────
 

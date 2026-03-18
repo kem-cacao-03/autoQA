@@ -201,24 +201,32 @@ async def _persist(
     elapsed_seconds: float | None = None,
 ) -> str:
     doc_id = str(uuid.uuid4())
-    await db["history"].insert_one(
-        {
-            "_id": doc_id,
-            "user_id": user_id,
-            "requirement": req.requirement,
-            "provider": result.provider,
-            "mode": req.mode.value,
-            "language": req.language,
-            "is_favorite": False,
-            "session_id": session_id,
-            "input_tokens": input_tokens,
-            "output_tokens": output_tokens,
-            "total_tokens": input_tokens + output_tokens,
-            "elapsed_seconds": elapsed_seconds,
-            "result": result.model_dump(),
-            "created_at": datetime.now(timezone.utc),
-        }
-    )
+    now = datetime.now(timezone.utc)
+    doc = {
+        "_id": doc_id,
+        "user_id": user_id,
+        "requirement": req.requirement,
+        "provider": result.provider,
+        "mode": req.mode.value,
+        "language": req.language,
+        "is_favorite": False,
+        "session_id": session_id,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "total_tokens": input_tokens + output_tokens,
+        "elapsed_seconds": elapsed_seconds,
+        "result": result.model_dump(),
+        "created_at": now,
+    }
+    await db["history"].insert_one(doc)
+
+    # Index to Elasticsearch (best-effort — never block the pipeline on ES failure).
+    try:
+        from app.modules.history.indexer import index_doc
+        await index_doc(doc_id, doc)
+    except Exception as exc:
+        logger.warning("[ES] Failed to index history doc %s: %s", doc_id, exc)
+
     return doc_id
 
 
@@ -354,7 +362,7 @@ async def run_research(
                         requirement=req.requirement,
                         language=req.language,
                     ),
-                    system=prompts.SYSTEM_RESEARCH,
+                    system=prompts.build_research_system(req.language),
                 )
                 duration = (datetime.now(timezone.utc) - t_start).total_seconds()
                 logger.info(
