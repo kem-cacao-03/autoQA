@@ -7,8 +7,10 @@ const HEADER_BG = "4F46E5"; // indigo-600
 const HEADER_FG = "FFFFFF";
 const ROW_ALT_BG = "EEF2FF"; // indigo-50
 const BORDER_CLR = "C7D2FE"; // indigo-200
-const TITLE_BG = "312E81"; // indigo-900  (sheet title row)
+const TITLE_BG = "312E81"; // indigo-900
 const TITLE_FG = "FFFFFF";
+const MARKED_BG = "FEF9C3"; // yellow-100 – bôi vàng cho row đã đánh dấu
+const MARKED_BORDER = "FDE047"; // yellow-300
 
 // ── Reusable style helpers ────────────────────────────────────────────────────
 const border = (color = BORDER_CLR) => ({
@@ -31,17 +33,19 @@ const titleStyle = {
   alignment: { horizontal: "left", vertical: "center" },
 };
 
-const cellStyle = (rowIndex: number, wrap = false) => ({
+const cellStyle = (rowIndex: number, wrap = false, marked = false) => ({
   font: { sz: 10, color: { rgb: "1E293B" } },
-  fill: rowIndex % 2 === 0
-    ? { patternType: "solid", fgColor: { rgb: "FFFFFF" } }
-    : { patternType: "solid", fgColor: { rgb: ROW_ALT_BG } },
+  fill: marked
+    ? { patternType: "solid", fgColor: { rgb: MARKED_BG } }
+    : rowIndex % 2 === 0
+      ? { patternType: "solid", fgColor: { rgb: "FFFFFF" } }
+      : { patternType: "solid", fgColor: { rgb: ROW_ALT_BG } },
   alignment: { vertical: "top", wrapText: wrap },
-  border: border(),
+  border: border(marked ? MARKED_BORDER : undefined),
 });
 
-const priorityStyle = (priority: string, rowIndex: number) => {
-  const base = cellStyle(rowIndex);
+const priorityStyle = (priority: string, rowIndex: number, marked = false) => {
+  const base = cellStyle(rowIndex, false, marked);
   const fg =
     priority === "High" ? "DC2626" :
       priority === "Medium" ? "D97706" :
@@ -49,7 +53,8 @@ const priorityStyle = (priority: string, rowIndex: number) => {
   return { ...base, font: { ...base.font, bold: true, color: { rgb: fg } } };
 };
 
-// ── Column definitions ─────────────────────────────────────────────────────────
+
+// ── Column definitions ────────────────────────────────────────────────────────
 const COLUMNS: { key: string; label: string; wch: number; wrap?: boolean }[] = [
   { key: "ID", label: "Test Case ID", wch: 14 },
   { key: "Title", label: "Title", wch: 42 },
@@ -60,15 +65,16 @@ const COLUMNS: { key: string; label: string; wch: number; wrap?: boolean }[] = [
   { key: "Expected_Result", label: "Expected Result", wch: 48, wrap: true },
 ];
 
-// ── Sheet builder ──────────────────────────────────────────────────────────────
+// ── Sheet builder ─────────────────────────────────────────────────────────────
 function buildSheet(
   cases: Record<string, unknown>[],
   sheetTitle: string,
+  markedIds: Set<string> = new Set(),
 ): object {
   const ws: Record<string, unknown> = {};
   const totalCols = COLUMNS.length;
 
-  // ── Row 0: merged title banner ─────────────────────────────────────────────
+  // ── Row 0: merged title banner ───────────────────────────────────────────────
   for (let c = 0; c < totalCols; c++) {
     const addr = XLSXStyle.utils.encode_cell({ r: 0, c });
     ws[addr] = c === 0
@@ -77,18 +83,21 @@ function buildSheet(
   }
   ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } }];
 
-  // ── Row 1: column headers ──────────────────────────────────────────────────
+  // ── Row 1: column headers ────────────────────────────────────────────────────
   COLUMNS.forEach((col, c) => {
     ws[XLSXStyle.utils.encode_cell({ r: 1, c })] = {
       v: col.label, t: "s", s: headerStyle,
     };
   });
 
-  // ── Rows 2…N: data ──────────────────────────────────────────────────────────
+  // ── Rows 2…N: data ───────────────────────────────────────────────────────────
   cases.forEach((tc, i) => {
-    const rowIndex = i; // for alternating colours
+    const rowIndex = i;
+    const tcId = String(tc.test_case_id ?? tc.id ?? "");
+    const isMarked = markedIds.has(tcId);
+
     const dataRow: Record<string, string> = {
-      ID: String(tc.test_case_id ?? tc.id ?? ""),
+      ID: tcId,
       Title: String(tc.title ?? ""),
       Priority: String(tc.priority ?? ""),
       Category: String(tc.category ?? ""),
@@ -103,32 +112,37 @@ function buildSheet(
 
     COLUMNS.forEach((col, c) => {
       const style = col.key === "Priority"
-        ? priorityStyle(dataRow.Priority, rowIndex)
-        : cellStyle(rowIndex, col.wrap);
+        ? priorityStyle(dataRow.Priority, rowIndex, isMarked)
+        : cellStyle(rowIndex, col.wrap, isMarked);
       ws[XLSXStyle.utils.encode_cell({ r: i + 2, c })] = {
         v: dataRow[col.key], t: "s", s: style,
       };
     });
   });
 
-  // ── Sheet range ─────────────────────────────────────────────────────────────
+  // ── Sheet range ──────────────────────────────────────────────────────────────
   ws["!ref"] = XLSXStyle.utils.encode_range({
     s: { r: 0, c: 0 },
     e: { r: cases.length + 1, c: totalCols - 1 },
   });
 
-  // ── Column widths + row heights ─────────────────────────────────────────────
+  // ── AutoFilter — mũi tên lọc trên hàng tiêu đề (row 2 trong Excel) ──────────
+  ws["!autofilter"] = {
+    ref: `A2:${XLSXStyle.utils.encode_cell({ r: 1, c: totalCols - 1 })}`,
+  };
+
+  // ── Column widths + row heights ──────────────────────────────────────────────
   ws["!cols"] = COLUMNS.map((col) => ({ wch: col.wch }));
   ws["!rows"] = [
     { hpt: 22 },  // title row
     { hpt: 28 },  // header row
-    ...cases.map(() => ({ hpt: 54 })), // data rows (tall enough for wrap)
+    ...cases.map(() => ({ hpt: 54 })),
   ];
 
   return ws;
 }
 
-// ── Public helpers ─────────────────────────────────────────────────────────────
+// ── Public helpers ────────────────────────────────────────────────────────────
 export function downloadJSON(
   result: GenerationResult | undefined,
   research: ResearchProviderResult[] | undefined,
@@ -148,12 +162,13 @@ export function downloadExcel(
   result: GenerationResult | undefined,
   research: ResearchProviderResult[] | undefined,
   filename = "test-cases.xlsx",
+  markedIds: Set<string> = new Set(),
 ) {
   const wb = XLSXStyle.utils.book_new();
 
   const addSheet = (cases: Record<string, unknown>[], name: string, title: string) => {
     if (!cases.length) return;
-    const ws = buildSheet(cases, title);
+    const ws = buildSheet(cases, title, markedIds);
     XLSXStyle.utils.book_append_sheet(wb, ws, name.slice(0, 31));
   };
 

@@ -104,9 +104,7 @@ For EACH scenario in the outline, generate detailed test cases covering:
 
 ## Quantity Guideline
 - Aim for quality over quantity
-- Maximum 25 test cases unless feature is very complex
 - Prefer 1 well-written test case over 3 redundant ones
-- If scenarios exceed 25, prioritize: High priority first, then Medium, then Low
 
 ## Output Format (JSON)
 {{

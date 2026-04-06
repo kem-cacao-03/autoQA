@@ -36,7 +36,7 @@ async def submit(                               # ← async: required for asynci
     current_user: dict = Depends(get_current_user),
 ):
     """
-    **Pipeline mode** — Gemini (BA) → GPT-4o (QA) → Claude (Reviewer).
+    **Pipeline mode** — GPT-4o (BA) → Gemini (QA) → Claude (Reviewer).
     Returns a single validated test suite.
 
     **Research mode** — calls selected providers in parallel.

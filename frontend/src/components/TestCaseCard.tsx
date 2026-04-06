@@ -1,31 +1,50 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, Bookmark, BookmarkCheck } from "lucide-react";
+
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const PRIORITY_CONFIG: Record<string, { badge: string; dot: string; border: string }> = {
-  High: { badge: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400", dot: "bg-rose-500", border: "border-l-rose-400" },
-  Medium: { badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400", dot: "bg-amber-500", border: "border-l-amber-400" },
-  Low: { badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400", dot: "bg-emerald-500", border: "border-l-emerald-400" },
+  High:   { badge: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",           dot: "bg-rose-500",    border: "border-l-rose-400"    },
+  Medium: { badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",       dot: "bg-amber-500",   border: "border-l-amber-400"   },
+  Low:    { badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400", dot: "bg-emerald-500", border: "border-l-emerald-400" },
 };
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
+// ── Bookmark button ───────────────────────────────────────────────────────────
+
+function BookmarkButton({
+  marked,
+  onToggle,
+}: {
+  marked: boolean;
+  onToggle: (e: React.MouseEvent) => void;
+}) {
   return (
     <button
-      onClick={copy}
-      className="opacity-0 group-hover/card:opacity-100 transition-opacity p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+      onClick={onToggle}
+      title={marked ? "Bỏ đánh dấu" : "Đánh dấu test case"}
+      className={`transition-all duration-200 p-1 rounded-md ${
+        marked
+          ? "text-amber-500 hover:text-amber-600"
+          : "opacity-0 group-hover/card:opacity-100 text-slate-300 dark:text-slate-600 hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+      }`}
     >
-      {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+      {marked
+        ? <BookmarkCheck className="w-3.5 h-3.5" />
+        : <Bookmark      className="w-3.5 h-3.5" />}
     </button>
   );
 }
 
-export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index: number }) {
+// ── Main card component ───────────────────────────────────────────────────────
+
+export function TestCaseCard({
+  tc, index, marked = false, onToggleMarked,
+}: {
+  tc: Record<string, unknown>;
+  index: number;
+  marked?: boolean;
+  onToggleMarked?: (id: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -35,11 +54,11 @@ export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index
     }
   }, [open]);
 
-  const id = String(tc.test_case_id ?? tc.id ?? `TC-${index + 1}`);
-  const title = String(tc.title ?? "Untitled");
+  const id       = String(tc.test_case_id ?? tc.id ?? `TC-${index + 1}`);
+  const title    = String(tc.title    ?? "Untitled");
   const priority = String(tc.priority ?? "Medium");
   const category = String(tc.category ?? "");
-  const cfg = PRIORITY_CONFIG[priority] ?? { badge: "bg-slate-100 text-slate-600", dot: "bg-slate-400", border: "border-l-slate-300" };
+  const cfg      = PRIORITY_CONFIG[priority] ?? { badge: "bg-slate-100 text-slate-600", dot: "bg-slate-400", border: "border-l-slate-300" };
 
   const preconditions: string[] = Array.isArray(tc.preconditions)
     ? (tc.preconditions as unknown[]).map((p) => String(p))
@@ -50,7 +69,7 @@ export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index
     : [];
 
   const expectedResult = tc.expected_result ?? tc.expected_outcome;
-  const expectedStr = expectedResult != null
+  const expectedStr    = expectedResult != null
     ? (typeof expectedResult === "string" ? expectedResult : JSON.stringify(expectedResult))
     : null;
 
@@ -62,7 +81,11 @@ export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index
   ) ? tc.test_data : null;
 
   return (
-    <div className={`group/card border border-slate-100 dark:border-slate-700/80 border-l-4 ${cfg.border} rounded-xl overflow-hidden hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 transition-all duration-200 bg-white dark:bg-slate-800/50`}>
+    <div className={`group/card border border-l-4 ${cfg.border} rounded-xl overflow-hidden hover:shadow-md transition-all duration-200 ${
+      marked
+        ? "border-amber-300 dark:border-amber-600/60 bg-amber-50/40 dark:bg-amber-900/10"
+        : "border-slate-100 dark:border-slate-700/80 hover:border-slate-200 dark:hover:border-slate-600 bg-white dark:bg-slate-800/50"
+    }`}>
       <button
         className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer select-none hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors"
         onClick={() => setOpen((v) => !v)}
@@ -70,26 +93,30 @@ export function TestCaseCard({ tc, index }: { tc: Record<string, unknown>; index
         {/* Priority dot */}
         <div className={`w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
 
-        {/* ID — fixed width, truncate long IDs */}
+        {/* ID */}
         <span className="text-xs font-mono text-slate-400 dark:text-slate-500 w-28 shrink-0 truncate" title={id}>{id}</span>
 
-        {/* Title — clamp to 2 lines when collapsed, full text when expanded */}
+        {/* Title */}
         <span title={title} className={`flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-200 ${open ? "" : "line-clamp-2"}`}>{title}</span>
 
         {/* Priority badge */}
-        <span className={`badge shrink-0 ${cfg.badge}`}>{priority}</span>
+        <span className={`badge shrink-0 w-16 justify-center ${cfg.badge}`}>{priority}</span>
 
         {/* Category badge */}
         {category && (
-          <span className="badge shrink-0 bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400 border border-brand-100 dark:border-brand-800/30">
+          <span className="badge shrink-0 w-24 justify-center bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400 border border-brand-100 dark:border-brand-800/30">
             {category}
           </span>
         )}
 
-        <CopyButton text={`${id}: ${title}`} />
+        {/* Bookmark toggle */}
+        <BookmarkButton
+          marked={marked}
+          onToggle={(e) => { e.stopPropagation(); onToggleMarked?.(id); }}
+        />
 
         {open
-          ? <ChevronUp className="w-4 h-4 text-slate-400 shrink-0" />
+          ? <ChevronUp   className="w-4 h-4 text-slate-400 shrink-0" />
           : <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
         }
       </button>

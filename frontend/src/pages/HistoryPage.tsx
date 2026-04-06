@@ -17,10 +17,10 @@ const MODE_STYLES: Record<string, { label: string; badge: string; border: string
 
 const PROVIDER_LABELS: Record<string, string> = { openai: "GPT-4o", gemini: "Gemini", claude: "Claude" };
 
-const TYPE_LABELS: Record<string, string> = { standard: "Standard", bdd: "BDD", api: "API" };
+
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("en-US", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return new Date(iso).toLocaleString("en-US", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Ho_Chi_Minh" });
 }
 
 function formatElapsed(sec: number) {
@@ -41,6 +41,14 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
   const [sort, setSort] = useState<SortState | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [cardGen, setCardGen] = useState(0);
+  const [markedIds, setMarkedIds] = useState<Set<string>>(new Set());
+
+  const toggleMark = (id: string) =>
+    setMarkedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
 
   // Lock body scroll while drawer is open
   useEffect(() => {
@@ -201,9 +209,18 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
                 />
               )}
               <div className="space-y-2">
-                {items.map((tc, i) => (
-                  <TestCaseCard key={`${i}-${cardGen}`} tc={tc as Record<string, unknown>} index={i} />
-                ))}
+                {items.map((tc, i) => {
+                  const tcId = String((tc as Record<string, unknown>).test_case_id ?? (tc as Record<string, unknown>).id ?? `TC-${i + 1}`);
+                  return (
+                    <TestCaseCard
+                      key={`${i}-${cardGen}`}
+                      tc={tc as Record<string, unknown>}
+                      index={i}
+                      marked={markedIds.has(tcId)}
+                      onToggleMarked={toggleMark}
+                    />
+                  );
+                })}
               </div>
             </>
           )}
@@ -217,10 +234,10 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
             if (isResearch && detail?.all_results?.length) {
               const allResearch = detail.all_results.map((r) => ({ provider: r.provider, result: r, success: true }));
               if (exportDialog.type === "json") downloadJSON(undefined, allResearch, filename);
-              else downloadExcel(undefined, allResearch, filename);
+              else downloadExcel(undefined, allResearch, filename, markedIds);
             } else {
-              if (exportDialog.type === "json") downloadJSON(activeResult, undefined, filename);
-              else downloadExcel(activeResult, undefined, filename);
+              if (exportDialog.type === "json") downloadJSON(activeResult ?? undefined, undefined, filename);
+              else downloadExcel(activeResult ?? undefined, undefined, filename, markedIds);
             }
           }}
           onClose={() => setExportDialog(null)}

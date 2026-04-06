@@ -370,6 +370,14 @@ export default function GeneratorPage() {
   const [sort, setSort]                 = useState<SortState | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [cardGen, setCardGen]           = useState(0);
+  const [markedIds, setMarkedIds]       = useState<Set<string>>(new Set());
+
+  const toggleMark = (id: string) =>
+    setMarkedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
 
   // Reset category filter + collapse cards when switching research tabs
   useEffect(() => { setCategoryFilter(null); setCardGen((g) => g + 1); }, [activeTab]);
@@ -595,9 +603,18 @@ export default function GeneratorPage() {
                 total={items.length}
               />
               <div className="space-y-2">
-                {items.map((tc, i) => (
-                  <TestCaseCard key={`${i}-${cardGen}`} tc={tc as Record<string, unknown>} index={i} />
-                ))}
+                {items.map((tc, i) => {
+                  const tcId = String((tc as Record<string, unknown>).test_case_id ?? (tc as Record<string, unknown>).id ?? `TC-${i + 1}`);
+                  return (
+                    <TestCaseCard
+                      key={`${i}-${cardGen}`}
+                      tc={tc as Record<string, unknown>}
+                      index={i}
+                      marked={markedIds.has(tcId)}
+                      onToggleMarked={toggleMark}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -651,9 +668,18 @@ export default function GeneratorPage() {
                               total={tabItems.length}
                             />
                             <div className="space-y-2">
-                              {tabItems.map((tc, i) => (
-                                <TestCaseCard key={`${i}-${cardGen}`} tc={tc as Record<string, unknown>} index={i} />
-                              ))}
+                              {tabItems.map((tc, i) => {
+                              const tcId = String((tc as Record<string, unknown>).test_case_id ?? (tc as Record<string, unknown>).id ?? `TC-${i + 1}`);
+                              return (
+                                <TestCaseCard
+                                  key={`${i}-${cardGen}`}
+                                  tc={tc as Record<string, unknown>}
+                                  index={i}
+                                  marked={markedIds.has(tcId)}
+                                  onToggleMarked={toggleMark}
+                                />
+                              );
+                            })}
                             </div>
                           </>
                         );
@@ -678,7 +704,7 @@ export default function GeneratorPage() {
           extension={exportDialog.type === "json" ? "json" : "xlsx"}
           onConfirm={(filename) => {
             if (exportDialog.type === "json") downloadJSON(pipelineResult, researchResults, filename);
-            else downloadExcel(pipelineResult, researchResults, filename);
+            else downloadExcel(pipelineResult, researchResults, filename, markedIds);
           }}
           onClose={() => setExportDialog(null)}
         />

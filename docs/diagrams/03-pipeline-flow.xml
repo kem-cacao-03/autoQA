@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.1">
   <diagram name="Pipeline Flow" id="dia-3">
-    <mxGraphModel dx="1017" dy="650" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="500" math="0" shadow="0">
+    <mxGraphModel dx="883" dy="611" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="500" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -10,13 +10,13 @@
         <mxCell id="inp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Input&lt;/b&gt;&#xa;User Requirement&#xa;mode=pipeline&#xa;test_type, language" vertex="1">
           <mxGeometry height="110" width="120" x="50" y="165" as="geometry" />
         </mxCell>
-        <mxCell id="s1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Stage 1&lt;/b&gt;&#xa;&lt;b&gt;BA Agent&lt;/b&gt;&#xa;&#xa;Provider: Gemini 2.0 Flash&#xa;&#xa;Phân tích requirement →&#xa;cấu trúc test case có cấu trúc" vertex="1">
+        <mxCell id="s1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Stage 1&lt;/b&gt;&lt;br&gt;&lt;b&gt;BA Agent&lt;/b&gt;&lt;br&gt;&lt;br&gt;Provider: GPT-4o&lt;br&gt;&lt;br&gt;Phân tích requirement&amp;nbsp;" vertex="1">
           <mxGeometry height="160" width="170" x="210" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="s2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Stage 2&lt;/b&gt;&#xa;&lt;b&gt;Generator Agent&lt;/b&gt;&#xa;&#xa;Provider: GPT-4o&#xa;&#xa;Sinh test cases chi tiết:&#xa;ID · title · steps · expected result" vertex="1">
+        <mxCell id="s2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;Stage 2&lt;/b&gt;&lt;br&gt;&lt;b&gt;Generator Agent&lt;/b&gt;&lt;br&gt;&lt;br&gt;Provider: Gemini 2.5 Flash&lt;br&gt;&lt;br&gt;Sinh test cases chi tiết" vertex="1">
           <mxGeometry height="160" width="190" x="460" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="s3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;Stage 3&lt;/b&gt;&#xa;&lt;b&gt;Reviewer Agent&lt;/b&gt;&#xa;&#xa;Provider: Claude 3.5 Sonnet&#xa;&#xa;Review + bổ sung:&#xa;edge cases · coverage · chất lượng" vertex="1">
+        <mxCell id="s3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;Stage 3&lt;/b&gt;&lt;br&gt;&lt;b&gt;Reviewer Agent&lt;/b&gt;&lt;br&gt;&lt;br&gt;Provider: Claude 3.5 Sonnet&lt;br&gt;&lt;br&gt;Review + bổ sung" vertex="1">
           <mxGeometry height="160" width="200" x="740" y="150" as="geometry" />
         </mxCell>
         <mxCell id="out" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#006600;fontColor=#006600;" value="&lt;b&gt;Output&lt;/b&gt;&#xa;GenerationResult&#xa;&#xa;test_cases[]&#xa;review_summary&#xa;usage[] (tokens + time)" vertex="1">

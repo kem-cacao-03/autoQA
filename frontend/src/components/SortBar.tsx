@@ -1,6 +1,6 @@
 import { ArrowUpDown, ArrowUp, ArrowDown, X } from "lucide-react";
 
-export type SortKey = "priority";
+export type SortKey = "priority" | "category";
 export type SortDir = "asc" | "desc";
 export interface SortState { key: SortKey; dir: SortDir }
 
@@ -14,6 +14,12 @@ export function sortCases(
 ): Record<string, unknown>[] {
   if (!sort) return cases;
   return [...cases].sort((a, b) => {
+    if (sort.key === "category") {
+      const ca = String(a.category ?? "").toLowerCase();
+      const cb = String(b.category ?? "").toLowerCase();
+      const cmp = ca.localeCompare(cb);
+      return sort.dir === "asc" ? cmp : -cmp;
+    }
     const wa = PRIORITY_W[String(a.priority ?? "Medium")] ?? 2;
     const wb = PRIORITY_W[String(b.priority ?? "Medium")] ?? 2;
     // desc = High first, asc = Low first
@@ -82,20 +88,31 @@ export function SortBar({
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {/* Sort by priority */}
+      {/* Sort by priority / category */}
       <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest shrink-0">
         Sort
       </span>
       <button
         onClick={() => onToggle("priority")}
         className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-          sort
+          sort?.key === "priority"
             ? "bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400"
             : "bg-slate-100 text-slate-500 dark:bg-slate-700/60 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600"
         }`}
       >
         Priority
-        <SortIcon sort={sort} />
+        <SortIcon sort={sort?.key === "priority" ? sort : null} />
+      </button>
+      <button
+        onClick={() => onToggle("category")}
+        className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+          sort?.key === "category"
+            ? "bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400"
+            : "bg-slate-100 text-slate-500 dark:bg-slate-700/60 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600"
+        }`}
+      >
+        Category
+        <SortIcon sort={sort?.key === "category" ? sort : null} />
       </button>
 
       {/* Filter by category */}

@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.1">
   <diagram name="Research Mode Flow" id="dia-4">
-    <mxGraphModel dx="1086" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="680" math="0" shadow="0">
+    <mxGraphModel dx="883" dy="611" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="680" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -16,7 +16,7 @@
         <mxCell id="rm-p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#23a26d;" value="&lt;b&gt;_call_one(openai)&lt;/b&gt;&#xa;&#xa;OpenAI GPT-4o&#xa;&#xa;1 LLM call&#xa;Sinh test cases trực tiếp" vertex="1">
           <mxGeometry height="130" width="190" x="470" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="rm-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#4285f4;" value="&lt;b&gt;_call_one(gemini)&lt;/b&gt;&#xa;&#xa;Google Gemini 2.0 Flash&#xa;&#xa;1 LLM call&#xa;Sinh test cases trực tiếp" vertex="1">
+        <mxCell id="rm-p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#4285f4;" value="&lt;b&gt;_call_one(gemini)&lt;/b&gt;&lt;br&gt;&lt;br&gt;Google Gemini 2.5 Flash&lt;br&gt;&lt;br&gt;1 LLM call&lt;br&gt;Sinh test cases trực tiếp" vertex="1">
           <mxGeometry height="130" width="190" x="470" y="230" as="geometry" />
         </mxCell>
         <mxCell id="rm-p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;_call_one(claude)&lt;/b&gt;&#xa;&#xa;Anthropic Claude 3.5&#xa;&#xa;1 LLM call&#xa;Sinh test cases trực tiếp" vertex="1">
