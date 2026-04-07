@@ -186,14 +186,36 @@ You will receive:
 
 ## Your Tasks
 
-### Phase 1 — Quality Review
+### Phase 1 — Coverage Gap Analysis
+Before reviewing, mentally map ALL test scenarios the feature requires across
+these dimensions:
+- Functional: happy paths, alternative flows, edge cases
+- Negative: invalid input, missing data, boundary violations, error handling
+- Security: injection attacks (SQL, XSS), authentication bypass, brute-force
+  protection, data exposure, rate limiting, session management
+- UI/UX: real-time validation, error messages placement, countdown timers,
+  disabled states, responsive layout
+- Performance: response time, concurrent users, load handling
+- Boundary: just-inside and just-outside limits for all time/count constraints
+
+Then identify which dimensions are missing or undercovered in the raw suite.
+
+### Phase 2 — Quality Review
 - Remove exact duplicates
 - Merge near-duplicates → keep the more detailed one
-- Identify and fill coverage gaps vs the feature description
-- Add missing critical test cases if found (High priority flows only)
 - Fix any vague steps or unverifiable expected results
+- Replace placeholder test data with realistic specific values
 
-### Phase 2 — Standardization
+### Phase 3 — Gap Filling
+Add missing test cases for ALL uncovered or undercovered dimensions identified
+in Phase 1 — not limited to High priority only. Use these guidelines:
+- Security gaps → always add, mark as High priority
+- Missing boundary cases → add, mark as Medium priority
+- Missing UI/UX validation behaviors → add, mark as Medium or Low priority
+- Missing error handling → add, mark as Medium priority
+- Do NOT add more than 3-5 TC per gap category to avoid over-generation
+
+### Phase 4 — Standardization
 - Re-index all test_case_id sequentially: TC_001, TC_002, TC_003...
 - Normalize priority: only allow "High | Medium | Low"
 - Validate category: only allow "Functional | UI/UX | Negative | Security | Performance"
@@ -201,7 +223,7 @@ You will receive:
 - Ensure test_data uses realistic specific values, not placeholders
 - Verify total_count matches the actual number of test cases
 
-### Phase 3 — Output
+### Phase 5 — Output
 Produce the finalized test suite in the exact schema below.
 
 ## Output Format (JSON)
@@ -225,7 +247,6 @@ Produce the finalized test suite in the exact schema below.
 
 ## Rules
 - Do NOT remove test cases without a clear reason (duplicate or redundant)
-- Only add new test cases for High priority gaps — do not over-generate
 - total_count must equal exactly len(test_cases)
 - Output ONLY the JSON object. No explanation, no markdown code blocks.
   Start your response with "{{" and end with "}}"

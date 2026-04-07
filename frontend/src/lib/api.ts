@@ -114,9 +114,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
 
   // ── 401: try to refresh, then retry once ──────────────────────────────────
-  // Auth endpoints handle their own 401s (wrong password, invalid token) —
-  // never intercept them here or the real error message gets swallowed.
-  if (res.status === 401 && !path.startsWith("/auth/")) {
+  // Do not intercept login/register/refresh endpoints or the real error message gets swallowed.
+  const skipRefresh = ["/auth/login", "/auth/register", "/auth/refresh"].includes(path);
+  if (res.status === 401 && !skipRefresh) {
     const refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken) {
       const refreshRes = await fetch(`${BASE}/auth/refresh`, {
