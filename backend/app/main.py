@@ -29,6 +29,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.database import close_db, connect_db, create_indexes
 from app.db.elastic import close_es, connect_es
+from app.modules.admin.router import router as admin_router
 from app.modules.auth.router import router as auth_router
 from app.modules.generator.router import router as generator_router
 from app.modules.history.router import router as history_router
@@ -102,6 +103,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(generator_router)
 app.include_router(history_router)
+app.include_router(admin_router)
 
 
 # ── Health ────────────────────────────────────────────────────────────────────

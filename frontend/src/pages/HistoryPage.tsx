@@ -249,12 +249,42 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
+type DateRange = "" | "today" | "7d" | "30d" | "custom";
+
+function getDateParams(dateRange: DateRange, customFrom: string, customTo: string) {
+  const now = new Date();
+  if (dateRange === "today") {
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return { dateFrom: start.toISOString(), dateTo: undefined };
+  }
+  if (dateRange === "7d") {
+    const start = new Date(now);
+    start.setDate(start.getDate() - 7);
+    return { dateFrom: start.toISOString(), dateTo: undefined };
+  }
+  if (dateRange === "30d") {
+    const start = new Date(now);
+    start.setDate(start.getDate() - 30);
+    return { dateFrom: start.toISOString(), dateTo: undefined };
+  }
+  if (dateRange === "custom") {
+    const dateFrom = customFrom ? new Date(customFrom).toISOString() : undefined;
+    const dateTo = customTo ? new Date(customTo + "T23:59:59").toISOString() : undefined;
+    return { dateFrom, dateTo };
+  }
+  return { dateFrom: undefined, dateTo: undefined };
+}
+
 export default function HistoryPage() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [modeFilter, setModeFilter] = useState<"" | "pipeline" | "research">("");
+  const [dateRange, setDateRange] = useState<DateRange>("");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -268,9 +298,14 @@ export default function HistoryPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { const data = await historyApi.list(0, 50, favoritesOnly, debouncedSearch || undefined); setItems(data); }
-    finally { setLoading(false); }
-  }, [favoritesOnly, debouncedSearch]);
+    const { dateFrom, dateTo } = getDateParams(dateRange, customFrom, customTo);
+    try {
+      const data = await historyApi.list(0, 50, favoritesOnly, debouncedSearch || undefined, modeFilter || undefined, dateFrom, dateTo);
+      setItems(data);
+    } finally {
+      setLoading(false);
+    }
+  }, [favoritesOnly, debouncedSearch, modeFilter, dateRange, customFrom, customTo]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -288,6 +323,8 @@ export default function HistoryPage() {
     finally { setDeletingId(null); }
   };
 
+  const hasFilters = favoritesOnly || !!modeFilter || !!dateRange || !!debouncedSearch;
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -302,7 +339,8 @@ export default function HistoryPage() {
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               {items.length} record{items.length !== 1 ? "s" : ""}
-              {favoritesOnly ? " · ⭐ favorites" : ""}
+              {favoritesOnly ? " · favorites" : ""}
+              {modeFilter ? ` · ${modeFilter === "pipeline" ? "Standard" : "Research"}` : ""}
               {debouncedSearch ? ` · "${debouncedSearch}"` : ""}
             </p>
           </div>
@@ -335,6 +373,62 @@ export default function HistoryPage() {
             </button>
           )}
         </div>
+
+        {/* Filter row */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Mode filter */}
+          <select
+            value={modeFilter}
+            onChange={(e) => setModeFilter(e.target.value as "" | "pipeline" | "research")}
+            className="input text-sm py-1.5 pr-8 h-9 w-auto cursor-pointer"
+          >
+            <option value="">All modes</option>
+            <option value="pipeline">Standard</option>
+            <option value="research">Research</option>
+          </select>
+
+          {/* Date range filter */}
+          <select
+            value={dateRange}
+            onChange={(e) => { setDateRange(e.target.value as DateRange); setCustomFrom(""); setCustomTo(""); }}
+            className="input text-sm py-1.5 pr-8 h-9 w-auto cursor-pointer"
+          >
+            <option value="">All time</option>
+            <option value="today">Today</option>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="custom">Custom range</option>
+          </select>
+
+          {/* Custom date inputs */}
+          {dateRange === "custom" && (
+            <>
+              <input
+                type="date"
+                value={customFrom}
+                onChange={(e) => setCustomFrom(e.target.value)}
+                className="input text-sm py-1.5 h-9 w-auto cursor-pointer"
+              />
+              <span className="text-sm text-slate-400">–</span>
+              <input
+                type="date"
+                value={customTo}
+                onChange={(e) => setCustomTo(e.target.value)}
+                className="input text-sm py-1.5 h-9 w-auto cursor-pointer"
+              />
+            </>
+          )}
+
+          {/* Clear filters */}
+          {hasFilters && (
+            <button
+              className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex items-center gap-1 transition-colors"
+              onClick={() => { setFavoritesOnly(false); setModeFilter(""); setDateRange(""); setCustomFrom(""); setCustomTo(""); handleSearchChange(""); }}
+            >
+              <X className="w-3 h-3" /> Clear filters
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Loading */}
@@ -351,26 +445,18 @@ export default function HistoryPage() {
       {!loading && items.length === 0 && (
         <div className="card p-16 text-center">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-100 to-violet-100 dark:from-brand-900/30 dark:to-violet-900/30 flex items-center justify-center mx-auto mb-4">
-            {debouncedSearch
+            {hasFilters
               ? <Search className="w-7 h-7 text-slate-400" />
-              : favoritesOnly
-                ? <Star className="w-7 h-7 text-amber-400" />
-                : <FileText className="w-7 h-7 text-brand-400" />
+              : <FileText className="w-7 h-7 text-brand-400" />
             }
           </div>
           <p className="font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {debouncedSearch
-              ? `No results for "${debouncedSearch}"`
-              : favoritesOnly ? "No favorites yet" : "No test cases generated yet"}
+            {hasFilters ? "No matching records" : "No test cases generated yet"}
           </p>
           <p className="text-sm text-slate-400 dark:text-slate-500">
-            {debouncedSearch
-              ? "Try a different keyword."
-              : favoritesOnly
-                ? "Star a record to save it here."
-                : "Head to the Generator to create your first test suite."}
+            {hasFilters ? "Try adjusting your filters." : "Head to the Generator to create your first test suite."}
           </p>
-          {!favoritesOnly && !debouncedSearch && (
+          {!hasFilters && (
             <a href="/" className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-md shadow-brand-500/20 hover:shadow-lg transition-shadow">
               <Sparkles className="w-3.5 h-3.5" /> Start Generating
             </a>

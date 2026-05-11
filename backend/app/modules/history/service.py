@@ -85,10 +85,22 @@ class HistoryService:
         limit: int = 20,
         favorites_only: bool = False,
         search: str | None = None,
+        mode: str | None = None,
+        date_from: datetime | None = None,
+        date_to: datetime | None = None,
     ) -> list[HistoryItem]:
         query: dict = {"user_id": user_id}
         if favorites_only:
             query["is_favorite"] = True
+        if mode:
+            query["mode"] = mode
+        if date_from or date_to:
+            date_filter: dict = {}
+            if date_from:
+                date_filter["$gte"] = date_from
+            if date_to:
+                date_filter["$lte"] = date_to
+            query["created_at"] = date_filter
         if search and search.strip():
             try:
                 from app.modules.history.indexer import search_ids

@@ -1,0 +1,96 @@
+<mxfile host="app.diagrams.net" modified="2026-05-12T00:00:00.000Z" agent="Claude" version="21.0.0" type="device">
+  <diagram name="History Module — Class Diagram" id="class-history">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ══════════════════════════════════════════════════════════
+             HistoryItem  (14 fields → h = 26+8+(14*16+4) = 262)
+        ══════════════════════════════════════════════════════════ -->
+        <mxCell id="cls_hi" value="HistoryItem" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="280" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hi_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hi">
+          <mxGeometry y="26" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hi_attrs" value="+ id: str&#xa;+ requirement: str&#xa;+ provider: str&#xa;+ providers: list[str]&#xa;+ session_id: Optional[str]&#xa;+ mode: str&#xa;+ language: str&#xa;+ total_count: int&#xa;+ is_favorite: bool&#xa;+ created_at: datetime&#xa;+ input_tokens: int = 0&#xa;+ output_tokens: int = 0&#xa;+ total_tokens: int = 0&#xa;+ elapsed_seconds: Optional[float]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hi">
+          <mxGeometry y="34" width="280" height="236" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             HistoryDetail  (extends HistoryItem, 3 own fields → h=110)
+        ══════════════════════════════════════════════════════════ -->
+        <mxCell id="cls_hd" value="HistoryDetail" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="340" y="20" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hd_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hd">
+          <mxGeometry y="26" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hd_attrs" value="+ result: GenerationResult&#xa;+ all_results: Optional[list[GenerationResult]]&#xa;+ provider_stats: Optional[dict[str, dict]]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hd">
+          <mxGeometry y="34" width="280" height="86" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             GenerationResult  (from core, 6 fields → h=150)
+        ══════════════════════════════════════════════════════════ -->
+        <mxCell id="cls_gr" value="&lt;&lt;core&gt;&gt;&#xa;GenerationResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=40;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="340" y="180" width="280" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gr_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gr">
+          <mxGeometry y="40" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gr_attrs" value="+ test_suite_name: str&#xa;+ description: str&#xa;+ test_cases: list[Any]&#xa;+ total_count: int&#xa;+ provider: str&#xa;+ mode: str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gr">
+          <mxGeometry y="48" width="280" height="112" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             HistoryService  (1 field + 4 methods → h=200)
+        ══════════════════════════════════════════════════════════ -->
+        <mxCell id="cls_hs" value="HistoryService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="320" width="280" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hs">
+          <mxGeometry y="26" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_f" value="- _col: Collection" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hs">
+          <mxGeometry y="34" width="280" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hs">
+          <mxGeometry y="54" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_m" value="+ list(user_id, skip, limit, favorites_only, search): list[HistoryItem]&#xa;+ get(history_id, user_id): HistoryDetail&#xa;+ delete(history_id, user_id): None&#xa;+ toggle_favorite(history_id, user_id): HistoryItem&#xa;- _to_item(doc): HistoryItem&#xa;- _to_detail(doc): HistoryDetail" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hs">
+          <mxGeometry y="62" width="280" height="138" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             RELATIONSHIPS
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- HistoryDetail extends HistoryItem (inheritance) -->
+        <mxCell id="rel_hd_hi" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=0;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="cls_hd" target="cls_hi" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_inherit" value="extends" style="edgeLabel;fontSize=10;align=center;" vertex="1" connectable="0" parent="rel_hd_hi">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- HistoryDetail contains GenerationResult (composition) -->
+        <mxCell id="rel_hd_gr" value="1" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_hd" target="cls_gr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- HistoryService returns HistoryItem -->
+        <mxCell id="rel_hs_hi" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_hs" target="cls_hi" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- HistoryService returns HistoryDetail -->
+        <mxCell id="rel_hs_hd" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_hs" target="cls_hd" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

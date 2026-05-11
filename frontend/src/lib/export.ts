@@ -55,7 +55,7 @@ const priorityStyle = (priority: string, rowIndex: number, marked = false) => {
 };
 
 const passfailCellStyle = (rowIndex: number, marked = false) => ({
-  font: { sz: 10, color: { rgb: "94A3B8" } },
+  font: { sz: 10, color: { rgb: "94A3B8" }, bold: true }, // Mặc định màu Xám cho Pending
   fill: marked
     ? { patternType: "solid", fgColor: { rgb: MARKED_BG } }
     : rowIndex % 2 === 0
@@ -67,7 +67,7 @@ const passfailCellStyle = (rowIndex: number, marked = false) => ({
 
 // ── Column definitions ────────────────────────────────────────────────────────
 const COLUMNS: { key: string; label: string; wch: number; wrap?: boolean; isPassFail?: boolean }[] = [
-  { key: "PassFail", label: "Pass/Fail", wch: 10, isPassFail: true },
+  { key: "PassFail", label: "Pass/Fail", wch: 13, isPassFail: true },
   { key: "ID", label: "Test Case ID", wch: 14 },
   { key: "Title", label: "Title", wch: 42 },
   { key: "Priority", label: "Priority", wch: 10 },
@@ -77,10 +77,7 @@ const COLUMNS: { key: string; label: string; wch: number; wrap?: boolean; isPass
   { key: "Expected_Result", label: "Expected Result", wch: 48, wrap: true },
 ];
 
-// col index helper
-const COL = Object.fromEntries(COLUMNS.map((c, i) => [c.key, i]));
-
-// ── Sheet builder (styling only – no autofilter/validation here) ──────────────
+// ── Sheet builder ─────────────────────────────────────────────────────────────
 function buildSheet(
   cases: Record<string, unknown>[],
   sheetTitle: string,
@@ -89,7 +86,6 @@ function buildSheet(
   const ws: Record<string, unknown> = {};
   const totalCols = COLUMNS.length;
 
-  // Row 0: title banner
   for (let c = 0; c < totalCols; c++) {
     ws[XLSXStyle.utils.encode_cell({ r: 0, c })] =
       c === 0
@@ -98,21 +94,19 @@ function buildSheet(
   }
   ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } }];
 
-  // Row 1: headers
   COLUMNS.forEach((col, c) => {
     ws[XLSXStyle.utils.encode_cell({ r: 1, c })] = {
       v: col.label, t: "s", s: headerStyle,
     };
   });
 
-  // Rows 2…N: data
   cases.forEach((tc, i) => {
     const rowIndex = i;
     const tcId = String(tc.test_case_id ?? tc.id ?? "");
     const isMarked = markedIds.has(tcId);
 
     const dataRow: Record<string, string> = {
-      PassFail: "",
+      PassFail: "", // Mặc định rỗng (chờ người dùng chọn)
       ID: tcId,
       Title: String(tc.title ?? ""),
       Priority: String(tc.priority ?? ""),
@@ -140,45 +134,39 @@ function buildSheet(
   ws["!cols"] = COLUMNS.map((col) => ({ wch: col.wch }));
   ws["!rows"] = [{ hpt: 22 }, { hpt: 28 }, ...cases.map(() => ({ hpt: 54 }))];
 
+  // AutoFilter native cho Google Sheets
+  const lastColLetter = XLSXStyle.utils.encode_col(totalCols - 1);
+  ws["!autofilter"] = { ref: `A2:${lastColLetter}${cases.length + 2}` };
+
   return { ws, dataRows: cases.length };
 }
 
-// ── XML injection: add autoFilter + dataValidation into sheet XML ─────────────
+// ── Bản tối giản cho Google Sheets ────────────────────────────────────────────
 function injectSheetFeatures(xml: string, dataRows: number): string {
-  const lastDataRow = dataRows + 2; // Excel 1-indexed
+  const lastDataRow = dataRows + 2;
 
-  // 1. AutoFilter — chỉ hiện mũi tên ở Pass/Fail (col 0), Priority (col 3), Category (col 4)
-  //    hiddenButton="1" = ẨN mũi tên; omit hiddenButton => hiện mũi tên
-  const lastCol = XLSXStyle.utils.encode_col(COLUMNS.length - 1);
-  const autoFilterXml =
-    `<autoFilter ref="A2:${lastCol}2">` +
-    `<filterColumn colId="${COL.ID}" hiddenButton="1"/>` +
-    `<filterColumn colId="${COL.Title}" hiddenButton="1"/>` +
-    `<filterColumn colId="${COL.Preconditions}" hiddenButton="1"/>` +
-    `<filterColumn colId="${COL.Steps}" hiddenButton="1"/>` +
-    `<filterColumn colId="${COL.Expected_Result}" hiddenButton="1"/>` +
-    `</autoFilter>`;
+  // Google Sheets đọc rất tốt Conditional Formatting nếu nhét thẳng vào đây
+  const cfXml =
+    `<conditionalFormatting sqref="A3:A${lastDataRow}">` +
+    `<cfRule type="cellIs" dxfId="0" priority="1" operator="equal"><formula>"Pass"</formula></cfRule>` +
+    `<cfRule type="cellIs" dxfId="1" priority="2" operator="equal"><formula>"Fail"</formula></cfRule>` +
+    `</conditionalFormatting>`;
 
-  // 2. DataValidation dropdown cho cột Pass/Fail (col A = PassFail)
-  //    showDropDown="0" hoặc bỏ trống => HIỆN mũi tên dropdown (OOXML quirk)
+  // Dropdown list
   const dataValidXml =
     `<dataValidations count="1">` +
-    `<dataValidation type="list" sqref="A3:A${lastDataRow}" showDropDown="0" allowBlank="1">` +
-    `<formula1>&quot;Pass,Fail&quot;</formula1>` +
+    `<dataValidation type="list" sqref="A3:A${lastDataRow}" allowBlank="1" showDropDown="0">` +
+    `<formula1>"Pass,Fail,Pending"</formula1>` +
     `</dataValidation>` +
     `</dataValidations>`;
 
-  // Xoá autoFilter cũ nếu có (do xlsx-js-style có thể đã ghi)
-  let out = xml.replace(/<autoFilter[^>]*\/>/g, "")
-    .replace(/<autoFilter[\s\S]*?<\/autoFilter>/g, "");
-
-  // Xoá dataValidations cũ nếu có
+  // Dọn dẹp thẻ cũ do thư viện sinh ra
+  let out = xml.replace(/<conditionalFormatting[\s\S]*?<\/conditionalFormatting>/g, "");
   out = out.replace(/<dataValidations[\s\S]*?<\/dataValidations>/g, "");
 
-  // Chèn trước </worksheet>
-  out = out.replace("</worksheet>", autoFilterXml + dataValidXml + "</worksheet>");
-
-  return out;
+  // Vì Google Sheets dễ tính, ta đính kèm luôn vào sát cuối file, 
+  // không cần viết vòng lặp kiểm tra index rườm rà nữa!
+  return out.replace("</worksheet>", cfXml + dataValidXml + "</worksheet>");
 }
 
 // ── Public helpers ────────────────────────────────────────────────────────────
@@ -202,8 +190,6 @@ export async function downloadExcel(
   markedIds: Set<string> = new Set(),
 ) {
   const wb = XLSXStyle.utils.book_new();
-
-  // Track dataRows per sheet name for post-processing
   const sheetDataRows: Record<string, number> = {};
 
   const addSheet = (cases: Record<string, unknown>[], name: string, title: string) => {
@@ -233,12 +219,27 @@ export async function downloadExcel(
     });
   }
 
-  // Write xlsx to ArrayBuffer, then post-process XML via JSZip
   const buffer = XLSXStyle.write(wb, { bookType: "xlsx", type: "array" }) as ArrayBuffer;
-
   const zip = await JSZip.loadAsync(buffer);
-  const sheetNames = Object.keys(wb.Sheets);
 
+  // Vẫn phải bơm mã màu Xanh/Đỏ vào styles.xml để Google Sheets có màu hiển thị
+  const stylesPath = "xl/styles.xml";
+  let stylesXml = await zip.file(stylesPath)?.async("string");
+  if (stylesXml) {
+    stylesXml = stylesXml.replace(/<dxfs[^>]*>.*?<\/dxfs>/g, "").replace(/<dxfs[^>]*\/>/g, "");
+
+    const customDxfs =
+      `<dxfs count="2">` +
+      `<dxf><font><b/><color rgb="FF16A34A"/></font></dxf>` + // Pass: Xanh lá
+      `<dxf><font><b/><color rgb="FFDC2626"/></font></dxf>` + // Fail: Đỏ
+      `</dxfs>`;
+
+    // Với styles.xml, chèn đơn giản trước </styleSheet> là Google Sheets đọc tốt
+    stylesXml = stylesXml.replace("</styleSheet>", customDxfs + "</styleSheet>");
+    zip.file(stylesPath, stylesXml);
+  }
+
+  const sheetNames = Object.keys(wb.Sheets);
   await Promise.all(
     sheetNames.map(async (name, idx) => {
       const fileName = `xl/worksheets/sheet${idx + 1}.xml`;

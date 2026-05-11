@@ -143,6 +143,17 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     throw new Error("Your session has expired. Please sign in again.");
   }
 
+  if (res.status === 403) {
+    const body = await res.json().catch(() => ({ detail: "" }));
+    const detail: string = body.detail ?? "Forbidden";
+    if (detail.toLowerCase().includes("locked")) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      window.dispatchEvent(new Event("auth:expired"));
+    }
+    throw new Error(detail);
+  }
+
   if (!res.ok) throw await parseError(res);
   if (res.status === 204) return undefined as T;
   return res.json();
@@ -165,16 +176,40 @@ export const authApi = {
 
   me: () => request<UserResponse>("/auth/me"),
 
-  updateProfile: (full_name: string, email: string, img_url?: string) =>
+  updateProfile: (full_name: string, img_url?: string) =>
     request<UserResponse>("/auth/me", {
       method: "PUT",
-      body: JSON.stringify({ full_name, email, img_url: img_url || null }),
+      body: JSON.stringify({ full_name, img_url: img_url || null }),
     }),
 
   changePassword: (current_password: string, new_password: string) =>
     request<void>("/auth/me/password", {
       method: "PUT",
       body: JSON.stringify({ current_password, new_password }),
+    }),
+
+  verifyOTP: (email: string, otp: string) =>
+    request<void>("/auth/verify-otp", {
+      method: "POST",
+      body: JSON.stringify({ email, otp }),
+    }),
+
+  resendOTP: (email: string) =>
+    request<void>("/auth/resend-otp", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+
+  forgotPassword: (email: string) =>
+    request<void>("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+
+  resetPassword: (email: string, otp: string, new_password: string) =>
+    request<void>("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ email, otp, new_password }),
     }),
 };
 
@@ -200,13 +235,16 @@ export const generatorApi = {
 // ── History ───────────────────────────────────────────────────────────────────
 
 export const historyApi = {
-  list: (skip = 0, limit = 20, favoritesOnly = false, q?: string) => {
+  list: (skip = 0, limit = 20, favoritesOnly = false, q?: string, mode?: string, dateFrom?: string, dateTo?: string) => {
     const params = new URLSearchParams({
       skip: String(skip),
       limit: String(limit),
       favorites_only: String(favoritesOnly),
     });
     if (q && q.trim()) params.set("q", q.trim());
+    if (mode) params.set("mode", mode);
+    if (dateFrom) params.set("date_from", dateFrom);
+    if (dateTo) params.set("date_to", dateTo);
     return request<HistoryItem[]>(`/history?${params}`);
   },
 

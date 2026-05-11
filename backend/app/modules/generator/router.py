@@ -9,7 +9,7 @@ DELETE /generate/jobs/{id} → cancels a running job
 from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from app.core.dependencies import get_current_user, get_db
+from app.core.dependencies import check_rate_limit, get_current_user, get_db
 from app.modules.generator.schema import (
     GenerateRequest,
     JobStatusResponse,
@@ -29,6 +29,7 @@ def _svc(db: AsyncIOMotorDatabase = Depends(get_db)) -> GeneratorService:
     response_model=JobSubmittedResponse,
     status_code=202,
     summary="Submit a generation job — returns Job ID immediately",
+    dependencies=[Depends(check_rate_limit)],
 )
 async def submit(                               # ← async: required for asyncio.create_task()
     body: GenerateRequest,

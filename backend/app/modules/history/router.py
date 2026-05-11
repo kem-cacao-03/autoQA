@@ -7,6 +7,8 @@ DELETE /history/{id}             → delete one entry
 POST   /history/{id}/favorite    → toggle favourite flag
 """
 
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -27,6 +29,9 @@ async def list_history(
     limit: int = Query(20, ge=1, le=100),
     favorites_only: bool = Query(False),
     q: str | None = Query(None, description="Search by requirement text (case-insensitive)"),
+    mode: str | None = Query(None, description="Filter by mode: pipeline or research"),
+    date_from: datetime | None = Query(None),
+    date_to: datetime | None = Query(None),
     svc: HistoryService = Depends(_svc),
     current_user: dict = Depends(get_current_user),
 ):
@@ -36,6 +41,9 @@ async def list_history(
         limit=limit,
         favorites_only=favorites_only,
         search=q,
+        mode=mode,
+        date_from=date_from,
+        date_to=date_to,
     )
 
 

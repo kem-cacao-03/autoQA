@@ -1,0 +1,127 @@
+@startuml AutoQA-Gen Use Case Diagram
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecaseBorderThickness 1.5
+skinparam usecaseBackgroundColor #EEF4FF
+skinparam usecaseBorderColor #4A6FA5
+skinparam actorBorderColor #2C3E50
+skinparam actorFontSize 13
+skinparam usecaseFontSize 12
+skinparam ArrowColor #4A6FA5
+skinparam BackgroundColor #FAFAFA
+
+title AutoQA-Gen — Use Case Diagram
+
+' ─── ACTORS ───────────────────────────────────────────────────────────────────
+actor "Anonymous User"  as Anon   #LightGray
+actor "User"            as User   #LightBlue
+actor "Admin"           as Admin  #LightSalmon
+actor "LLM Providers\n(GPT-4o / Gemini / Claude)" as LLM #LightGreen
+
+' Admin inherits User capabilities
+Admin -up-|> User
+
+' ─── SYSTEM BOUNDARY ──────────────────────────────────────────────────────────
+rectangle "AutoQA-Gen System" {
+
+  ' ── AUTHENTICATION ──────────────────────────────────────────────────────────
+  package "Authentication" {
+    usecase "Register Account"       as UC_Register
+    usecase "Verify OTP\n(Email)"    as UC_VerifyOTP
+    usecase "Login"                  as UC_Login
+    usecase "Refresh Token"          as UC_Refresh
+    usecase "Forgot Password"        as UC_ForgotPwd
+    usecase "Reset Password"         as UC_ResetPwd
+  }
+
+  ' ── PROFILE ─────────────────────────────────────────────────────────────────
+  package "Profile Management" {
+    usecase "View Profile"           as UC_ViewProfile
+    usecase "Update Profile"         as UC_UpdateProfile
+    usecase "Change Password"        as UC_ChangePwd
+  }
+
+  ' ── TEST CASE GENERATION ────────────────────────────────────────────────────
+  package "Test Case Generation" {
+    usecase "Submit Generation Job"  as UC_Submit
+    usecase "Run Pipeline Mode\n(Gemini→GPT-4o→Claude)" as UC_Pipeline
+    usecase "Run Research Mode\n(Parallel Providers)"   as UC_Research
+    usecase "Poll Job Status"        as UC_Poll
+    usecase "Cancel Job"             as UC_Cancel
+    usecase "View Generation Result" as UC_Result
+  }
+
+  ' ── HISTORY ─────────────────────────────────────────────────────────────────
+  package "History Management" {
+    usecase "View History List"      as UC_HistList
+    usecase "Search History"         as UC_Search
+    usecase "View History Detail"    as UC_HistDetail
+    usecase "Toggle Favorite"        as UC_Favorite
+    usecase "Delete History Entry"   as UC_DeleteHist
+  }
+
+  ' ── ADMIN ───────────────────────────────────────────────────────────────────
+  package "Admin — User Management" {
+    usecase "View All Users"         as UC_ListUsers
+    usecase "Create User"            as UC_CreateUser
+    usecase "Lock / Unlock Account"  as UC_LockUser
+    usecase "Assign Role"            as UC_AssignRole
+    usecase "Set Rate Limit"         as UC_RateLimit
+    usecase "Delete User"            as UC_DeleteUser
+  }
+
+  package "Admin — System" {
+    usecase "View System Statistics" as UC_Stats
+    usecase "Configure Global\nSettings"            as UC_Settings
+  }
+}
+
+' ─── ANON ASSOCIATIONS ────────────────────────────────────────────────────────
+Anon --> UC_Register
+Anon --> UC_Login
+Anon --> UC_ForgotPwd
+Anon --> UC_ResetPwd
+
+' ─── USER ASSOCIATIONS ────────────────────────────────────────────────────────
+User --> UC_Login
+User --> UC_Refresh
+User --> UC_ViewProfile
+User --> UC_UpdateProfile
+User --> UC_ChangePwd
+User --> UC_Submit
+User --> UC_Poll
+User --> UC_Cancel
+User --> UC_Result
+User --> UC_HistList
+User --> UC_HistDetail
+User --> UC_Favorite
+User --> UC_DeleteHist
+User --> UC_Search
+
+' ─── ADMIN ASSOCIATIONS ───────────────────────────────────────────────────────
+Admin --> UC_ListUsers
+Admin --> UC_CreateUser
+Admin --> UC_LockUser
+Admin --> UC_AssignRole
+Admin --> UC_RateLimit
+Admin --> UC_DeleteUser
+Admin --> UC_Stats
+Admin --> UC_Settings
+
+' ─── LLM ASSOCIATIONS ─────────────────────────────────────────────────────────
+LLM --> UC_Pipeline
+LLM --> UC_Research
+
+' ─── INCLUDE / EXTEND ─────────────────────────────────────────────────────────
+UC_Register    ..> UC_VerifyOTP   : <<include>>
+UC_ForgotPwd   ..> UC_VerifyOTP   : <<include>>
+
+UC_Submit      ..> UC_Pipeline    : <<extend>>\n[mode=pipeline]
+UC_Submit      ..> UC_Research    : <<extend>>\n[mode=research]
+UC_Submit      ..> UC_Poll        : <<include>>
+UC_Result      ..> UC_HistDetail  : <<include>>
+
+UC_HistList    ..> UC_Search      : <<extend>>\n[query provided]
+
+@enduml

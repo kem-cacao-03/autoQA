@@ -8,7 +8,6 @@ export default function ProfilePage() {
 
   // Profile form
   const [fullName, setFullName] = useState(user?.full_name ?? "");
-  const [email, setEmail] = useState(user?.email ?? "");
   const [imgUrl, setImgUrl] = useState(user?.img_url ?? "");
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileMsg, setProfileMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -48,7 +47,7 @@ export default function ProfilePage() {
     setProfileMsg(null);
     setProfileLoading(true);
     try {
-      const updated = await authApi.updateProfile(fullName, email, imgUrl || undefined);
+      const updated = await authApi.updateProfile(fullName, imgUrl || undefined);
       updateUser(updated);
       setProfileMsg({ ok: true, text: "Profile updated successfully!" });
     } catch (err) {
@@ -68,7 +67,7 @@ export default function ProfilePage() {
     setPwLoading(true);
     try {
       await authApi.changePassword(currentPw, newPw);
-      await login(email, newPw);
+      await login(user!.email, newPw);
       setCurrentPw("");
       setNewPw("");
       setPwMsg({ ok: true, text: "Password changed successfully!" });
@@ -170,13 +169,9 @@ export default function ProfilePage() {
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               Email
             </label>
-            <input
-              type="email"
-              required
-              className="input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <p className="input bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 cursor-not-allowed select-none">
+              {user?.email}
+            </p>
           </div>
 
           {profileMsg && (

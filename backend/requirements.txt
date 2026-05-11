@@ -28,3 +28,4 @@ elasticsearch[async]==8.13.0
 python-dotenv==1.0.1
 httpx==0.28.1
 json-repair==0.30.3
+aiosmtplib==3.0.2

@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import VerifyOTPPage from "@/pages/VerifyOTPPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import GeneratorPage from "@/pages/GeneratorPage";
 import HistoryPage from "@/pages/HistoryPage";
 import ProfilePage from "@/pages/ProfilePage";
@@ -104,6 +106,8 @@ export default function App() {
             path="/register"
             element={user ? <Navigate to="/" replace /> : <RegisterPage />}
           />
+          <Route path="/verify-otp" element={<VerifyOTPPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

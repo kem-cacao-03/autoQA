@@ -1,0 +1,263 @@
+<mxfile host="app.diagrams.net" modified="2026-05-12T00:00:00.000Z" agent="Claude" version="21.0.0" type="device">
+  <diagram name="General Class Diagram" id="class-general">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ══════════════════════════════════════════════════════════
+             MODULE SWIMLANES
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- CORE MODULE -->
+        <mxCell id="mod_core" value="&lt;&lt;module&gt;&gt; Core" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;container=1;collapsible=0;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="660" y="20" width="290" height="230" as="geometry" />
+        </mxCell>
+
+        <!-- AUTH MODULE -->
+        <mxCell id="mod_auth" value="&lt;&lt;module&gt;&gt; Auth" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="300" height="550" as="geometry" />
+        </mxCell>
+
+        <!-- GENERATOR MODULE -->
+        <mxCell id="mod_gen" value="&lt;&lt;module&gt;&gt; Generator" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="340" y="310" width="290" height="620" as="geometry" />
+        </mxCell>
+
+        <!-- HISTORY MODULE -->
+        <mxCell id="mod_hist" value="&lt;&lt;module&gt;&gt; History" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="660" y="310" width="620" height="310" as="geometry" />
+        </mxCell>
+
+        <!-- ADMIN MODULE -->
+        <mxCell id="mod_admin" value="&lt;&lt;module&gt;&gt; Admin" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="20" width="300" height="620" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             CORE CLASSES
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- GenerationResult -->
+        <mxCell id="cls_gr" value="GenerationResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="mod_core">
+          <mxGeometry x="25" y="50" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gr_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gr">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gr_attrs" value="+ test_suite_name: str&#xa;+ description: str&#xa;+ test_cases: list[Any]&#xa;+ total_count: int&#xa;+ provider: str&#xa;+ mode: str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gr">
+          <mxGeometry y="34" width="240" height="126" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             AUTH CLASSES
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- UserInDB -->
+        <mxCell id="cls_uid" value="UserInDB" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="mod_auth">
+          <mxGeometry x="25" y="50" width="250" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_uid_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_uid">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_uid_attrs" value="- id: str&#xa;- email: str&#xa;- full_name: str&#xa;- hashed_password: str&#xa;- role: str&#xa;- is_active: bool&#xa;- rate_limit: int&#xa;- rate_used: int&#xa;- created_at: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_uid">
+          <mxGeometry y="34" width="250" height="186" as="geometry" />
+        </mxCell>
+
+        <!-- AuthService -->
+        <mxCell id="cls_as" value="AuthService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="mod_auth">
+          <mxGeometry x="25" y="290" width="250" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_as_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_as">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_as_f" value="- _col: Collection&#xa;- _db: Database" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_as">
+          <mxGeometry y="34" width="250" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_as_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_as">
+          <mxGeometry y="70" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_as_m" value="+ register(body): UserResponse&#xa;+ login(body): TokenResponse&#xa;+ refresh(body): TokenResponse&#xa;+ verify_otp(body): None&#xa;+ forgot_password(body): None&#xa;+ update_profile(id, body): UserResponse&#xa;+ change_password(id, body): None" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_as">
+          <mxGeometry y="78" width="250" height="152" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             GENERATOR CLASSES
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- GeneratorService -->
+        <mxCell id="cls_gs" value="GeneratorService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="mod_gen">
+          <mxGeometry x="20" y="50" width="250" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gs_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gs">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gs_f" value="- _db: Database" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gs">
+          <mxGeometry y="34" width="250" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gs_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gs">
+          <mxGeometry y="54" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gs_m" value="+ submit(req, user_id): JobSubmittedResponse&#xa;+ get_status(job_id): JobStatusResponse&#xa;+ cancel(job_id): dict&#xa;- _require_keys(providers): None" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gs">
+          <mxGeometry y="62" width="250" height="88" as="geometry" />
+        </mxCell>
+
+        <!-- JobState -->
+        <mxCell id="cls_jstate" value="JobState" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="mod_gen">
+          <mxGeometry x="20" y="230" width="250" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstate_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_jstate">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstate_attrs" value="+ job_id: str&#xa;+ status: JobStatus&#xa;+ progress: int&#xa;+ result: GenerationResult | None&#xa;+ research_results: list | None&#xa;+ usage: list[StageUsage] | None&#xa;+ error: str | None&#xa;+ created_at: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_jstate">
+          <mxGeometry y="34" width="250" height="156" as="geometry" />
+        </mxCell>
+
+        <!-- GenerateRequest -->
+        <mxCell id="cls_greq" value="GenerateRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="mod_gen">
+          <mxGeometry x="20" y="450" width="250" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_greq_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_greq">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_greq_attrs" value="+ requirement: str&#xa;+ mode: GenerationMode&#xa;+ language: str&#xa;+ providers: list[LLMProvider]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_greq">
+          <mxGeometry y="34" width="250" height="106" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             HISTORY CLASSES
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- HistoryItem -->
+        <mxCell id="cls_hi" value="HistoryItem" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="mod_hist">
+          <mxGeometry x="20" y="50" width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hi_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hi">
+          <mxGeometry y="26" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hi_attrs" value="+ id: str&#xa;+ requirement: str&#xa;+ provider: str&#xa;+ mode: str&#xa;+ language: str&#xa;+ total_count: int&#xa;+ is_favorite: bool&#xa;+ input_tokens: int&#xa;+ output_tokens: int&#xa;+ elapsed_seconds: float | None&#xa;+ created_at: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hi">
+          <mxGeometry y="34" width="230" height="186" as="geometry" />
+        </mxCell>
+
+        <!-- HistoryDetail -->
+        <mxCell id="cls_hd" value="HistoryDetail" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="mod_hist">
+          <mxGeometry x="270" y="50" width="230" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hd_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hd">
+          <mxGeometry y="26" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hd_attrs" value="+ result: GenerationResult&#xa;+ all_results: list | None&#xa;+ provider_stats: dict | None" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hd">
+          <mxGeometry y="34" width="230" height="96" as="geometry" />
+        </mxCell>
+
+        <!-- HistoryService -->
+        <mxCell id="cls_hs" value="HistoryService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="mod_hist">
+          <mxGeometry x="390" y="50" width="210" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hs">
+          <mxGeometry y="26" width="210" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_f" value="- _col: Collection" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hs">
+          <mxGeometry y="34" width="210" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_hs">
+          <mxGeometry y="54" width="210" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_hs_m" value="+ list(user_id,...): list[HistoryItem]&#xa;+ get(id, user_id): HistoryDetail&#xa;+ delete(id, user_id): None&#xa;+ toggle_favorite(id, user_id): HistoryItem" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_hs">
+          <mxGeometry y="62" width="210" height="118" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             ADMIN CLASSES
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- AdminService -->
+        <mxCell id="cls_admsvc" value="AdminService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="mod_admin">
+          <mxGeometry x="25" y="50" width="250" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_f" value="- _col: Collection&#xa;- _settings: Collection" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="34" width="250" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="70" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_m" value="+ list_users(...): AdminUserListResponse&#xa;+ create_user(body): AdminUserResponse&#xa;+ set_status(id, body): AdminUserResponse&#xa;+ set_role(id, body): AdminUserResponse&#xa;+ set_rate_limit(id, body): AdminUserResponse&#xa;+ delete_user(id): None&#xa;+ get_stats(): AdminStats&#xa;+ get_settings(): GlobalSettings&#xa;+ update_settings(body): GlobalSettings" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="78" width="250" height="182" as="geometry" />
+        </mxCell>
+
+        <!-- AdminStats -->
+        <mxCell id="cls_admstats" value="AdminStats" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="mod_admin">
+          <mxGeometry x="25" y="340" width="250" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admstats_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admstats">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admstats_attrs" value="+ total: int&#xa;+ active: int&#xa;+ locked: int&#xa;+ admins: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admstats">
+          <mxGeometry y="34" width="250" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- GlobalSettings -->
+        <mxCell id="cls_gsettings" value="GlobalSettings" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="mod_admin">
+          <mxGeometry x="25" y="480" width="250" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gsettings_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gsettings">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gsettings_attrs" value="+ default_rate_limit: int&#xa;+ registration_open: bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gsettings">
+          <mxGeometry y="34" width="250" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- RELATIONSHIPS (cross-module edges use parent="1") -->
+
+        <!-- AuthService uses UserInDB (within Auth) -->
+        <mxCell id="rel_as_uid" value="uses" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" source="cls_as" target="cls_uid" parent="mod_auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GeneratorService creates JobState (within Generator) -->
+        <mxCell id="rel_gs_jstate" value="creates" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_gs" target="cls_jstate" parent="mod_gen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- HistoryDetail extends HistoryItem (within History) -->
+        <mxCell id="rel_hd_hi" value="" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=0;strokeWidth=1.5;fontSize=10;" edge="1" source="cls_hd" target="cls_hi" parent="mod_hist">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GeneratorService produces GenerationResult (cross-module: gen to core) -->
+        <mxCell id="rel_gs_gr" value="produces" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;strokeColor=#d79b00;" edge="1" source="cls_gs" target="cls_gr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- JobState contains GenerationResult (cross-module: gen to core) -->
+        <mxCell id="rel_jstate_gr" value="contains" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;strokeColor=#d79b00;" edge="1" source="cls_jstate" target="cls_gr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- HistoryDetail contains GenerationResult (cross-module: hist to core) -->
+        <mxCell id="rel_hd_gr" value="contains" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;strokeColor=#d79b00;" edge="1" source="cls_hd" target="cls_gr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AdminService manages UserInDB (cross-module: admin to auth) -->
+        <mxCell id="rel_admsvc_uid" value="manages" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;strokeColor=#9673a6;" edge="1" source="cls_admsvc" target="cls_uid" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GenerateRequest input to GeneratorService (within gen) -->
+        <mxCell id="rel_greq_gs" value="input" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_greq" target="cls_gs" parent="mod_gen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- HistoryService returns HistoryItem (within hist) -->
+        <mxCell id="rel_hs_hi" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_hs" target="cls_hi" parent="mod_hist">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

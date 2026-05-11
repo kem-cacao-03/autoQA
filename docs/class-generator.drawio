@@ -1,0 +1,247 @@
+<mxfile host="app.diagrams.net" modified="2026-05-12T00:00:00.000Z" agent="Claude" version="21.0.0" type="device">
+  <diagram name="Generator Module — Class Diagram" id="class-generator">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 1 — Enumerations
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- LLMProvider (enum, 3 values → h=90) -->
+        <mxCell id="cls_llmprov" value="&lt;&lt;enumeration&gt;&gt;&#xa;LLMProvider" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=40;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_llmprov_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_llmprov">
+          <mxGeometry y="40" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_llmprov_vals" value="OPENAI&#xa;GEMINI&#xa;CLAUDE" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;fontSize=11;rotatable=0;" vertex="1" parent="cls_llmprov">
+          <mxGeometry y="48" width="180" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- GenerationMode (enum, 2 values → h=80) -->
+        <mxCell id="cls_genmode" value="&lt;&lt;enumeration&gt;&gt;&#xa;GenerationMode" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=40;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="140" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_genmode_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_genmode">
+          <mxGeometry y="40" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_genmode_vals" value="PIPELINE&#xa;RESEARCH" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;fontSize=11;rotatable=0;" vertex="1" parent="cls_genmode">
+          <mxGeometry y="48" width="180" height="42" as="geometry" />
+        </mxCell>
+
+        <!-- JobStatus (enum, 5 values → h=120) -->
+        <mxCell id="cls_jstatus" value="&lt;&lt;enumeration&gt;&gt;&#xa;JobStatus" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=40;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="250" width="180" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstatus_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_jstatus">
+          <mxGeometry y="40" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstatus_vals" value="PENDING&#xa;RUNNING&#xa;SUCCESS&#xa;FAILURE&#xa;CANCELLED" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=10;fontSize=11;rotatable=0;" vertex="1" parent="cls_jstatus">
+          <mxGeometry y="48" width="180" height="82" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 2 — Request + Supporting Schemas
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- GenerateRequest (4 fields → h=110) -->
+        <mxCell id="cls_greq" value="GenerateRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="230" y="20" width="230" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_greq_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_greq">
+          <mxGeometry y="26" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_greq_attrs" value="+ requirement: str (min=10)&#xa;+ mode: GenerationMode&#xa;+ language: str = &quot;English&quot;&#xa;+ providers: list[LLMProvider]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_greq">
+          <mxGeometry y="34" width="230" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- StageUsage (6 fields → h=140) -->
+        <mxCell id="cls_susage" value="StageUsage" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="230" y="150" width="230" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_susage_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_susage">
+          <mxGeometry y="26" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_susage_attrs" value="+ stage: str&#xa;+ provider: str&#xa;+ prompt_tokens: int&#xa;+ completion_tokens: int&#xa;+ total_tokens: int&#xa;+ duration_seconds: Optional[float]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_susage">
+          <mxGeometry y="34" width="230" height="106" as="geometry" />
+        </mxCell>
+
+        <!-- ResearchProviderResult (5 fields → h=120) -->
+        <mxCell id="cls_rpres" value="ResearchProviderResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="230" y="310" width="230" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_rpres_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_rpres">
+          <mxGeometry y="26" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_rpres_attrs" value="+ provider: str&#xa;+ result: Optional[GenerationResult]&#xa;+ error: Optional[str]&#xa;+ success: bool&#xa;+ usage: Optional[StageUsage]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_rpres">
+          <mxGeometry y="34" width="230" height="86" as="geometry" />
+        </mxCell>
+
+        <!-- CallResult (dataclass, 3 fields + 1 property → h=130) -->
+        <mxCell id="cls_callres" value="&lt;&lt;dataclass&gt;&gt;&#xa;CallResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=40;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="230" y="450" width="230" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_callres_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_callres">
+          <mxGeometry y="40" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_callres_f" value="+ text: str&#xa;+ prompt_tokens: int = 0&#xa;+ completion_tokens: int = 0" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_callres">
+          <mxGeometry y="48" width="230" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_callres_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_callres">
+          <mxGeometry y="100" width="230" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_callres_m" value="@property total_tokens: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_callres">
+          <mxGeometry y="108" width="230" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 3 — Response Schemas
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- JobSubmittedResponse (3 fields → h=90) -->
+        <mxCell id="cls_jsubmit" value="JobSubmittedResponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="490" y="20" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jsubmit_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_jsubmit">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jsubmit_attrs" value="+ job_id: str&#xa;+ status: JobStatus = PENDING&#xa;+ message: str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_jsubmit">
+          <mxGeometry y="34" width="240" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- JobStatusResponse (10 fields → h=200) -->
+        <mxCell id="cls_jstatresp" value="JobStatusResponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="490" y="130" width="240" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstatresp_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_jstatresp">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstatresp_attrs" value="+ job_id: str&#xa;+ status: JobStatus&#xa;+ progress: int (0–100)&#xa;+ result: Optional[GenerationResult]&#xa;+ history_id: Optional[str]&#xa;+ research_results: Optional[list]&#xa;+ elapsed_seconds: Optional[float]&#xa;+ usage: Optional[list[StageUsage]]&#xa;+ error: Optional[str]&#xa;+ created_at: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_jstatresp">
+          <mxGeometry y="34" width="240" height="166" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 4 — Dataclass + Service
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- JobState (dataclass, 11 fields → h=240) -->
+        <mxCell id="cls_jstate" value="&lt;&lt;dataclass&gt;&gt;&#xa;JobState" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=40;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="770" y="20" width="250" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstate_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_jstate">
+          <mxGeometry y="40" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_jstate_attrs" value="+ job_id: str&#xa;+ status: JobStatus = PENDING&#xa;+ progress: int = 0&#xa;+ result: GenerationResult | None&#xa;+ history_id: str | None&#xa;+ research_results: list | None&#xa;+ elapsed_seconds: float | None&#xa;+ usage: list[StageUsage] | None&#xa;+ error: str | None&#xa;+ created_at: datetime&#xa;+ _started_at: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_jstate">
+          <mxGeometry y="48" width="250" height="202" as="geometry" />
+        </mxCell>
+
+        <!-- GeneratorService (1 field + 4 methods → h=170) -->
+        <mxCell id="cls_gensvc" value="GeneratorService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="770" y="290" width="250" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gensvc_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gensvc">
+          <mxGeometry y="26" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gensvc_f" value="- _db: Database" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gensvc">
+          <mxGeometry y="34" width="250" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gensvc_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gensvc">
+          <mxGeometry y="54" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gensvc_m" value="+ submit(req, user_id): JobSubmittedResponse&#xa;+ get_status(job_id): JobStatusResponse&#xa;+ cancel(job_id): dict&#xa;- _require_keys(providers): None" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gensvc">
+          <mxGeometry y="62" width="250" height="108" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 5 — Core (imported)
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- GenerationResult (from core, 6 fields → h=150) -->
+        <mxCell id="cls_gr" value="&lt;&lt;core&gt;&gt;&#xa;GenerationResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=40;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="130" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gr_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gr">
+          <mxGeometry y="40" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gr_attrs" value="+ test_suite_name: str&#xa;+ description: str&#xa;+ test_cases: list[Any]&#xa;+ total_count: int&#xa;+ provider: str&#xa;+ mode: str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gr">
+          <mxGeometry y="48" width="240" height="112" as="geometry" />
+        </mxCell>
+
+        <!-- RELATIONSHIPS -->
+
+        <!-- GenerateRequest uses LLMProvider -->
+        <mxCell id="rel_greq_llm" value="uses" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_greq" target="cls_llmprov" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GenerateRequest uses GenerationMode -->
+        <mxCell id="rel_greq_gm" value="uses" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_greq" target="cls_genmode" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- JobState uses JobStatus -->
+        <mxCell id="rel_jstate_jstatus" value="uses" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_jstate" target="cls_jstatus" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- JobState contains GenerationResult (0..1) -->
+        <mxCell id="rel_jstate_gr" value="0..1" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_jstate" target="cls_gr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- JobState contains StageUsage list -->
+        <mxCell id="rel_jstate_su" value="0..*" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_jstate" target="cls_susage" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- JobState contains ResearchProviderResult list -->
+        <mxCell id="rel_jstate_rpr" value="0..*" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_jstate" target="cls_rpres" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ResearchProviderResult contains GenerationResult -->
+        <mxCell id="rel_rpres_gr" value="0..1" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_rpres" target="cls_gr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ResearchProviderResult contains StageUsage -->
+        <mxCell id="rel_rpres_su" value="0..1" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=0;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_rpres" target="cls_susage" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GeneratorService creates JobState -->
+        <mxCell id="rel_gensvc_jstate" value="creates" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_gensvc" target="cls_jstate" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GeneratorService returns JobSubmittedResponse -->
+        <mxCell id="rel_gensvc_jsubmit" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_gensvc" target="cls_jsubmit" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GeneratorService returns JobStatusResponse -->
+        <mxCell id="rel_gensvc_jstatresp" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_gensvc" target="cls_jstatresp" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- GenerateRequest input to GeneratorService -->
+        <mxCell id="rel_greq_gensvc" value="&lt;&lt;input&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_greq" target="cls_gensvc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- JobStatusResponse uses JobStatus -->
+        <mxCell id="rel_jstatresp_jstatus" value="uses" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_jstatresp" target="cls_jstatus" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- JobStatusResponse contains GenerationResult -->
+        <mxCell id="rel_jstatresp_gr" value="0..1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_jstatresp" target="cls_gr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -4,12 +4,16 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.dependencies import get_current_user, get_db
 from app.modules.auth.schema import (
     ChangePasswordRequest,
+    ForgotPasswordRequest,
     RefreshRequest,
+    ResendOTPRequest,
+    ResetWithOTPRequest,
     TokenResponse,
     UpdateProfileRequest,
     UserLogin,
     UserRegister,
     UserResponse,
+    VerifyOTPRequest,
 )
 from app.modules.auth.service import AuthService
 
@@ -56,3 +60,23 @@ async def change_password(
     svc: AuthService = Depends(_svc),
 ):
     await svc.change_password(current_user["_id"], body)
+
+
+@router.post("/verify-otp", status_code=status.HTTP_204_NO_CONTENT)
+async def verify_otp(body: VerifyOTPRequest, svc: AuthService = Depends(_svc)):
+    await svc.verify_otp(body)
+
+
+@router.post("/resend-otp", status_code=status.HTTP_204_NO_CONTENT)
+async def resend_otp(body: ResendOTPRequest, svc: AuthService = Depends(_svc)):
+    await svc.resend_otp(body)
+
+
+@router.post("/forgot-password", status_code=status.HTTP_204_NO_CONTENT)
+async def forgot_password(body: ForgotPasswordRequest, svc: AuthService = Depends(_svc)):
+    await svc.forgot_password(body)
+
+
+@router.post("/reset-password", status_code=status.HTTP_204_NO_CONTENT)
+async def reset_password(body: ResetWithOTPRequest, svc: AuthService = Depends(_svc)):
+    await svc.reset_password_otp(body)

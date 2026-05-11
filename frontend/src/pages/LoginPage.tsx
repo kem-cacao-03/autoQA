@@ -103,12 +103,11 @@ export default function LoginPage() {
           </form>
 
           <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
-            Don't have an account?{" "}
             <Link
-              to="/register"
+              to="/forgot-password"
               className="text-brand-600 dark:text-brand-400 font-medium hover:underline"
             >
-              Sign up
+              Forgot your password?
             </Link>
           </p>
         </div>

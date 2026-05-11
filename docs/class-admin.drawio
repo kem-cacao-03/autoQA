@@ -1,0 +1,191 @@
+<mxfile host="app.diagrams.net" modified="2026-05-12T00:00:00.000Z" agent="Claude" version="21.0.0" type="device">
+  <diagram name="Admin Module — Class Diagram" id="class-admin">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 1 — Service + Settings
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- AdminService  (2 fields + 10 methods → h = 26+8+36+8+164 = 242) -->
+        <mxCell id="cls_admsvc" value="AdminService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="280" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="26" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_f" value="- _col: Collection&#xa;- _settings: Collection" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="34" width="280" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_sep2" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="70" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admsvc_m" value="+ get_stats(): AdminStats&#xa;+ list_users(skip,limit,q,role,is_active): AdminUserListResponse&#xa;+ create_user(body): AdminUserResponse&#xa;+ set_status(user_id, body, admin_id): AdminUserResponse&#xa;+ set_rate_limit(user_id, body): AdminUserResponse&#xa;+ set_role(user_id, body, admin_id): AdminUserResponse&#xa;+ delete_user(user_id, admin_id): None&#xa;+ get_settings(): GlobalSettings&#xa;+ update_settings(body): GlobalSettings&#xa;- _get_or_404(user_id): dict&#xa;- _to_response(doc): AdminUserResponse" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admsvc">
+          <mxGeometry y="78" width="280" height="212" as="geometry" />
+        </mxCell>
+
+        <!-- GlobalSettings  (2 fields → h=70) -->
+        <mxCell id="cls_gsettings" value="GlobalSettings" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="20" y="330" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gsettings_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_gsettings">
+          <mxGeometry y="26" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_gsettings_attrs" value="+ default_rate_limit: int = 0&#xa;+ registration_open: bool = True" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_gsettings">
+          <mxGeometry y="34" width="280" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- UpdateSettingsRequest  (2 fields → h=70) -->
+        <mxCell id="cls_updset" value="UpdateSettingsRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="420" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_updset_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_updset">
+          <mxGeometry y="26" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_updset_attrs" value="+ default_rate_limit: int (ge=0)&#xa;+ registration_open: bool = True" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_updset">
+          <mxGeometry y="34" width="280" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 2 — User Response Schemas + Stats
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- AdminUserResponse  (10 fields → h=200) -->
+        <mxCell id="cls_admuserresp" value="AdminUserResponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="20" width="260" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admuserresp_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admuserresp">
+          <mxGeometry y="26" width="260" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admuserresp_attrs" value="+ id: str&#xa;+ email: EmailStr&#xa;+ full_name: str&#xa;+ img_url: Optional[str]&#xa;+ role: str&#xa;+ is_active: bool&#xa;+ rate_limit: int&#xa;+ rate_used: int&#xa;+ rate_reset_at: Optional[datetime]&#xa;+ created_at: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admuserresp">
+          <mxGeometry y="34" width="260" height="176" as="geometry" />
+        </mxCell>
+
+        <!-- AdminUserListResponse  (2 fields → h=70) -->
+        <mxCell id="cls_admuserlist" value="AdminUserListResponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="250" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admuserlist_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admuserlist">
+          <mxGeometry y="26" width="260" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admuserlist_attrs" value="+ total: int&#xa;+ items: list[AdminUserResponse]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admuserlist">
+          <mxGeometry y="34" width="260" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- AdminStats  (4 fields → h=110) -->
+        <mxCell id="cls_admstats" value="AdminStats" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="340" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admstats_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_admstats">
+          <mxGeometry y="26" width="260" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_admstats_attrs" value="+ total: int&#xa;+ active: int&#xa;+ locked: int&#xa;+ admins: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_admstats">
+          <mxGeometry y="34" width="260" height="76" as="geometry" />
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════════
+             COLUMN 3 — Request Schemas
+        ══════════════════════════════════════════════════════════ -->
+
+        <!-- CreateUserRequest  (5 fields → h=120) -->
+        <mxCell id="cls_creatuser" value="CreateUserRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="640" y="20" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_creatuser_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_creatuser">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_creatuser_attrs" value="+ email: EmailStr&#xa;+ password: str (min=8)&#xa;+ full_name: str (min=2)&#xa;+ role: str = &quot;user&quot;&#xa;+ rate_limit: int = 0" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_creatuser">
+          <mxGeometry y="34" width="240" height="86" as="geometry" />
+        </mxCell>
+
+        <!-- SetStatusRequest  (1 field → h=60) -->
+        <mxCell id="cls_setstat" value="SetStatusRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="640" y="160" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_setstat_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_setstat">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_setstat_attrs" value="+ is_active: bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_setstat">
+          <mxGeometry y="34" width="240" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- SetRateLimitRequest  (1 field → h=60) -->
+        <mxCell id="cls_setratelim" value="SetRateLimitRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="640" y="240" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_setratelim_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_setratelim">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_setratelim_attrs" value="+ rate_limit: int (ge=0)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_setratelim">
+          <mxGeometry y="34" width="240" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- SetRoleRequest  (1 field → h=60) -->
+        <mxCell id="cls_setrolerq" value="SetRoleRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=26;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="640" y="320" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_setrolerq_sep" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="cls_setrolerq">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="cls_setrolerq_attrs" value="+ role: str (&quot;user&quot; | &quot;admin&quot;)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=11;rotatable=0;" vertex="1" parent="cls_setrolerq">
+          <mxGeometry y="34" width="240" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- RELATIONSHIPS -->
+
+        <!-- AdminService returns AdminUserResponse -->
+        <mxCell id="rel_admsvc_aur" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_admsvc" target="cls_admuserresp" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AdminService returns AdminUserListResponse -->
+        <mxCell id="rel_admsvc_aulr" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_admsvc" target="cls_admuserlist" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AdminService returns AdminStats -->
+        <mxCell id="rel_admsvc_stats" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_admsvc" target="cls_admstats" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AdminService returns GlobalSettings -->
+        <mxCell id="rel_admsvc_gset" value="returns" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_admsvc" target="cls_gsettings" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AdminUserListResponse contains AdminUserResponse (0..*) -->
+        <mxCell id="rel_aulr_aur" value="0..*" style="edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_admuserlist" target="cls_admuserresp" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- CreateUserRequest input to AdminService -->
+        <mxCell id="rel_creatuser_admsvc" value="&lt;&lt;input&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_creatuser" target="cls_admsvc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SetStatusRequest input to AdminService -->
+        <mxCell id="rel_setstat_admsvc" value="&lt;&lt;input&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_setstat" target="cls_admsvc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SetRateLimitRequest input to AdminService -->
+        <mxCell id="rel_setratelim_admsvc" value="&lt;&lt;input&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_setratelim" target="cls_admsvc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SetRoleRequest input to AdminService -->
+        <mxCell id="rel_setrolerq_admsvc" value="&lt;&lt;input&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_setrolerq" target="cls_admsvc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- UpdateSettingsRequest input to AdminService -->
+        <mxCell id="rel_updset_admsvc" value="&lt;&lt;input&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=10;" edge="1" source="cls_updset" target="cls_admsvc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

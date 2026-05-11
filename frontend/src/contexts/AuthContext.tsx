@@ -34,12 +34,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  // Listen for token expiry signal from the API layer
+  // Listen for token expiry / account-locked signal from the API layer
   useEffect(() => {
     const handleExpired = () => setUser(null);
     window.addEventListener("auth:expired", handleExpired);
     return () => window.removeEventListener("auth:expired", handleExpired);
   }, []);
+
+  // Poll every 30 s to detect remote lock or deletion while the user is active
+  useEffect(() => {
+    if (!user) return;
+    const id = setInterval(() => {
+      authApi.me().catch(() => {/* auth:expired event handles logout */});
+    }, 5_000);
+    return () => clearInterval(id);
+  }, [user]);
 
   const login = useCallback(async (email: string, password: string) => {
     const tokens = await authApi.login(email, password);
@@ -52,9 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (email: string, password: string, full_name: string) => {
       await authApi.register(email, password, full_name);
-      await login(email, password);
+      // Do NOT auto-login — user must verify email first.
     },
-    [login]
+    []
   );
 
   const logout = useCallback(() => {
