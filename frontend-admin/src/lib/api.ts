@@ -31,6 +31,7 @@ export interface CreateUserPayload {
 export interface GlobalSettings {
   default_rate_limit: number;
   registration_open: boolean;
+  rate_reset_hour: number;
 }
 
 export interface AdminStats {
@@ -130,6 +131,6 @@ export const adminApi = {
   getSettings: () =>
     request<GlobalSettings>("GET", "/admin/settings"),
 
-  updateSettings: (payload: { default_rate_limit: number; registration_open: boolean }) =>
+  updateSettings: (payload: { default_rate_limit: number; registration_open: boolean; rate_reset_hour: number }) =>
     request<GlobalSettings>("PATCH", "/admin/settings", payload),
 };

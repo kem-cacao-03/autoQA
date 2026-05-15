@@ -445,9 +445,10 @@ export default function UsersPage() {
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Settings state
-  const [settings, setSettings] = useState<GlobalSettings>({ default_rate_limit: 0, registration_open: true });
+  const [settings, setSettings] = useState<GlobalSettings>({ default_rate_limit: 0, registration_open: true, rate_reset_hour: 0 });
   const [settingsInput, setSettingsInput] = useState(0);
   const [regOpen, setRegOpen] = useState(true);
+  const [resetHour, setResetHour] = useState(0);
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
 
@@ -479,6 +480,7 @@ export default function UsersPage() {
       setSettings(s);
       setSettingsInput(s.default_rate_limit);
       setRegOpen(s.registration_open);
+      setResetHour(s.rate_reset_hour ?? 0);
     } catch { /* non-critical */ }
   }
 
@@ -525,12 +527,18 @@ export default function UsersPage() {
   }
 
   const settingsChanged =
-    settingsInput !== settings.default_rate_limit || regOpen !== settings.registration_open;
+    settingsInput !== settings.default_rate_limit ||
+    regOpen !== settings.registration_open ||
+    resetHour !== (settings.rate_reset_hour ?? 0);
 
   async function handleSaveSettings() {
     setSettingsSaving(true);
     try {
-      const s = await adminApi.updateSettings({ default_rate_limit: settingsInput, registration_open: regOpen });
+      const s = await adminApi.updateSettings({
+        default_rate_limit: settingsInput,
+        registration_open: regOpen,
+        rate_reset_hour: resetHour,
+      });
       setSettings(s);
       setSettingsSaved(true);
       setTimeout(() => setSettingsSaved(false), 2000);
@@ -638,6 +646,22 @@ export default function UsersPage() {
                 <span className={`w-2 h-2 rounded-full ${regOpen ? "bg-emerald-500 dark:bg-emerald-400" : "bg-rose-500 dark:bg-rose-400"}`} />
                 {regOpen ? "Open" : "Closed"}
               </button>
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">
+                Rate reset hour <span className="text-slate-400 dark:text-slate-600">(UTC · 0–23)</span>
+              </label>
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  min={0}
+                  max={23}
+                  value={resetHour}
+                  onChange={(e) => setResetHour(Math.min(23, Math.max(0, Number(e.target.value))))}
+                  className="w-20 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-brand-500"
+                />
+                <span className="text-xs text-slate-400 dark:text-slate-500">:00 UTC</span>
+              </div>
             </div>
             <button
               onClick={handleSaveSettings}

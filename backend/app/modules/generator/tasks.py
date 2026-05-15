@@ -111,11 +111,26 @@ async def _call_with_fallback(
     prompt: str,
     system: str,
 ) -> tuple[llm_caller.CallResult, str]:
-    """Try each provider in order; return (CallResult, provider_used) on first success."""
+    """Try each provider in order; return (CallResult, provider_used) on first success.
+
+    Truncated output is treated as failure so the next provider is tried — passing
+    an incomplete test suite to the next pipeline stage would silently corrupt results.
+    """
     last_exc: Exception | None = None
     for provider in providers:
         try:
-            return await llm_caller.call(provider, prompt, system), provider
+            cr = await llm_caller.call(provider, prompt, system)
+            if cr.truncated:
+                logger.warning(
+                    "[PIPELINE] %s output truncated (%d tokens), trying next provider",
+                    provider, cr.completion_tokens,
+                )
+                last_exc = RuntimeError(
+                    f"{provider} output was truncated at {cr.completion_tokens:,} tokens "
+                    "(hit max_output_tokens limit)"
+                )
+                continue
+            return cr, provider
         except Exception as exc:
             logger.warning("[PIPELINE] %s failed, trying next provider: %s", provider, exc)
             last_exc = exc
@@ -352,8 +367,11 @@ async def run_research(
     _update(job_id, status=JobStatus.RUNNING, progress=5)
     try:
         providers: list[LLMProvider] = req.providers or list(LLMProvider)
+        completed = 0
+        total = len(providers)
 
         async def _call_one(provider: LLMProvider) -> ResearchProviderResult:
+            nonlocal completed
             try:
                 t_start = datetime.now(timezone.utc)
                 cr = await llm_caller.call(
@@ -366,22 +384,33 @@ async def run_research(
                 )
                 duration = (datetime.now(timezone.utc) - t_start).total_seconds()
                 logger.info(
-                    "[RESEARCH]  %-8s input=%6d  output=%5d  total=%6d  (%.1fs)",
-                    provider.value, cr.prompt_tokens, cr.completion_tokens, cr.total_tokens, duration,
+                    "[RESEARCH]  %-8s input=%6d  output=%5d  total=%6d  (%.1fs)%s",
+                    provider.value, cr.prompt_tokens, cr.completion_tokens, cr.total_tokens,
+                    duration, "  [TRUNCATED]" if cr.truncated else "",
                 )
                 result = _build_result(
                     llm_caller.parse_json(cr.text),
                     provider=provider.value,
                     req=req,
                 )
+                warning = (
+                    f"Output was truncated at {cr.completion_tokens:,} tokens (model limit reached). "
+                    "The test suite shown may be incomplete."
+                    if cr.truncated else None
+                )
+                completed += 1
+                _update(job_id, progress=5 + int(90 * completed / total))
                 return ResearchProviderResult(
                     provider=provider.value,
                     result=result,
+                    warning=warning,
                     success=True,
                     usage=_make_stage_usage(provider.value, provider.value, cr, duration),
                 )
             except Exception as exc:
                 logger.warning("[RESEARCH]  %s FAILED: %s", provider.value, exc)
+                completed += 1
+                _update(job_id, progress=5 + int(90 * completed / total))
                 return ResearchProviderResult(
                     provider=provider.value,
                     error=str(exc),

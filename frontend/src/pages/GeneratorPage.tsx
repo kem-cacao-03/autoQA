@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent } from "react";
 import {
   Zap, FlaskConical,
-  Clock, Cpu, CheckCircle, XCircle,
+  Clock, Cpu, CheckCircle, XCircle, AlertTriangle,
   Loader2, FileJson, FileSpreadsheet,
   Globe, Sparkles, X, ListChecks, Square,
 } from "lucide-react";
@@ -10,6 +10,7 @@ import {
   type ResearchProviderResult, type StageUsage,
 } from "@/lib/api";
 import { useGenerator, type QueueItem } from "@/contexts/GeneratorContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { TestCaseCard } from "@/components/TestCaseCard";
 import { FilenameDialog } from "@/components/FilenameDialog";
 import { ProviderLogo } from "@/components/ProviderLogo";
@@ -343,6 +344,8 @@ function QueuePanel({ queue, dismiss, cancel, clearDone }: {
 
 export default function GeneratorPage() {
   const { queue, submit, cancel, dismiss, clearDone } = useGenerator();
+  const { user } = useAuth();
+  const isRateLimited = !!user && user.rate_limit > 0 && user.rate_used >= user.rate_limit;
 
   // ── Form state (fully local — resets after each submit) ──────────────────
   const [mode, setMode]             = useState<GenerationMode>("pipeline");
@@ -540,8 +543,25 @@ export default function GeneratorPage() {
             </select>
           </div>
 
+          {/* Rate limit warning */}
+          {isRateLimited && (
+            <div className="flex items-start gap-2 rounded-lg bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-700 px-3 py-2.5 text-rose-700 dark:text-rose-400 text-xs">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>
+                Daily request limit reached ({user!.rate_used}/{user!.rate_limit}). Resets at{" "}
+                {user!.rate_reset_at
+                  ? new Date(user!.rate_reset_at).toLocaleString(undefined, { hour: "2-digit", minute: "2-digit", timeZoneName: "short" })
+                  : "midnight UTC"}.
+              </span>
+            </div>
+          )}
+
           {/* Submit */}
-          <button type="submit" className="btn-primary w-full py-3.5 text-base">
+          <button
+            type="submit"
+            disabled={isRateLimited}
+            className="btn-primary w-full py-3.5 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Zap className="w-5 h-5" /> Generate Test Cases
           </button>
         </div>
@@ -642,8 +662,10 @@ export default function GeneratorPage() {
                         </span>
                       )}
                       {r.success
-                        ? <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                        : <XCircle    className="w-3.5 h-3.5 text-rose-500" />
+                        ? r.warning
+                          ? <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                          : <CheckCircle   className="w-3.5 h-3.5 text-emerald-500" />
+                        : <XCircle        className="w-3.5 h-3.5 text-rose-500" />
                       }
                     </button>
                   );
@@ -653,6 +675,12 @@ export default function GeneratorPage() {
                 <div key={r.provider} className="p-4 space-y-3 animate-fade-in">
                   {r.success && r.result ? (
                     <>
+                      {r.warning && (
+                        <div className="flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-3 py-2.5 text-amber-700 dark:text-amber-400 text-xs">
+                          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                          <span>{r.warning}</span>
+                        </div>
+                      )}
                       {(() => {
                         const tabCategories = getCategories(r.result.test_cases as Record<string, unknown>[]);
                         const tabItems      = sortCases(filterCases(r.result.test_cases as Record<string, unknown>[], categoryFilter), sort);

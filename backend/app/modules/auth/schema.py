@@ -21,6 +21,9 @@ class UserResponse(BaseModel):
     full_name: str
     img_url: Optional[str] = None
     role: str = "user"
+    rate_limit: int = 0
+    rate_used: int = 0
+    rate_reset_at: Optional[datetime] = None
     created_at: datetime
 
 

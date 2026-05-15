@@ -203,7 +203,6 @@ export function GeneratorProvider({ children }: { children: ReactNode }) {
         ...qi, jobId: submitted.job_id, status: "running",
       }));
     } catch (err) {
-      // Submission failed — mark the item as failure in-place (visible in queue)
       setQueue(q => q.map(qi => qi.queueId !== queueId ? qi : {
         ...qi,
         status: "failure",

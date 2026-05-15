@@ -148,6 +148,9 @@ class AuthService:
             full_name=user_doc["full_name"],
             img_url=user_doc.get("img_url"),
             role=user_doc.get("role", "user"),
+            rate_limit=user_doc.get("rate_limit", 0),
+            rate_used=user_doc.get("rate_used", 0),
+            rate_reset_at=user_doc.get("rate_reset_at"),
             created_at=user_doc["created_at"],
         )
 

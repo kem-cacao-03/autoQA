@@ -141,18 +141,15 @@ function buildSheet(
   return { ws, dataRows: cases.length };
 }
 
-// ── Bản tối giản cho Google Sheets ────────────────────────────────────────────
 function injectSheetFeatures(xml: string, dataRows: number): string {
   const lastDataRow = dataRows + 2;
 
-  // Google Sheets đọc rất tốt Conditional Formatting nếu nhét thẳng vào đây
   const cfXml =
     `<conditionalFormatting sqref="A3:A${lastDataRow}">` +
     `<cfRule type="cellIs" dxfId="0" priority="1" operator="equal"><formula>"Pass"</formula></cfRule>` +
     `<cfRule type="cellIs" dxfId="1" priority="2" operator="equal"><formula>"Fail"</formula></cfRule>` +
     `</conditionalFormatting>`;
 
-  // Dropdown list
   const dataValidXml =
     `<dataValidations count="1">` +
     `<dataValidation type="list" sqref="A3:A${lastDataRow}" allowBlank="1" showDropDown="0">` +
@@ -160,13 +157,19 @@ function injectSheetFeatures(xml: string, dataRows: number): string {
     `</dataValidation>` +
     `</dataValidations>`;
 
-  // Dọn dẹp thẻ cũ do thư viện sinh ra
   let out = xml.replace(/<conditionalFormatting[\s\S]*?<\/conditionalFormatting>/g, "");
   out = out.replace(/<dataValidations[\s\S]*?<\/dataValidations>/g, "");
 
-  // Vì Google Sheets dễ tính, ta đính kèm luôn vào sát cuối file, 
-  // không cần viết vòng lặp kiểm tra index rườm rà nữa!
-  return out.replace("</worksheet>", cfXml + dataValidXml + "</worksheet>");
+  // OOXML schema requires conditionalFormatting + dataValidations to appear BEFORE
+  // printOptions/pageMargins/pageSetup. Inserting right before </worksheet> puts them
+  // after those elements, which Excel rejects (Google Sheets is lenient and ignores order).
+  const insertionPoint =
+    out.includes("<printOptions") ? "<printOptions" :
+    out.includes("<pageMargins")  ? "<pageMargins"  :
+    out.includes("<pageSetup")    ? "<pageSetup"    :
+    "</worksheet>";
+
+  return out.replace(insertionPoint, cfXml + dataValidXml + insertionPoint);
 }
 
 // ── Public helpers ────────────────────────────────────────────────────────────
@@ -234,8 +237,13 @@ export async function downloadExcel(
       `<dxf><font><b/><color rgb="FFDC2626"/></font></dxf>` + // Fail: Đỏ
       `</dxfs>`;
 
-    // Với styles.xml, chèn đơn giản trước </styleSheet> là Google Sheets đọc tốt
-    stylesXml = stylesXml.replace("</styleSheet>", customDxfs + "</styleSheet>");
+    // dxfs must appear before extLst/colors in styleSheet per OOXML schema.
+    const stylesInsertPoint =
+      stylesXml.includes("<extLst")     ? "<extLst"     :
+      stylesXml.includes("<colors")     ? "<colors"     :
+      stylesXml.includes("<tableStyles") ? "<tableStyles" :
+      "</styleSheet>";
+    stylesXml = stylesXml.replace(stylesInsertPoint, customDxfs + stylesInsertPoint);
     zip.file(stylesPath, stylesXml);
   }
 

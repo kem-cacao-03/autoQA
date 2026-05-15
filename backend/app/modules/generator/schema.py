@@ -93,6 +93,7 @@ class ResearchProviderResult(BaseModel):
     provider: str
     result: Optional[GenerationResult] = None
     error: Optional[str] = None
+    warning: Optional[str] = None
     success: bool
     usage: Optional[StageUsage] = None
 

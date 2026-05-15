@@ -215,7 +215,7 @@ class HistoryService:
 
         new_value = not doc.get("is_favorite", False)
         await self._col.update_one(
-            {"_id": history_id},
+            {"_id": history_id, "user_id": user_id},
             {"$set": {"is_favorite": new_value}},
         )
         doc["is_favorite"] = new_value

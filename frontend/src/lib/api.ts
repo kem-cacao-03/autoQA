@@ -36,6 +36,7 @@ export interface ResearchProviderResult {
   provider: string;
   result?: GenerationResult;
   error?: string;
+  warning?: string;
   success: boolean;
   usage?: StageUsage;
 }
@@ -57,6 +58,39 @@ export interface JobStatusResponse {
   usage?: StageUsage[];
   error?: string;
   created_at: string;
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+
+export interface AdminUserResponse {
+  id: string;
+  email: string;
+  full_name: string;
+  img_url?: string;
+  role: string;
+  is_active: boolean;
+  rate_limit: number;
+  rate_used: number;
+  rate_reset_at?: string;
+  created_at: string;
+}
+
+export interface AdminUserListResponse {
+  total: number;
+  items: AdminUserResponse[];
+}
+
+export interface AdminStats {
+  total: number;
+  active: number;
+  locked: number;
+  admins: number;
+}
+
+export interface GlobalSettings {
+  default_rate_limit: number;
+  registration_open: boolean;
+  rate_reset_hour: number;
 }
 
 export interface HistoryItem {
@@ -91,6 +125,10 @@ export interface UserResponse {
   email: string;
   full_name: string;
   img_url?: string;
+  role: string;
+  rate_limit: number;
+  rate_used: number;
+  rate_reset_at?: string;
   created_at: string;
 }
 
@@ -108,7 +146,7 @@ async function parseError(res: Response): Promise<Error> {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
   const headers = { ...buildHeaders(token), ...(options.headers as Record<string, string>) };
 
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
@@ -117,7 +155,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   // Do not intercept login/register/refresh endpoints or the real error message gets swallowed.
   const skipRefresh = ["/auth/login", "/auth/register", "/auth/refresh"].includes(path);
   if (res.status === 401 && !skipRefresh) {
-    const refreshToken = localStorage.getItem("refresh_token");
+    const refreshToken = sessionStorage.getItem("refresh_token");
     if (refreshToken) {
       const refreshRes = await fetch(`${BASE}/auth/refresh`, {
         method: "POST",
@@ -126,8 +164,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
       });
       if (refreshRes.ok) {
         const tokens = await refreshRes.json() as { access_token: string; refresh_token: string };
-        localStorage.setItem("access_token", tokens.access_token);
-        localStorage.setItem("refresh_token", tokens.refresh_token);
+        sessionStorage.setItem("access_token", tokens.access_token);
+        sessionStorage.setItem("refresh_token", tokens.refresh_token);
         // Retry original request with fresh token
         const retryHeaders = { ...buildHeaders(tokens.access_token), ...(options.headers as Record<string, string>) };
         const retry = await fetch(`${BASE}${path}`, { ...options, headers: retryHeaders });
@@ -137,8 +175,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
       }
     }
     // Refresh unavailable or failed — clear session and notify the app
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("refresh_token");
     window.dispatchEvent(new Event("auth:expired"));
     throw new Error("Your session has expired. Please sign in again.");
   }
@@ -147,8 +185,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const body = await res.json().catch(() => ({ detail: "" }));
     const detail: string = body.detail ?? "Forbidden";
     if (detail.toLowerCase().includes("locked")) {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
       window.dispatchEvent(new Event("auth:expired"));
     }
     throw new Error(detail);
@@ -230,6 +268,55 @@ export const generatorApi = {
       `/generate/jobs/${jobId}`,
       { method: "DELETE" },
     ),
+};
+
+// ── Admin API ─────────────────────────────────────────────────────────────────
+
+export const adminApi = {
+  getStats: () => request<AdminStats>("/admin/stats"),
+
+  listUsers: (skip = 0, limit = 20, q?: string, role?: string, is_active?: boolean) => {
+    const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+    if (q && q.trim()) params.set("q", q.trim());
+    if (role) params.set("role", role);
+    if (is_active !== undefined) params.set("is_active", String(is_active));
+    return request<AdminUserListResponse>(`/admin/users?${params}`);
+  },
+
+  createUser: (email: string, password: string, full_name: string, role: "user" | "admin", rate_limit: number) =>
+    request<AdminUserResponse>("/admin/users", {
+      method: "POST",
+      body: JSON.stringify({ email, password, full_name, role, rate_limit }),
+    }),
+
+  setStatus: (userId: string, is_active: boolean) =>
+    request<AdminUserResponse>(`/admin/users/${userId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ is_active }),
+    }),
+
+  setRateLimit: (userId: string, rate_limit: number) =>
+    request<AdminUserResponse>(`/admin/users/${userId}/rate-limit`, {
+      method: "PATCH",
+      body: JSON.stringify({ rate_limit }),
+    }),
+
+  setRole: (userId: string, role: "user" | "admin") =>
+    request<AdminUserResponse>(`/admin/users/${userId}/role`, {
+      method: "PATCH",
+      body: JSON.stringify({ role }),
+    }),
+
+  deleteUser: (userId: string) =>
+    request<void>(`/admin/users/${userId}`, { method: "DELETE" }),
+
+  getSettings: () => request<GlobalSettings>("/admin/settings"),
+
+  updateSettings: (settings: GlobalSettings) =>
+    request<GlobalSettings>("/admin/settings", {
+      method: "PATCH",
+      body: JSON.stringify(settings),
+    }),
 };
 
 // ── History ───────────────────────────────────────────────────────────────────

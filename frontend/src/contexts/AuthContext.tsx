@@ -23,14 +23,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount — restore session from localStorage
+  // On mount — restore session from sessionStorage
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    const token = sessionStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
     authApi
       .me()
       .then(setUser)
-      .catch(() => localStorage.removeItem("access_token"))
+      .catch(() => sessionStorage.removeItem("access_token"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -41,19 +41,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("auth:expired", handleExpired);
   }, []);
 
-  // Poll every 30 s to detect remote lock or deletion while the user is active
+  // Poll every 30 s to keep user data fresh (rate_used, rate_reset_at, lock status, etc.)
   useEffect(() => {
     if (!user) return;
-    const id = setInterval(() => {
-      authApi.me().catch(() => {/* auth:expired event handles logout */});
-    }, 5_000);
-    return () => clearInterval(id);
+    const refresh = () => authApi.me().then(setUser).catch(() => {/* auth:expired event handles logout */});
+    const id = setInterval(refresh, 30_000);
+    window.addEventListener("focus", refresh);
+    return () => { clearInterval(id); window.removeEventListener("focus", refresh); };
   }, [user]);
 
   const login = useCallback(async (email: string, password: string) => {
     const tokens = await authApi.login(email, password);
-    localStorage.setItem("access_token", tokens.access_token);
-    localStorage.setItem("refresh_token", tokens.refresh_token);
+    sessionStorage.setItem("access_token", tokens.access_token);
+    sessionStorage.setItem("refresh_token", tokens.refresh_token);
     const me = await authApi.me();
     setUser(me);
   }, []);
@@ -67,8 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("refresh_token");
     setUser(null);
   }, []);
 

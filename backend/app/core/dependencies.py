@@ -71,15 +71,23 @@ async def check_rate_limit(
     user_id: str = current_user["_id"]
     col = db["users"]
 
+    # Read configured reset hour from global settings
+    settings_doc = await db["settings"].find_one({"_id": "global"})
+    reset_hour: int = (settings_doc or {}).get("rate_reset_hour", 0)
+
     # Reset counter if the daily window has expired
     reset_at = current_user.get("rate_reset_at")
     if reset_at is None or (isinstance(reset_at, datetime) and reset_at < now):
-        next_midnight = (now + timedelta(days=1)).replace(
-            hour=0, minute=0, second=0, microsecond=0
+        next_reset = (now + timedelta(days=1)).replace(
+            hour=reset_hour, minute=0, second=0, microsecond=0
         )
+        # If the next occurrence of reset_hour is still later today, use today's
+        today_reset = now.replace(hour=reset_hour, minute=0, second=0, microsecond=0)
+        if today_reset > now:
+            next_reset = today_reset
         await col.update_one(
             {"_id": user_id},
-            {"$set": {"rate_used": 0, "rate_reset_at": next_midnight}},
+            {"$set": {"rate_used": 0, "rate_reset_at": next_reset}},
         )
 
     # Atomically increment only if still under limit
@@ -88,7 +96,8 @@ async def check_rate_limit(
         {"$inc": {"rate_used": 1}},
     )
     if updated is None:
+        reset_label = f"{reset_hour:02d}:00 UTC"
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=f"Daily request limit of {rate_limit} reached. Resets at midnight UTC.",
+            detail=f"Daily request limit of {rate_limit} reached. Resets at {reset_label}.",
         )

@@ -62,6 +62,7 @@ export default function Navbar() {
             <>
               {navLink("/", "Generator", generatorLoading)}
               {navLink("/history", "History")}
+              {user.role === "admin" && navLink("/admin", "Admin")}
             </>
           )}
         </div>
@@ -137,6 +138,7 @@ export default function Navbar() {
           {navLink("/", "Generator", generatorLoading)}
           {navLink("/history", "History")}
           {navLink("/profile", "Profile")}
+          {user.role === "admin" && navLink("/admin", "Admin")}
           <button
             onClick={() => { logout(); setMenuOpen(false); }}
             className="w-full text-left flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"

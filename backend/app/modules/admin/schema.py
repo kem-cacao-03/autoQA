@@ -52,8 +52,10 @@ class SetRoleRequest(BaseModel):
 class GlobalSettings(BaseModel):
     default_rate_limit: int = Field(default=0, ge=0)
     registration_open: bool = True
+    rate_reset_hour: int = Field(default=0, ge=0, le=23)
 
 
 class UpdateSettingsRequest(BaseModel):
     default_rate_limit: int = Field(ge=0)
     registration_open: bool = True
+    rate_reset_hour: int = Field(default=0, ge=0, le=23)

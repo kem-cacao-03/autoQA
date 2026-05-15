@@ -10,6 +10,7 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import GeneratorPage from "@/pages/GeneratorPage";
 import HistoryPage from "@/pages/HistoryPage";
 import ProfilePage from "@/pages/ProfilePage";
+import AdminPage from "@/pages/AdminPage";
 
 // ── Error Boundary ────────────────────────────────────────────────────────────
 
@@ -94,6 +95,16 @@ export default function App() {
               <ProtectedRoute>
                 <ErrorBoundary>
                   <ProfilePage />
+                </ErrorBoundary>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ErrorBoundary>
+                  <AdminPage />
                 </ErrorBoundary>
               </ProtectedRoute>
             }

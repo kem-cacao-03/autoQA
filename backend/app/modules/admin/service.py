@@ -3,7 +3,7 @@ AdminService — CRUD operations on the users collection, accessible only to adm
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import HTTPException, status
@@ -169,20 +169,41 @@ class AdminService:
         return GlobalSettings(
             default_rate_limit=doc.get("default_rate_limit", 0),
             registration_open=doc.get("registration_open", True),
+            rate_reset_hour=doc.get("rate_reset_hour", 0),
         )
 
     async def update_settings(self, body: UpdateSettingsRequest) -> GlobalSettings:
+        old_doc = await self._settings.find_one({"_id": SETTINGS_ID})
+        old_reset_hour: int = (old_doc or {}).get("rate_reset_hour", 0)
+
         await self._settings.update_one(
             {"_id": SETTINGS_ID},
             {"$set": {
                 "default_rate_limit": body.default_rate_limit,
                 "registration_open": body.registration_open,
+                "rate_reset_hour": body.rate_reset_hour,
             }},
             upsert=True,
         )
+
+        # Propagate new reset hour to all rate-limited users who have a future reset_at
+        if body.rate_reset_hour != old_reset_hour:
+            now = datetime.utcnow()
+            today_reset = now.replace(
+                hour=body.rate_reset_hour, minute=0, second=0, microsecond=0
+            )
+            next_reset = today_reset if today_reset > now else (
+                today_reset + timedelta(days=1)
+            )
+            await self._col.update_many(
+                {"rate_limit": {"$gt": 0}, "rate_reset_at": {"$gt": now}},
+                {"$set": {"rate_reset_at": next_reset}},
+            )
+
         return GlobalSettings(
             default_rate_limit=body.default_rate_limit,
             registration_open=body.registration_open,
+            rate_reset_hour=body.rate_reset_hour,
         )
 
     # ── Delete ────────────────────────────────────────────────────────────────

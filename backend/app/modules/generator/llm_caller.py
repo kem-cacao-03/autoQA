@@ -51,6 +51,7 @@ class CallResult:
     text: str
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    truncated: bool = False
 
     @property
     def total_tokens(self) -> int:
@@ -162,10 +163,23 @@ async def _gemini(prompt: str, system: str) -> CallResult:
         # finish_reason == 2 means MAX_TOKENS in the Gemini protobuf enum.
         fr_value = getattr(finish_reason, "value", finish_reason)
         if fr_value == 2:
-            raise RuntimeError(
-                f"Gemini ({settings.GEMINI_MODEL}) hit max_output_tokens — the generated "
-                "test suite is too large for this model. Switch to a model with a higher "
-                "output limit (e.g. gemini-2.5-flash) via GEMINI_MODEL in .env."
+            meta = getattr(resp, "usage_metadata", None)
+            partial_text = ""
+            try:
+                partial_text = resp.text
+            except Exception:
+                pass
+            logger.warning(
+                "Gemini (%s) hit max_output_tokens (%d tokens used). "
+                "Salvaging partial output via json_repair.",
+                settings.GEMINI_MODEL,
+                getattr(meta, "candidates_token_count", 0) or 0,
+            )
+            return CallResult(
+                text=partial_text,
+                prompt_tokens=getattr(meta, "prompt_token_count", 0) or 0,
+                completion_tokens=getattr(meta, "candidates_token_count", 0) or 0,
+                truncated=True,
             )
 
     meta = getattr(resp, "usage_metadata", None)
@@ -182,7 +196,7 @@ async def _claude(prompt: str, system: str) -> CallResult:
     client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
     msg = await client.messages.create(
         model=settings.CLAUDE_MODEL,
-        max_tokens=16384,  # claude-sonnet-4-5 supports up to 64K output; 16K covers large test suites
+        max_tokens=49152,  # claude-sonnet-4-6 supports up to 64K output
         system=system,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.3,
@@ -204,6 +218,7 @@ async def _claude(prompt: str, system: str) -> CallResult:
             text=partial_text,
             prompt_tokens=msg.usage.input_tokens,
             completion_tokens=msg.usage.output_tokens,
+            truncated=True,
         )
 
     return CallResult(
