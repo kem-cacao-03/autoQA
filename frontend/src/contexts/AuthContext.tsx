@@ -11,10 +11,12 @@ import { authApi, type UserResponse } from "@/lib/api";
 interface AuthContextValue {
   user: UserResponse | null;
   loading: boolean;
+  kickNotice: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, full_name: string) => Promise<void>;
   logout: () => void;
   updateUser: (user: UserResponse) => void;
+  dismissKickNotice: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -22,6 +24,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [kickNotice, setKickNotice] = useState<string | null>(null);
 
   // On mount — restore session from sessionStorage
   useEffect(() => {
@@ -34,9 +37,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  // Listen for token expiry / account-locked signal from the API layer
+  // Listen for token expiry / account-locked signal from the API layer.
+  // Do NOT set user=null immediately — show a modal first so the user sees why.
   useEffect(() => {
-    const handleExpired = () => setUser(null);
+    const handleExpired = (e: Event) => {
+      const reason = (e as CustomEvent<{ reason: string }>).detail?.reason
+        ?? "Your session has ended. Please sign in again.";
+      setKickNotice(reason);
+    };
     window.addEventListener("auth:expired", handleExpired);
     return () => window.removeEventListener("auth:expired", handleExpired);
   }, []);
@@ -72,8 +80,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const dismissKickNotice = useCallback(() => {
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("refresh_token");
+    setKickNotice(null);
+    setUser(null);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser: setUser }}>
+    <AuthContext.Provider value={{ user, loading, kickNotice, login, register, logout, updateUser: setUser, dismissKickNotice }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Component, type ReactNode, type ErrorInfo } from "react";
+import { AlertTriangle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -10,7 +11,6 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import GeneratorPage from "@/pages/GeneratorPage";
 import HistoryPage from "@/pages/HistoryPage";
 import ProfilePage from "@/pages/ProfilePage";
-import AdminPage from "@/pages/AdminPage";
 
 // ── Error Boundary ────────────────────────────────────────────────────────────
 
@@ -62,10 +62,29 @@ class ErrorBoundary extends Component<
 // ── App ───────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const { user } = useAuth();
+  const { user, kickNotice, dismissKickNotice } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
+      {/* Forced-logout modal — appears before redirect for all kick reasons */}
+      {kickNotice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 space-y-5 animate-slide-up">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0 mt-0.5">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800 dark:text-slate-100">Session Notice</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{kickNotice}</p>
+              </div>
+            </div>
+            <button onClick={dismissKickNotice} className="btn-primary w-full">
+              OK
+            </button>
+          </div>
+        </div>
+      )}
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 max-w-6xl">
         <Routes>
@@ -95,16 +114,6 @@ export default function App() {
               <ProtectedRoute>
                 <ErrorBoundary>
                   <ProfilePage />
-                </ErrorBoundary>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAdmin>
-                <ErrorBoundary>
-                  <AdminPage />
                 </ErrorBoundary>
               </ProtectedRoute>
             }

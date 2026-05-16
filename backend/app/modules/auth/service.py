@@ -108,9 +108,14 @@ class AuthService:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Email not verified. Please check your inbox.",
             )
+        session_id = str(uuid.uuid4())
+        await self._col.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"session_id": session_id}},
+        )
         return TokenResponse(
-            access_token=create_access_token(user["_id"]),
-            refresh_token=create_refresh_token(user["_id"]),
+            access_token=create_access_token(user["_id"], session_id),
+            refresh_token=create_refresh_token(user["_id"], session_id),
         )
 
     # ── Refresh ──────────────────────────────────────────────────────────────
@@ -121,6 +126,7 @@ class AuthService:
             if payload.get("type") != "refresh":
                 raise ValueError
             user_id: str = payload["sub"]
+            token_session_id: str = payload.get("sid", "")
         except (JWTError, ValueError):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -133,9 +139,24 @@ class AuthService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User not found.",
             )
+        if not user.get("is_active", True):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is locked. Contact your administrator.",
+            )
+        if user.get("session_id") != token_session_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Session expired. Please log in again.",
+            )
+        session_id = str(uuid.uuid4())
+        await self._col.update_one(
+            {"_id": user_id},
+            {"$set": {"session_id": session_id}},
+        )
         return TokenResponse(
-            access_token=create_access_token(user_id),
-            refresh_token=create_refresh_token(user_id),
+            access_token=create_access_token(user_id, session_id),
+            refresh_token=create_refresh_token(user_id, session_id),
         )
 
     # ── Me ───────────────────────────────────────────────────────────────────
@@ -179,7 +200,10 @@ class AuthService:
             )
         await self._col.update_one(
             {"_id": user_id},
-            {"$set": {"hashed_password": hash_password(body.new_password)}},
+            {
+                "$set": {"hashed_password": hash_password(body.new_password)},
+                "$unset": {"session_id": ""},
+            },
         )
 
     # ── Verify OTP ────────────────────────────────────────────────────────────
@@ -267,6 +291,8 @@ class AuthService:
             )
         await self._col.update_one(
             {"_id": user["_id"]},
-            {"$set": {"hashed_password": hash_password(body.new_password)},
-             "$unset": {"reset_otp": "", "reset_otp_expires": ""}},
+            {
+                "$set": {"hashed_password": hash_password(body.new_password)},
+                "$unset": {"reset_otp": "", "reset_otp_expires": "", "session_id": ""},
+            },
         )

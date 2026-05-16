@@ -34,6 +34,7 @@ async def get_current_user(
         if payload.get("type") != "access":
             raise credentials_exception
         user_id: str = payload.get("sub")
+        token_session_id: str = payload.get("sid", "")
         if not user_id:
             raise credentials_exception
     except JWTError:
@@ -46,6 +47,12 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is locked. Contact your administrator.",
+        )
+    if user.get("session_id") != token_session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session expired. Please log in again.",
+            headers={"WWW-Authenticate": "Bearer"},
         )
     return user
 

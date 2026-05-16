@@ -60,39 +60,6 @@ export interface JobStatusResponse {
   created_at: string;
 }
 
-// ── Admin ─────────────────────────────────────────────────────────────────────
-
-export interface AdminUserResponse {
-  id: string;
-  email: string;
-  full_name: string;
-  img_url?: string;
-  role: string;
-  is_active: boolean;
-  rate_limit: number;
-  rate_used: number;
-  rate_reset_at?: string;
-  created_at: string;
-}
-
-export interface AdminUserListResponse {
-  total: number;
-  items: AdminUserResponse[];
-}
-
-export interface AdminStats {
-  total: number;
-  active: number;
-  locked: number;
-  admins: number;
-}
-
-export interface GlobalSettings {
-  default_rate_limit: number;
-  registration_open: boolean;
-  rate_reset_hour: number;
-}
-
 export interface HistoryItem {
   id: string;
   requirement: string;
@@ -169,6 +136,12 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
         // Retry original request with fresh token
         const retryHeaders = { ...buildHeaders(tokens.access_token), ...(options.headers as Record<string, string>) };
         const retry = await fetch(`${BASE}${path}`, { ...options, headers: retryHeaders });
+        if (retry.status === 401) {
+          sessionStorage.removeItem("access_token");
+          sessionStorage.removeItem("refresh_token");
+          window.dispatchEvent(new CustomEvent("auth:expired", { detail: { reason: "Your session has ended. Please sign in again." } }));
+          throw new Error("Your session has ended. Please sign in again.");
+        }
         if (!retry.ok) throw await parseError(retry);
         if (retry.status === 204) return undefined as T;
         return retry.json();
@@ -177,17 +150,17 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     // Refresh unavailable or failed — clear session and notify the app
     sessionStorage.removeItem("access_token");
     sessionStorage.removeItem("refresh_token");
-    window.dispatchEvent(new Event("auth:expired"));
-    throw new Error("Your session has expired. Please sign in again.");
+    window.dispatchEvent(new CustomEvent("auth:expired", { detail: { reason: "Your session has ended. Please sign in again." } }));
+    throw new Error("Your session has ended. Please sign in again.");
   }
 
   if (res.status === 403) {
     const body = await res.json().catch(() => ({ detail: "" }));
     const detail: string = body.detail ?? "Forbidden";
-    if (detail.toLowerCase().includes("locked")) {
+    if (!skipRefresh && detail.toLowerCase().includes("locked")) {
       sessionStorage.removeItem("access_token");
       sessionStorage.removeItem("refresh_token");
-      window.dispatchEvent(new Event("auth:expired"));
+      window.dispatchEvent(new CustomEvent("auth:expired", { detail: { reason: "Your session has ended. Please sign in again." } }));
     }
     throw new Error(detail);
   }
@@ -268,55 +241,6 @@ export const generatorApi = {
       `/generate/jobs/${jobId}`,
       { method: "DELETE" },
     ),
-};
-
-// ── Admin API ─────────────────────────────────────────────────────────────────
-
-export const adminApi = {
-  getStats: () => request<AdminStats>("/admin/stats"),
-
-  listUsers: (skip = 0, limit = 20, q?: string, role?: string, is_active?: boolean) => {
-    const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
-    if (q && q.trim()) params.set("q", q.trim());
-    if (role) params.set("role", role);
-    if (is_active !== undefined) params.set("is_active", String(is_active));
-    return request<AdminUserListResponse>(`/admin/users?${params}`);
-  },
-
-  createUser: (email: string, password: string, full_name: string, role: "user" | "admin", rate_limit: number) =>
-    request<AdminUserResponse>("/admin/users", {
-      method: "POST",
-      body: JSON.stringify({ email, password, full_name, role, rate_limit }),
-    }),
-
-  setStatus: (userId: string, is_active: boolean) =>
-    request<AdminUserResponse>(`/admin/users/${userId}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ is_active }),
-    }),
-
-  setRateLimit: (userId: string, rate_limit: number) =>
-    request<AdminUserResponse>(`/admin/users/${userId}/rate-limit`, {
-      method: "PATCH",
-      body: JSON.stringify({ rate_limit }),
-    }),
-
-  setRole: (userId: string, role: "user" | "admin") =>
-    request<AdminUserResponse>(`/admin/users/${userId}/role`, {
-      method: "PATCH",
-      body: JSON.stringify({ role }),
-    }),
-
-  deleteUser: (userId: string) =>
-    request<void>(`/admin/users/${userId}`, { method: "DELETE" }),
-
-  getSettings: () => request<GlobalSettings>("/admin/settings"),
-
-  updateSettings: (settings: GlobalSettings) =>
-    request<GlobalSettings>("/admin/settings", {
-      method: "PATCH",
-      body: JSON.stringify(settings),
-    }),
 };
 
 // ── History ───────────────────────────────────────────────────────────────────

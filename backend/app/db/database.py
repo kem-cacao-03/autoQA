@@ -50,16 +50,6 @@ async def create_indexes() -> None:
         [("role", ASCENDING)],
         name="users_role",
     )
-    await db["users"].create_index(
-        [("verification_token", ASCENDING)],
-        sparse=True,
-        name="users_verification_token",
-    )
-    await db["users"].create_index(
-        [("reset_token", ASCENDING)],
-        sparse=True,
-        name="users_reset_token",
-    )
 
     # ── pending_registrations ─────────────────────────────────────────────────
     # TTL: auto-delete documents 15 minutes after created_at
