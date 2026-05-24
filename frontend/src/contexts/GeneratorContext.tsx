@@ -24,6 +24,7 @@ export interface GeneratorSubmitParams {
   mode: GenerationMode;
   language: string;
   providers: LLMProvider[];
+  image?: File;
 }
 
 export interface QueueItem {
@@ -193,12 +194,15 @@ export function GeneratorProvider({ children }: { children: ReactNode }) {
     }]);
 
     try {
-      const submitted = await generatorApi.submit({
-        requirement: params.requirement,
-        mode: params.mode,
-        language: params.language,
-        providers: params.providers,
-      });
+      const submitted = await generatorApi.submit(
+        {
+          requirement: params.requirement,
+          mode: params.mode,
+          language: params.language,
+          providers: params.providers,
+        },
+        params.image,
+      );
       setQueue(q => q.map(qi => qi.queueId !== queueId ? qi : {
         ...qi, jobId: submitted.job_id, status: "running",
       }));

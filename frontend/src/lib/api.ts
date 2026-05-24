@@ -101,8 +101,9 @@ export interface UserResponse {
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 
-function buildHeaders(token?: string | null): Record<string, string> {
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+function buildHeaders(token?: string | null, skipContentType = false): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (!skipContentType) headers["Content-Type"] = "application/json";
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
@@ -114,7 +115,8 @@ async function parseError(res: Response): Promise<Error> {
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = sessionStorage.getItem("access_token");
-  const headers = { ...buildHeaders(token), ...(options.headers as Record<string, string>) };
+  const isFormData = options.body instanceof FormData;
+  const headers = { ...buildHeaders(token, isFormData), ...(options.headers as Record<string, string>) };
 
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
 
@@ -227,11 +229,21 @@ export const authApi = {
 // ── Generator ─────────────────────────────────────────────────────────────────
 
 export const generatorApi = {
-  submit: (payload: GenerateRequest) =>
-    request<JobSubmittedResponse>("/generate", {
+  submit: (payload: GenerateRequest, image?: File) => {
+    if (image) {
+      const form = new FormData();
+      form.append("requirement", payload.requirement);
+      form.append("mode",        payload.mode);
+      form.append("language",    payload.language);
+      form.append("providers",   JSON.stringify(payload.providers));
+      form.append("image",       image);
+      return request<JobSubmittedResponse>("/generate", { method: "POST", body: form });
+    }
+    return request<JobSubmittedResponse>("/generate", {
       method: "POST",
       body: JSON.stringify(payload),
-    }),
+    });
+  },
 
   getJobStatus: (jobId: string) =>
     request<JobStatusResponse>(`/generate/jobs/${jobId}`),

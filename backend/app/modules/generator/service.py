@@ -42,7 +42,12 @@ class GeneratorService:
 
     # ── Submit ───────────────────────────────────────────────────────────────
 
-    def submit(self, req: GenerateRequest, user_id: str) -> JobSubmittedResponse:
+    def submit(
+        self,
+        req: GenerateRequest,
+        user_id: str,
+        image_bytes: bytes | None = None,
+    ) -> JobSubmittedResponse:
         """Validate API keys, create job, fire-and-forget the task."""
         if req.mode == GenerationMode.PIPELINE:
             # Pipeline always calls all three providers in sequence
@@ -52,7 +57,7 @@ class GeneratorService:
             self._require_keys(req.providers)
 
         job_id = task_engine.create_job()
-        task_engine.dispatch(job_id, req, user_id, self._db)
+        task_engine.dispatch(job_id, req, user_id, self._db, image_bytes=image_bytes)
         return JobSubmittedResponse(job_id=job_id)
 
     # ── Poll ─────────────────────────────────────────────────────────────────

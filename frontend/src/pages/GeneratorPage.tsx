@@ -1,9 +1,9 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, useCallback, type FormEvent } from "react";
 import {
   Zap, FlaskConical,
   Clock, Cpu, CheckCircle, XCircle, AlertTriangle,
   Loader2, FileJson, FileSpreadsheet,
-  Globe, Sparkles, X, ListChecks, Square,
+  Globe, Sparkles, X, ListChecks, Square, ImagePlus, Upload,
 } from "lucide-react";
 import {
   type GenerationMode, type LLMProvider,
@@ -196,9 +196,11 @@ function QueueItemRow({
   const isActive    = item.status === "submitting" || item.status === "running";
   const isDone      = item.status === "success" || item.status === "failure" || item.status === "cancelled";
   const isCancelled = item.status === "cancelled";
-  const truncReq    = item.requirement.length > 110
-    ? item.requirement.slice(0, 110) + "…"
-    : item.requirement;
+  const truncReq    = !item.requirement.trim()
+    ? "[Image attachment]"
+    : item.requirement.length > 110
+      ? item.requirement.slice(0, 110) + "…"
+      : item.requirement;
 
   return (
     <div className="flex items-start gap-3 px-4 py-3">
@@ -356,6 +358,47 @@ export default function GeneratorPage() {
   const [language, setLanguage]       = useState("Vietnamese");
   const [activeTab, setActiveTab]     = useState<string>("openai");
 
+  // ── Image attachment state ───────────────────────────────────────────────
+  const [image, setImage]             = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging]   = useState(false);
+  const fileInputRef                  = useRef<HTMLInputElement>(null);
+
+  // Revoke object URL when preview changes or component unmounts
+  useEffect(() => {
+    return () => { if (imagePreview) URL.revokeObjectURL(imagePreview); };
+  }, [imagePreview]);
+
+  const attachImage = useCallback((file: File) => {
+    const MAX = 10 * 1024 * 1024;
+    if (file.size > MAX) { alert("Image must be under 10 MB."); return; }
+    if (!file.type.startsWith("image/")) { alert("Only image files are supported."); return; }
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImage(file);
+    setImagePreview(URL.createObjectURL(file));
+  }, [imagePreview]);
+
+  const removeImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) attachImage(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
+  const handleDragLeave = () => setIsDragging(false);
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) attachImage(file);
+  };
+
   // ── Derive active result from queue ─────────────────────────────────────
   // Show the most recently submitted job that succeeded
   const latestSuccess = [...queue].reverse().find(q => q.status === "success") ?? null;
@@ -416,9 +459,11 @@ export default function GeneratorPage() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const params = { requirement, mode, language, providers: Array.from(providers) };
+    if (!requirement.trim() && !image) return;
+    const params = { requirement, mode, language, providers: Array.from(providers), image: image ?? undefined };
     // Reset form immediately — submit is fire-and-forget
     setRequirement("");
+    removeImage();
     submit(params);
   };
 
@@ -523,7 +568,7 @@ export default function GeneratorPage() {
               </span>
             </div>
             <textarea
-              rows={7} required minLength={10}
+              rows={7}
               className="input resize-none text-sm leading-relaxed"
               placeholder={"Describe your testing requirements in natural language\n\nExample: The login feature should accept a valid email and password. The system must validate the email format, enforce a minimum password length of 8 characters, and display clear error messages when credentials are invalid."}
               value={requirement}
@@ -541,6 +586,75 @@ export default function GeneratorPage() {
               <option value="Vietnamese">Vietnamese</option>
               <option value="English">English</option>
             </select>
+          </div>
+
+          {/* Image attachment */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              <ImagePlus className="w-3.5 h-3.5 inline mr-1.5 text-slate-400" />
+              Attachment
+              <span className="text-xs font-normal text-slate-400 ml-1.5">(optional — screenshot, wireframe, diagram)</span>
+            </label>
+
+            {imagePreview ? (
+              <div className="flex items-start gap-4 p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50">
+                <div className="relative shrink-0">
+                  <img
+                    src={imagePreview}
+                    alt="Attachment preview"
+                    className="h-20 w-28 object-cover rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors"
+                    title="Remove image"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{image?.name}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {image ? `${(image.size / 1024).toFixed(0)} KB` : ""}
+                  </p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" /> AI will use this image as visual context
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <label
+                htmlFor="image-upload"
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`flex items-center gap-3 px-4 py-4 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 ${
+                  isDragging
+                    ? "border-brand-400 bg-brand-50 dark:bg-brand-900/20"
+                    : "border-slate-200 dark:border-slate-600 hover:border-brand-300 hover:bg-brand-50/40 dark:hover:bg-brand-900/10"
+                }`}
+              >
+                <input
+                  id="image-upload"
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  className="sr-only"
+                  onChange={handleImageChange}
+                />
+                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
+                  <Upload className="w-4 h-4 text-slate-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Drop an image or{" "}
+                    <span className="text-brand-500 font-medium">browse</span>
+                  </p>
+                  <p className="text-xs text-slate-400 mt-0.5">JPEG, PNG, GIF, WebP — max 10 MB</p>
+                </div>
+              </label>
+            )}
           </div>
 
           {/* Rate limit warning */}

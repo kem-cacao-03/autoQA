@@ -7,7 +7,11 @@ Run:
 
 import asyncio
 import logging
+import time
 from contextlib import asynccontextmanager
+
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
 # Configure app-namespace logging explicitly.
 # logging.basicConfig() is a no-op if uvicorn has already added handlers to the
@@ -35,6 +39,27 @@ from app.modules.generator.router import router as generator_router
 from app.modules.history.router import router as history_router
 
 logger = logging.getLogger(__name__)
+
+# ── Performance logging middleware ────────────────────────────────────────────
+
+_perf_log = logging.getLogger("app.perf")
+
+class PerfMiddleware(BaseHTTPMiddleware):
+    SLOW_MS = 2_000  # log WARNING if response takes longer than this
+
+    async def dispatch(self, request: Request, call_next):
+        start = time.perf_counter()
+        response = await call_next(request)
+        ms = (time.perf_counter() - start) * 1000
+
+        msg = f"{request.method} {request.url.path} → {response.status_code}  {ms:.0f}ms"
+        if ms >= self.SLOW_MS:
+            _perf_log.warning("SLOW  %s", msg)
+        else:
+            _perf_log.info(msg)
+
+        response.headers["X-Response-Time"] = f"{ms:.0f}ms"
+        return response
 
 
 # ── Background cleanup task ───────────────────────────────────────────────────
@@ -97,6 +122,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(PerfMiddleware)
 
 # ── Routers ───────────────────────────────────────────────────────────────────
 

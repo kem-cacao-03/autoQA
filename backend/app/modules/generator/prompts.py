@@ -18,25 +18,25 @@ Rules:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Stage 1: GPT-4o as Senior Business Analyst / QA Architect ─────────────────
-# (unchanged — GPT-4o phân tích nghiệp vụ đang tốt, không cần sửa)
 
-SYSTEM_BA = "You are a senior business analyst and QA architect."
+SYSTEM_BA = (
+    "You are a senior business analyst and QA architect. Your job is to analyze "
+    "a feature description — provided as text, an interface image, or both — "
+    "and extract only the essential information needed for test case generation."
+)
 
 _BA_TMPL = """\
-Your job is to analyze a natural language feature description and extract only \
-the essential information needed for test case generation.
-
 ## Output Language
 All values in your JSON output must be written in: {language}
 (Keys must always remain in English)
 
 ## Your Tasks
-Analyze the feature description and extract:
-1. Business rules — explicit and implicit rules that govern the feature
-2. Constraints — validation rules, limits, permissions, data formats
-3. User flows — all paths a user can take through the feature
-4. Test scenarios — high-level scenario names grouped by category
-5. Ambiguities — unclear requirements that may affect test coverage
+Analyze the input and extract:
+1. Business rules - explicit and implicit rules that govern the feature
+2. Constraints - validation rules, limits, permissions, data formats
+3. User flows - all paths a user can take through the feature
+4. Test scenarios - high-level scenario names grouped by category
+5. Ambiguities - unclear requirements that may affect test coverage
 
 ## Output Format (JSON)
 {{
@@ -64,12 +64,20 @@ Analyze the feature description and extract:
   ]
 }}
 
+## Input Handling
+- If only text is provided: analyze the textual description directly
+- If only an image is provided: infer business rules, constraints, user flows,
+  and scenarios from visible UI elements, layout, and interactive components
+- If both are provided: treat the image as visual context that supplements
+  the text; use it to identify UI details, validation cues, or flows
+  not explicitly mentioned in the text
+
 ## Rules
-- Each array item must be 1 short sentence only — no nested objects, no bullet points
+- Each array item must be 1 short sentence only - no nested objects, no bullet points
 - Use [] for categories with no applicable scenarios
-- Do NOT generate detailed test cases — scenario names only
+- Do NOT generate detailed test cases - scenario names only
 - Do NOT include feature summary, entities, or any field outside the schema above
-- Be exhaustive on scenarios — missing a scenario here = missing test coverage later
+- Be exhaustive on scenarios - missing a scenario here = missing test coverage later
 - Output ONLY the JSON object. No explanation, no markdown code blocks.
   Start your response with "{{" and end with "}}"
 
@@ -429,7 +437,8 @@ Start your response with "{{" and end with "}}"
 
 def build_ba_prompt(requirement: str, language: str) -> str:
     """Stage 1 — GPT-4o as Senior Business Analyst / QA Architect."""
-    return _BA_TMPL.format(requirement=requirement, language=language)
+    text = requirement.strip() or "[No text description provided]"
+    return _BA_TMPL.format(requirement=text, language=language)
 
 
 def build_qa_prompt(ba_spec: str, language: str) -> str:
@@ -454,11 +463,17 @@ def build_research_system(language: str) -> str:
     """Research mode system prompt — includes language to ensure GPT-4o honours it."""
     return (
         "You are an expert QA engineer. Your task is to analyze a feature description "
-        f"and generate a complete test suite in a single pass. "
+        "and generate a complete test suite in a single pass. "
         f"All human-readable content in your output MUST be written in {language}."
     )
 
 
-def build_research_prompt(requirement: str, language: str) -> str:
+def build_research_prompt(requirement: str, language: str, has_image: bool = False) -> str:
     """Research mode — combined BA + QA, fully independent generation."""
-    return _RESEARCH_TMPL.format(requirement=requirement, language=language)
+    image_note = (
+        "\n\nNote: A screenshot or UI diagram has been attached as visual context. "
+        "Use it to identify UI elements, layouts, field names, and any visual "
+        "constraints not explicitly stated in the text description above."
+        if has_image else ""
+    )
+    return _RESEARCH_TMPL.format(requirement=requirement + image_note, language=language)

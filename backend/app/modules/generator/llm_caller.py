@@ -2,8 +2,8 @@
 LLM provider dispatching — pure I/O, no business logic.
 
 Public interface:
-  call(provider, prompt, system) → CallResult(text, prompt_tokens, completion_tokens)
-  parse_json(text)               → dict
+  call(provider, prompt, system, image_bytes?) → CallResult(text, prompt_tokens, completion_tokens)
+  parse_json(text)                              → dict
 
 Each stage in the pipeline supplies its OWN system prompt so Gemini, GPT-4o,
 and Claude each adopt the correct role (BA / QA Engineer / Reviewer).
@@ -11,6 +11,7 @@ Uses asyncio.get_running_loop() — never the deprecated get_event_loop().
 """
 
 import asyncio
+import base64
 import json
 import logging
 import re
@@ -29,7 +30,7 @@ _RETRY_DELAYS = (5, 15, 30)
 
 async def _with_retry(coro_fn, *args, **kwargs):
     last_exc: Exception | None = None
-    for attempt, delay in enumerate((*_RETRY_DELAYS, None)):
+    for delay in (*_RETRY_DELAYS, None):
         try:
             return await coro_fn(*args, **kwargs)
         except Exception as exc:
@@ -51,6 +52,8 @@ class CallResult:
     text: str
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    cache_read_tokens: int = 0
+    cache_write_tokens: int = 0
     truncated: bool = False
 
     @property
@@ -58,25 +61,42 @@ class CallResult:
         return self.prompt_tokens + self.completion_tokens
 
 
+# ── Image helpers ─────────────────────────────────────────────────────────────
+
+def _detect_mime(data: bytes) -> str:
+    """Detect image MIME type from magic bytes."""
+    if data[:4] == b'\x89PNG':                      return "image/png"
+    if data[:3] == b'\xff\xd8\xff':                 return "image/jpeg"
+    if data[:6] in (b'GIF87a', b'GIF89a'):          return "image/gif"
+    if data[:4] == b'RIFF' and data[8:12] == b'WEBP': return "image/webp"
+    return "image/jpeg"
+
+
 # ── Public API ────────────────────────────────────────────────────────────────
 
 
-async def call(provider: str, prompt: str, system: str) -> CallResult:
+async def call(
+    provider: str,
+    prompt: str,
+    system: str,
+    image_bytes: bytes | None = None,
+) -> CallResult:
     """
     Dispatch to the correct LLM provider and return CallResult with text + token usage.
     Automatically retries on transient overloaded / rate-limit errors (up to 3 attempts).
 
     Args:
-        provider: "openai" | "gemini" | "claude"
-        prompt:   User-turn content (built by prompts.py)
-        system:   System-turn content (role persona, also from prompts.py)
+        provider:    "openai" | "gemini" | "claude"
+        prompt:      User-turn content (built by prompts.py)
+        system:      System-turn content (role persona, also from prompts.py)
+        image_bytes: Optional raw image bytes for vision-enabled calls
     """
     if provider == "openai":
-        return await _with_retry(_openai, prompt, system)
+        return await _with_retry(_openai, prompt, system, image_bytes)
     if provider == "gemini":
-        return await _with_retry(_gemini, prompt, system)
+        return await _with_retry(_gemini, prompt, system, image_bytes)
     if provider == "claude":
-        return await _with_retry(_claude, prompt, system)
+        return await _with_retry(_claude, prompt, system, image_bytes)
     raise ValueError(f"Unknown LLM provider: '{provider}'")
 
 
@@ -115,15 +135,26 @@ def parse_json(text: str) -> dict:
 # ── Provider implementations ──────────────────────────────────────────────────
 
 
-async def _openai(prompt: str, system: str) -> CallResult:
+async def _openai(prompt: str, system: str, image_bytes: bytes | None = None) -> CallResult:
     from openai import AsyncOpenAI
 
     client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+
+    if image_bytes:
+        mime = _detect_mime(image_bytes)
+        b64  = base64.standard_b64encode(image_bytes).decode()
+        user_content: object = [
+            {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}},
+            {"type": "text", "text": prompt},
+        ]
+    else:
+        user_content = prompt
+
     resp = await client.chat.completions.create(
         model=settings.OPENAI_MODEL,
         messages=[
             {"role": "system", "content": system},
-            {"role": "user",   "content": prompt},
+            {"role": "user",   "content": user_content},
         ],
         response_format={"type": "json_object"},
         temperature=0.3,
@@ -136,8 +167,11 @@ async def _openai(prompt: str, system: str) -> CallResult:
     )
 
 
-async def _gemini(prompt: str, system: str) -> CallResult:
+async def _gemini(prompt: str, system: str, image_bytes: bytes | None = None) -> CallResult:
+    import io
+
     import google.generativeai as genai
+    from PIL import Image as PILImage
 
     genai.configure(api_key=settings.GEMINI_API_KEY)
     model = genai.GenerativeModel(
@@ -149,11 +183,17 @@ async def _gemini(prompt: str, system: str) -> CallResult:
             # to consume extra tokens on structural tokens, hitting the output cap
             # sooner. We rely on parse_json() to extract JSON from the raw text instead.
             max_output_tokens=65536,
+            thinking_config={"thinking_budget": -1},  # -1 = dynamic: model decides when to think
         ),
     )
     # Gemini SDK is synchronous — offload to thread pool.
     loop = asyncio.get_running_loop()
-    resp = await loop.run_in_executor(None, model.generate_content, prompt)
+    if image_bytes:
+        pil_image = PILImage.open(io.BytesIO(image_bytes))
+        content   = [pil_image, prompt]
+        resp = await loop.run_in_executor(None, model.generate_content, content)
+    else:
+        resp = await loop.run_in_executor(None, model.generate_content, prompt)
 
     # Detect truncation before attempting JSON parse — gives a meaningful error
     # instead of the cryptic "Unterminated string" from the JSON decoder.
@@ -190,17 +230,50 @@ async def _gemini(prompt: str, system: str) -> CallResult:
     )
 
 
-async def _claude(prompt: str, system: str) -> CallResult:
+_CLAUDE_MAX_TOKENS = 49152
+
+
+async def _claude(prompt: str, system: str, image_bytes: bytes | None = None) -> CallResult:
     import anthropic
 
     client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+
+    # System prompt is always static — mark it cacheable.
+    cached_system = [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}]
+
+    # User content: when an image is present its base64 payload is unique per upload
+    # so caching the text that follows it would never hit; skip cache_control in that case.
+    if image_bytes:
+        mime = _detect_mime(image_bytes)
+        b64  = base64.standard_b64encode(image_bytes).decode()
+        user_content: object = [
+            {"type": "image", "source": {
+                "type": "base64",
+                "media_type": mime,
+                "data": b64,
+            }},
+            {"type": "text", "text": prompt},
+        ]
+    else:
+        # Mark the prompt text cacheable — repeated identical calls (same requirement,
+        # same language) will hit the cache within the 5-minute TTL window.
+        user_content = [{"type": "text", "text": prompt, "cache_control": {"type": "ephemeral"}}]
+
     msg = await client.messages.create(
         model=settings.CLAUDE_MODEL,
-        max_tokens=49152,  # claude-sonnet-4-6 supports up to 64K output
-        system=system,
-        messages=[{"role": "user", "content": prompt}],
+        max_tokens=_CLAUDE_MAX_TOKENS,
+        system=cached_system,
+        messages=[{"role": "user", "content": user_content}],
         temperature=0.3,
     )
+
+    cache_read  = getattr(msg.usage, "cache_read_input_tokens",    0) or 0
+    cache_write = getattr(msg.usage, "cache_creation_input_tokens", 0) or 0
+    if cache_read or cache_write:
+        logger.info(
+            "Claude prompt-cache: read=%d write=%d (model=%s)",
+            cache_read, cache_write, settings.CLAUDE_MODEL,
+        )
 
     # Detect truncation — salvage whatever was generated rather than failing entirely.
     # json_repair (called inside parse_json) will close unclosed arrays/objects and
@@ -209,15 +282,17 @@ async def _claude(prompt: str, system: str) -> CallResult:
     if msg.stop_reason == "max_tokens":
         partial_text = msg.content[0].text if msg.content else "{}"
         logger.warning(
-            f"Claude ({settings.CLAUDE_MODEL}) hit max_tokens limit "
-            f"(output_tokens={msg.usage.output_tokens}/{16384}). "
+            "Claude (%s) hit max_tokens limit (output_tokens=%d/%d). "
             "Salvaging partial output via json_repair — result may contain "
-            "fewer test cases than requested."
+            "fewer test cases than requested.",
+            settings.CLAUDE_MODEL, msg.usage.output_tokens, _CLAUDE_MAX_TOKENS,
         )
         return CallResult(
             text=partial_text,
             prompt_tokens=msg.usage.input_tokens,
             completion_tokens=msg.usage.output_tokens,
+            cache_read_tokens=cache_read,
+            cache_write_tokens=cache_write,
             truncated=True,
         )
 
@@ -225,4 +300,6 @@ async def _claude(prompt: str, system: str) -> CallResult:
         text=msg.content[0].text,
         prompt_tokens=msg.usage.input_tokens,
         completion_tokens=msg.usage.output_tokens,
+        cache_read_tokens=cache_read,
+        cache_write_tokens=cache_write,
     )

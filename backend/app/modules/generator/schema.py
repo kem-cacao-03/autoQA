@@ -59,8 +59,8 @@ class JobStatus(str, Enum):
 
 class GenerateRequest(BaseModel):
     requirement: str = Field(
-        min_length=10,
-        description="Requirement, user story, or feature description.",
+        default="",
+        description="Requirement, user story, or feature description. May be empty when an image is provided.",
         examples=["As a user I want to log in with email and password."],
     )
     mode: GenerationMode = GenerationMode.PIPELINE

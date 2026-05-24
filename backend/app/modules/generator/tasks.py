@@ -110,6 +110,7 @@ async def _call_with_fallback(
     providers: list[str],
     prompt: str,
     system: str,
+    image_bytes: bytes | None = None,
 ) -> tuple[llm_caller.CallResult, str]:
     """Try each provider in order; return (CallResult, provider_used) on first success.
 
@@ -119,7 +120,7 @@ async def _call_with_fallback(
     last_exc: Exception | None = None
     for provider in providers:
         try:
-            cr = await llm_caller.call(provider, prompt, system)
+            cr = await llm_caller.call(provider, prompt, system, image_bytes=image_bytes)
             if cr.truncated:
                 logger.warning(
                     "[PIPELINE] %s output truncated (%d tokens), trying next provider",
@@ -255,17 +256,21 @@ async def run_pipeline(
     req: GenerateRequest,
     user_id: str,
     db: AsyncIOMotorDatabase,
+    image_bytes: bytes | None = None,
 ) -> None:
     t0 = datetime.now(timezone.utc)
     _update(job_id, status=JobStatus.RUNNING, progress=5)
     usage: list[StageUsage] = []
     try:
         # ── Stage 1: GPT-4o — Senior Business Analyst / QA Architect ──────────
+        # Image (if any) is passed here so the BA can extract visual context.
+        # Stages 2 and 3 work on structured text output from Stage 1, no image needed.
         t_ba = datetime.now(timezone.utc)
         cr_ba, ba_provider = await _call_with_fallback(
             ["openai", "claude"],
             prompt=prompts.build_ba_prompt(req.requirement, req.language),
             system=prompts.SYSTEM_BA,
+            image_bytes=image_bytes,
         )
         dur_ba = (datetime.now(timezone.utc) - t_ba).total_seconds()
         usage.append(_make_stage_usage("ba", ba_provider, cr_ba, dur_ba))
@@ -362,6 +367,7 @@ async def run_research(
     req: GenerateRequest,
     user_id: str,
     db: AsyncIOMotorDatabase,
+    image_bytes: bytes | None = None,
 ) -> None:
     t0 = datetime.now(timezone.utc)
     _update(job_id, status=JobStatus.RUNNING, progress=5)
@@ -379,8 +385,10 @@ async def run_research(
                     prompt=prompts.build_research_prompt(
                         requirement=req.requirement,
                         language=req.language,
+                        has_image=image_bytes is not None,
                     ),
                     system=prompts.build_research_system(req.language),
+                    image_bytes=image_bytes,
                 )
                 duration = (datetime.now(timezone.utc) - t_start).total_seconds()
                 logger.info(
@@ -474,15 +482,16 @@ def dispatch(
     req: GenerateRequest,
     user_id: str,
     db: AsyncIOMotorDatabase,
+    image_bytes: bytes | None = None,
 ) -> asyncio.Task:
     """
     Schedule the correct coroutine.
     Must be called from within an async context (event loop must be running).
     """
     coro = (
-        run_research(job_id, req, user_id, db)
+        run_research(job_id, req, user_id, db, image_bytes=image_bytes)
         if req.mode == GenerationMode.RESEARCH
-        else run_pipeline(job_id, req, user_id, db)
+        else run_pipeline(job_id, req, user_id, db, image_bytes=image_bytes)
     )
     task = asyncio.create_task(coro)
     _TASK_STORE[job_id] = task

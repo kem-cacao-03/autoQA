@@ -24,6 +24,9 @@ anthropic==0.43.0
 # Search
 elasticsearch[async]==8.13.0
 
+# Image processing (Gemini vision)
+Pillow>=10.0.0
+
 # Utilities
 python-dotenv==1.0.1
 httpx==0.28.1
