@@ -67,13 +67,18 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
     setExportDialog({ type, name });
   };
 
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   useEffect(() => {
-    historyApi.get(id).then((d) => {
-      setDetail(d);
-      if (d.all_results && d.all_results.length > 0) {
-        setSelectedProvider(d.all_results[0].provider);
-      }
-    }).finally(() => setLoading(false));
+    historyApi.get(id)
+      .then((d) => {
+        setDetail(d);
+        if (d.all_results && d.all_results.length > 0) {
+          setSelectedProvider(d.all_results[0].provider);
+        }
+      })
+      .catch(() => setFetchError("Failed to load history item."))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const isResearch = !!(detail?.mode === "research" && detail.all_results && detail.all_results.length > 1);
@@ -133,6 +138,10 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
             <div className="flex items-center justify-center py-16">
               <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
             </div>
+          )}
+
+          {fetchError && !loading && (
+            <div className="flex items-center justify-center py-16 text-sm text-red-500">{fetchError}</div>
           )}
 
           {detail && !loading && (
@@ -230,14 +239,18 @@ function DetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
         <FilenameDialog
           defaultName={exportDialog.name}
           extension={exportDialog.type === "json" ? "json" : "xlsx"}
-          onConfirm={(filename) => {
-            if (isResearch && detail?.all_results?.length) {
-              const allResearch = detail.all_results.map((r) => ({ provider: r.provider, result: r, success: true }));
-              if (exportDialog.type === "json") downloadJSON(undefined, allResearch, filename);
-              else downloadExcel(undefined, allResearch, filename, markedIds);
-            } else {
-              if (exportDialog.type === "json") downloadJSON(activeResult ?? undefined, undefined, filename);
-              else downloadExcel(activeResult ?? undefined, undefined, filename, markedIds);
+          onConfirm={async (filename) => {
+            try {
+              if (isResearch && detail?.all_results?.length) {
+                const allResearch = detail.all_results.map((r) => ({ provider: r.provider, result: r, success: true }));
+                if (exportDialog.type === "json") downloadJSON(undefined, allResearch, filename);
+                else await downloadExcel(undefined, allResearch, filename, markedIds);
+              } else {
+                if (exportDialog.type === "json") downloadJSON(activeResult ?? undefined, undefined, filename);
+                else await downloadExcel(activeResult ?? undefined, undefined, filename, markedIds);
+              }
+            } catch {
+              alert("Export failed. Please try again.");
             }
           }}
           onClose={() => setExportDialog(null)}

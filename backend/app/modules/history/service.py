@@ -6,6 +6,7 @@ NOT from generator/schema.py — that would create a cross-module dependency.
 """
 
 import logging
+import re
 from datetime import datetime
 
 from fastapi import HTTPException
@@ -110,7 +111,7 @@ class HistoryService:
                 query["_id"] = {"$in": es_ids}
             except Exception as exc:
                 logger.warning("[ES] Search unavailable, falling back to MongoDB regex: %s", exc)
-                query["requirement"] = {"$regex": search.strip(), "$options": "i"}
+                query["requirement"] = {"$regex": re.escape(search.strip()), "$options": "i"}
 
         # Fetch extra docs to account for research deduplication (up to 3 per session).
         internal_limit = limit * 3

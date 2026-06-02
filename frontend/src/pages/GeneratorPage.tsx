@@ -104,6 +104,52 @@ function PipelineStepIndicator({ progress }: { progress: number }) {
   );
 }
 
+const PIE_COLORS: Record<string, string> = {
+  "bg-emerald-500": "#10b981",
+  "bg-blue-500":    "#3b82f6",
+  "bg-violet-500":  "#8b5cf6",
+  "bg-slate-400":   "#94a3b8",
+};
+
+function TokenPieChart({ rows, total }: { rows: DashRow[]; total: number }) {
+  const cx = 60, cy = 60, r = 50, hole = 24;
+  let angle = -Math.PI / 2;
+  const slices = rows.map((row) => {
+    const frac  = total > 0 ? row.total / total : 0;
+    const sweep = frac * 2 * Math.PI;
+    const x1    = cx + r * Math.cos(angle);
+    const y1    = cy + r * Math.sin(angle);
+    angle += sweep;
+    const x2    = cx + r * Math.cos(angle);
+    const y2    = cy + r * Math.sin(angle);
+    const large = sweep > Math.PI ? 1 : 0;
+    const d = frac >= 0.9999
+      ? `M ${cx - r} ${cy} a ${r} ${r} 0 1 1 ${2 * r} 0 a ${r} ${r} 0 1 1 ${-2 * r} 0`
+      : `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+    return { d, color: PIE_COLORS[row.color] ?? "#94a3b8", pct: Math.round(frac * 100), model: row.model };
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        {slices.map((s, i) => (
+          <path key={i} d={s.d} fill={s.color} opacity={0.88} />
+        ))}
+        <circle cx={cx} cy={cy} r={hole} className="fill-white dark:fill-slate-800" />
+      </svg>
+      <div className="w-full space-y-1.5">
+        {slices.map((s, i) => (
+          <div key={i} className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: s.color }} />
+            <span className="text-xs text-slate-600 dark:text-slate-400 flex-1 truncate">{s.model}</span>
+            <span className="text-xs font-bold tabular-nums" style={{ color: s.color }}>{s.pct}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function UsageDashboard({
   usage, elapsed, mode, researchResults,
 }: {
@@ -140,45 +186,51 @@ function UsageDashboard({
       </h3>
 
       {rows.length > 0 && (
-        <>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{totalTokens.toLocaleString()}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Tokens</p>
+        <div className="flex gap-4 items-start">
+          <div className="flex-1 min-w-0 space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{totalTokens.toLocaleString()}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Tokens</p>
+              </div>
+              <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-sky-600 dark:text-sky-400 flex items-center justify-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  {elapsed != null ? `${elapsed.toFixed(1)}s` : "—"}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Total time</p>
+              </div>
+              <div className="bg-brand-50 dark:bg-brand-900/20 rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-brand-600 dark:text-brand-400">{rows.length}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Models</p>
+              </div>
             </div>
-            <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-sky-600 dark:text-sky-400 flex items-center justify-center gap-1">
-                <Clock className="w-4 h-4" />
-                {elapsed != null ? `${elapsed.toFixed(1)}s` : "—"}
-              </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Total time</p>
-            </div>
-            <div className="bg-brand-50 dark:bg-brand-900/20 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-brand-600 dark:text-brand-400">{rows.length}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Models</p>
+
+            <div className="space-y-2">
+              {rows.map((row) => (
+                <div key={row.key} className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 w-24 shrink-0">
+                    <div className={`w-2 h-2 rounded-full shrink-0 ${row.color}`} />
+                    <span className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">{row.model}</span>
+                  </div>
+                  <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
+                    <div className={`h-full ${row.color} rounded-full opacity-80 transition-all duration-700`} style={{ width: `${(row.total / maxTokens) * 100}%` }} />
+                  </div>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 w-24 text-right shrink-0 tabular-nums">
+                    {row.total.toLocaleString()} tok
+                  </span>
+                  <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 w-14 text-right shrink-0 tabular-nums">
+                    {row.duration != null ? `${row.duration.toFixed(1)}s` : "—"}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="space-y-2">
-            {rows.map((row) => (
-              <div key={row.key} className="flex items-center gap-3">
-                <div className="flex items-center gap-2 w-24 shrink-0">
-                  <div className={`w-2 h-2 rounded-full shrink-0 ${row.color}`} />
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">{row.model}</span>
-                </div>
-                <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
-                  <div className={`h-full ${row.color} rounded-full opacity-80 transition-all duration-700`} style={{ width: `${(row.total / maxTokens) * 100}%` }} />
-                </div>
-                <span className="text-xs text-slate-500 dark:text-slate-400 w-24 text-right shrink-0 tabular-nums">
-                  {row.total.toLocaleString()} tok
-                </span>
-                <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 w-14 text-right shrink-0 tabular-nums">
-                  {row.duration != null ? `${row.duration.toFixed(1)}s` : "—"}
-                </span>
-              </div>
-            ))}
+          <div className="w-36 shrink-0 border-l border-slate-100 dark:border-slate-700 pl-4">
+            <TokenPieChart rows={rows} total={totalTokens} />
           </div>
-        </>
+        </div>
       )}
     </div>
   );
@@ -844,9 +896,13 @@ export default function GeneratorPage() {
         <FilenameDialog
           defaultName={exportDialog.name}
           extension={exportDialog.type === "json" ? "json" : "xlsx"}
-          onConfirm={(filename) => {
-            if (exportDialog.type === "json") downloadJSON(pipelineResult, researchResults, filename);
-            else downloadExcel(pipelineResult, researchResults, filename, markedIds);
+          onConfirm={async (filename) => {
+            try {
+              if (exportDialog.type === "json") downloadJSON(pipelineResult, researchResults, filename);
+              else await downloadExcel(pipelineResult, researchResults, filename, markedIds);
+            } catch {
+              alert("Export failed. Please try again.");
+            }
           }}
           onClose={() => setExportDialog(null)}
         />

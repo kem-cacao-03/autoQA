@@ -67,14 +67,19 @@ export default function ProfilePage() {
     setPwLoading(true);
     try {
       await authApi.changePassword(currentPw, newPw);
-      await login(user!.email, newPw);
-      setCurrentPw("");
-      setNewPw("");
-      setPwMsg({ ok: true, text: "Password changed successfully!" });
     } catch (err) {
       setPwMsg({ ok: false, text: err instanceof Error ? err.message : "Failed to change password." });
-    } finally {
       setPwLoading(false);
+      return;
+    }
+    setCurrentPw("");
+    setNewPw("");
+    setPwMsg({ ok: true, text: "Password changed successfully!" });
+    setPwLoading(false);
+    try {
+      await login(user!.email, newPw);
+    } catch {
+      // Password was changed; silent failure here — user will be prompted to log in again
     }
   };
 

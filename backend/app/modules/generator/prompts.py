@@ -65,12 +65,7 @@ Analyze the input and extract:
 }}
 
 ## Input Handling
-- If only text is provided: analyze the textual description directly
-- If only an image is provided: infer business rules, constraints, user flows,
-  and scenarios from visible UI elements, layout, and interactive components
-- If both are provided: treat the image as visual context that supplements
-  the text; use it to identify UI details, validation cues, or flows
-  not explicitly mentioned in the text
+{input_section}
 
 ## Rules
 - Each array item must be 1 short sentence only - no nested objects, no bullet points
@@ -80,10 +75,30 @@ Analyze the input and extract:
 - Be exhaustive on scenarios - missing a scenario here = missing test coverage later
 - Output ONLY the JSON object. No explanation, no markdown code blocks.
   Start your response with "{{" and end with "}}"
+"""
+
+_BA_INPUT_TEXT_ONLY = """\
+Only text has been provided. Analyze the description below directly.
 
 ## Feature Description:
-{requirement}\
-"""
+{requirement}"""
+
+_BA_INPUT_IMAGE_ONLY = """\
+No text description has been provided. A UI screenshot or diagram has been
+attached as the sole input. Derive all business rules, constraints, flows,
+scenarios, and ambiguities entirely from what is visible in the image:
+UI elements, labels, field names, button states, validation hints, layout
+structure, and any visible constraints (e.g. character counters, file size
+labels, required field markers)."""
+
+_BA_INPUT_BOTH = """\
+Both a text description and a UI screenshot or diagram have been provided.
+Analyze the text as the primary source, and use the image to supplement it:
+identify UI element names, field labels, visible validation hints, layout
+details, or flows not explicitly mentioned in the text.
+
+## Feature Description:
+{requirement}"""
 
 
 # ── Stage 2: Gemini as Expert QA Engineer ────────────────────────────────────
@@ -378,7 +393,7 @@ Work through these steps internally (do NOT output intermediate steps):
 
 3. Self-review before outputting:
    - Remove duplicates
-   - Ensure at least 20% of test cases are Negative category
+   - Ensure at least 25% of test cases are Negative category
    - Verify total_count matches actual number of test cases
    - Replace any placeholder test data with specific realistic values
 
@@ -425,9 +440,29 @@ Your response must be ONLY the JSON object.
 No explanation, no markdown code blocks, no preamble.
 Start your response with "{{" and end with "}}"
 
-## Feature Description:
-{requirement}\
+## {input_section}\
 """
+
+_RESEARCH_INPUT_TEXT_ONLY = """\
+Feature Description:
+{requirement}"""
+
+_RESEARCH_INPUT_IMAGE_ONLY = """\
+Input
+No text description has been provided. A UI screenshot or diagram has been
+attached as the sole input. Derive all business rules, constraints, flows,
+and test cases entirely from what is visible in the image: UI elements,
+labels, field names, button states, validation hints, layout structure,
+and any visible constraints."""
+
+_RESEARCH_INPUT_BOTH = """\
+Feature Description:
+{requirement}
+
+## Visual Context
+A UI screenshot or diagram has also been attached. Use it to supplement the
+text above: identify UI element names, field labels, visible validation hints,
+layout details, or flows not explicitly mentioned in the text."""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -435,10 +470,20 @@ Start your response with "{{" and end with "}}"
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-def build_ba_prompt(requirement: str, language: str) -> str:
+def build_ba_prompt(requirement: str, language: str, has_image: bool = False) -> str:
     """Stage 1 — GPT-4o as Senior Business Analyst / QA Architect."""
-    text = requirement.strip() or "[No text description provided]"
-    return _BA_TMPL.format(requirement=text, language=language)
+    text = requirement.strip()
+
+    if text and has_image:
+        input_section = _BA_INPUT_BOTH.format(requirement=text)
+    elif has_image:
+        input_section = _BA_INPUT_IMAGE_ONLY
+    else:
+        input_section = _BA_INPUT_TEXT_ONLY.format(
+            requirement=text or "[No text description provided]"
+        )
+
+    return _BA_TMPL.format(input_section=input_section, language=language)
 
 
 def build_qa_prompt(ba_spec: str, language: str) -> str:
@@ -470,10 +515,15 @@ def build_research_system(language: str) -> str:
 
 def build_research_prompt(requirement: str, language: str, has_image: bool = False) -> str:
     """Research mode — combined BA + QA, fully independent generation."""
-    image_note = (
-        "\n\nNote: A screenshot or UI diagram has been attached as visual context. "
-        "Use it to identify UI elements, layouts, field names, and any visual "
-        "constraints not explicitly stated in the text description above."
-        if has_image else ""
-    )
-    return _RESEARCH_TMPL.format(requirement=requirement + image_note, language=language)
+    text = requirement.strip()
+
+    if text and has_image:
+        input_section = _RESEARCH_INPUT_BOTH.format(requirement=text)
+    elif has_image:
+        input_section = _RESEARCH_INPUT_IMAGE_ONLY
+    else:
+        input_section = _RESEARCH_INPUT_TEXT_ONLY.format(
+            requirement=text or "[No text description provided]"
+        )
+
+    return _RESEARCH_TMPL.format(input_section=input_section, language=language)

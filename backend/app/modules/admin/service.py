@@ -2,6 +2,7 @@
 AdminService — CRUD operations on the users collection, accessible only to admins.
 """
 
+import re
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional
@@ -76,9 +77,10 @@ class AdminService:
     ) -> AdminUserListResponse:
         query: dict = {}
         if q:
+            safe_q = re.escape(q.strip())
             query["$or"] = [
-                {"full_name": {"$regex": q, "$options": "i"}},
-                {"email": {"$regex": q, "$options": "i"}},
+                {"full_name": {"$regex": safe_q, "$options": "i"}},
+                {"email": {"$regex": safe_q, "$options": "i"}},
             ]
         if role:
             query["role"] = role

@@ -9,6 +9,7 @@ import asyncio
 import logging
 import time
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -80,6 +81,36 @@ async def _job_cleanup_loop() -> None:
             logger.error("[JobStore] Cleanup failed: %s", exc, exc_info=True)
 
 
+async def _rate_limit_reset_loop() -> None:
+    """Every 60 s: reset rate_used for users whose rate_reset_at has expired."""
+    from app.db.database import get_database
+
+    while True:
+        try:
+            await asyncio.sleep(60)
+            db = get_database()
+            now = datetime.utcnow()
+
+            settings_doc = await db["settings"].find_one({"_id": "global"})
+            reset_hour: int = (settings_doc or {}).get("rate_reset_hour", 0)
+            today_reset = now.replace(hour=reset_hour, minute=0, second=0, microsecond=0)
+            next_reset = today_reset if today_reset > now else today_reset + timedelta(days=1)
+
+            result = await db["users"].update_many(
+                {"rate_limit": {"$gt": 0}, "rate_reset_at": {"$lt": now}},
+                {"$set": {"rate_used": 0, "rate_reset_at": next_reset}},
+            )
+            if result.modified_count:
+                logger.info(
+                    "[RateReset] Auto-reset %d user(s). Next window at %s UTC.",
+                    result.modified_count, next_reset.strftime("%Y-%m-%d %H:%M"),
+                )
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            logger.error("[RateReset] Auto-reset failed: %s", exc, exc_info=True)
+
+
 # ── Lifespan ──────────────────────────────────────────────────────────────────
 
 @asynccontextmanager
@@ -88,14 +119,17 @@ async def lifespan(app: FastAPI):
     await create_indexes()
     await connect_es()
     cleanup_task = asyncio.create_task(_job_cleanup_loop())
+    rate_reset_task = asyncio.create_task(_rate_limit_reset_loop())
     try:
         yield
     finally:
         cleanup_task.cancel()
-        try:
-            await cleanup_task
-        except asyncio.CancelledError:
-            pass
+        rate_reset_task.cancel()
+        for t in (cleanup_task, rate_reset_task):
+            try:
+                await t
+            except asyncio.CancelledError:
+                pass
         await close_db()
         await close_es()
 

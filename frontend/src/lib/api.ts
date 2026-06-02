@@ -230,19 +230,13 @@ export const authApi = {
 
 export const generatorApi = {
   submit: (payload: GenerateRequest, image?: File) => {
-    if (image) {
-      const form = new FormData();
-      form.append("requirement", payload.requirement);
-      form.append("mode",        payload.mode);
-      form.append("language",    payload.language);
-      form.append("providers",   JSON.stringify(payload.providers));
-      form.append("image",       image);
-      return request<JobSubmittedResponse>("/generate", { method: "POST", body: form });
-    }
-    return request<JobSubmittedResponse>("/generate", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    const form = new FormData();
+    form.append("requirement", payload.requirement);
+    form.append("mode",        payload.mode);
+    form.append("language",    payload.language);
+    form.append("providers",   JSON.stringify(payload.providers));
+    if (image) form.append("image", image);
+    return request<JobSubmittedResponse>("/generate", { method: "POST", body: form });
   },
 
   getJobStatus: (jobId: string) =>

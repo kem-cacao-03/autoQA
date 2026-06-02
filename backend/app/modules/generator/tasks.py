@@ -268,7 +268,7 @@ async def run_pipeline(
         t_ba = datetime.now(timezone.utc)
         cr_ba, ba_provider = await _call_with_fallback(
             ["openai", "claude"],
-            prompt=prompts.build_ba_prompt(req.requirement, req.language),
+            prompt=prompts.build_ba_prompt(req.requirement, req.language, has_image=image_bytes is not None),
             system=prompts.SYSTEM_BA,
             image_bytes=image_bytes,
         )

@@ -84,14 +84,13 @@ async def check_rate_limit(
 
     # Reset counter if the daily window has expired
     reset_at = current_user.get("rate_reset_at")
-    if reset_at is None or (isinstance(reset_at, datetime) and reset_at < now):
-        next_reset = (now + timedelta(days=1)).replace(
-            hour=reset_hour, minute=0, second=0, microsecond=0
-        )
-        # If the next occurrence of reset_hour is still later today, use today's
+    effective_reset_at: datetime | None = reset_at if isinstance(reset_at, datetime) else None
+
+    needs_reset = (reset_at is None) or (isinstance(reset_at, datetime) and reset_at < now)
+    if needs_reset:
         today_reset = now.replace(hour=reset_hour, minute=0, second=0, microsecond=0)
-        if today_reset > now:
-            next_reset = today_reset
+        next_reset = today_reset if today_reset > now else today_reset + timedelta(days=1)
+        effective_reset_at = next_reset
         await col.update_one(
             {"_id": user_id},
             {"$set": {"rate_used": 0, "rate_reset_at": next_reset}},
@@ -103,7 +102,11 @@ async def check_rate_limit(
         {"$inc": {"rate_used": 1}},
     )
     if updated is None:
-        reset_label = f"{reset_hour:02d}:00 UTC"
+        reset_label = (
+            effective_reset_at.strftime("%Y-%m-%d %H:%M UTC")
+            if effective_reset_at
+            else f"{reset_hour:02d}:00 UTC"
+        )
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=f"Daily request limit of {rate_limit} reached. Resets at {reset_label}.",

@@ -183,7 +183,11 @@ async def _gemini(prompt: str, system: str, image_bytes: bytes | None = None) ->
             # to consume extra tokens on structural tokens, hitting the output cap
             # sooner. We rely on parse_json() to extract JSON from the raw text instead.
             max_output_tokens=65536,
-            thinking_config={"thinking_budget": -1},  # -1 = dynamic: model decides when to think
+            # Disable thinking: the pipeline's multi-stage design (BA→QA→Reviewer)
+            # already provides structured reasoning. Thinking tokens count toward
+            # max_output_tokens on gemini-2.5-flash, consuming budget that should
+            # go to JSON output — this was causing consistent fallback to OpenAI.
+            thinking_config={"thinking_budget": 0},
         ),
     )
     # Gemini SDK is synchronous — offload to thread pool.
