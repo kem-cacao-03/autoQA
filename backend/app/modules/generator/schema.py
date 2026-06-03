@@ -24,6 +24,8 @@ __all__ = [
     "JobStatus",
     "GenerateRequest",
     "StageUsage",
+    "ProviderAttempt",
+    "StageFallbackLog",
     "ResearchProviderResult",
     "GenerationResult",        # re-exported for convenience
     "JobSubmittedResponse",
@@ -85,6 +87,23 @@ class StageUsage(BaseModel):
     duration_seconds: Optional[float] = None  # wall-clock time for this LLM call
 
 
+# ── Fallback / retry tracking ────────────────────────────────────────────────
+
+class ProviderAttempt(BaseModel):
+    """One provider's attempt within a stage — succeeded or failed."""
+    provider: str
+    succeeded: bool
+    retry_count: int = 0                  # transient retries before this outcome
+    failure_reason: Optional[str] = None  # None when succeeded
+
+
+class StageFallbackLog(BaseModel):
+    """All provider attempts for a single pipeline stage."""
+    stage: str                          # "ba" | "qa" | "reviewer"
+    attempts: list[ProviderAttempt]
+    final_provider: str                 # provider that ultimately produced output
+
+
 # ── Research mode — per-provider result ──────────────────────────────────────
 
 class ResearchProviderResult(BaseModel):
@@ -120,7 +139,8 @@ class JobStatusResponse(BaseModel):
 
     # Observability
     elapsed_seconds: Optional[float] = None
-    usage: Optional[list[StageUsage]] = None   # per-stage (pipeline) or per-provider (research)
+    usage: Optional[list[StageUsage]] = None         # per-stage (pipeline) or per-provider (research)
+    fallbacks: Optional[list[StageFallbackLog]] = None  # provider switching + retry info (pipeline only)
 
     error: Optional[str] = None
     created_at: datetime = Field(default_factory=_utcnow)

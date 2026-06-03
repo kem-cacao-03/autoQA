@@ -20,9 +20,13 @@ Rules:
 # ── Stage 1: GPT-4o as Senior Business Analyst / QA Architect ─────────────────
 
 SYSTEM_BA = (
-    "You are a senior business analyst and QA architect. Your job is to analyze "
-    "a feature description — provided as text, an interface image, or both — "
-    "and extract only the essential information needed for test case generation."
+    "You are a principal business analyst and QA architect with 10+ years of experience "
+    "shipping production software. Your job is to perform a deep, structured analysis of "
+    "a feature description — provided as text, an interface image, or both — and extract "
+    "ALL information a QA engineer needs to design exhaustive test cases. "
+    "You think adversarially: assume the implementation is buggy until proven otherwise. "
+    "You surface implicit rules, hidden constraints, and edge cases that developers forget "
+    "to mention. A missing scenario in your output means a bug ships to production."
 )
 
 _BA_TMPL = """\
@@ -30,49 +34,153 @@ _BA_TMPL = """\
 All values in your JSON output must be written in: {language}
 (Keys must always remain in English)
 
+## Analysis Mindset
+Think like a QA architect who has seen every class of production bug. Before writing
+any output, mentally simulate the feature from these angles:
+- What happens at every boundary value (min, max, zero, negative, empty)?
+- What happens when the user does things out of order or skips steps?
+- What permissions / roles are involved — and what should each role NOT be able to do?
+- What concurrent or race-condition scenarios exist?
+- What data formats are accepted — and what malformed variants must be rejected?
+- What security surfaces does this feature expose?
+
 ## Your Tasks
-Analyze the input and extract:
-1. Business rules - explicit and implicit rules that govern the feature
-2. Constraints - validation rules, limits, permissions, data formats
-3. User flows - all paths a user can take through the feature
-4. Test scenarios - high-level scenario names grouped by category
-5. Ambiguities - unclear requirements that may affect test coverage
+Extract ALL of the following from the input:
+
+1. **Business rules** — explicit AND implicit rules governing the feature.
+   Implicit rules: things the spec doesn't say but any reasonable user would expect.
+   Example: "Users can only edit their own posts" even if not stated.
+
+2. **Constraints** — every validation rule, size/length limit, permission gate,
+   data format requirement, rate limit, and time constraint visible or inferable.
+   Be specific: "Username: 3–30 characters, alphanumeric + underscore only" not "Username has limits".
+
+3. **User flows** — every path through the feature:
+   - happy_paths: the intended, successful journeys
+   - alternative_flows: valid but non-default paths (e.g. optional fields skipped, secondary actions)
+   - exception_flows: all failure and error paths (validation errors, system errors, permission denials)
+
+4. **Test scenarios** — high-level scenario names grouped by category.
+   Use the per-category checklists in the Self-Review section below to ensure
+   full coverage before writing each category's scenario list.
+
+5. **Ambiguities** — questions about requirements that, if answered differently,
+   would change test coverage. Each question must be specific and actionable.
+   Example: "What is the maximum file upload size? The spec doesn't define this."
 
 ## Output Format (JSON)
 {{
   "business_rules": [
-    "One short sentence per rule"
+    "One concrete sentence per rule — explicit or implicit"
   ],
   "constraints": [
-    "One short sentence per constraint"
+    "One sentence per constraint — include specific values where known"
   ],
   "flows": {{
-    "happy_paths": ["One short sentence per flow"],
-    "alternative_flows": ["One short sentence per flow"],
-    "exception_flows": ["One short sentence per flow"]
+    "happy_paths": ["One sentence per flow"],
+    "alternative_flows": ["One sentence per flow"],
+    "exception_flows": ["One sentence per flow — each must be a distinct failure path"]
   }},
   "scenarios": {{
-    "functional": ["Scenario name only"],
-    "boundary": ["Scenario name only"],
-    "negative": ["Scenario name only"],
-    "ui_ux": [],
-    "security": [],
-    "performance": []
+    "functional": ["Scenario name — specific enough that a QA knows what to test"],
+    "database": ["Scenario name — name the data constraint or persistence behavior being tested"],
+    "user_interface": ["Scenario name — name the UI element or layout condition being tested"],
+    "usability": ["Scenario name — name the user flow or accessibility condition being tested"],
+    "performance": ["Scenario name"],
+    "security": ["Scenario name — must name the attack vector or exposure risk"],
+    "integration": ["Scenario name — name the external service or API being tested"]
   }},
   "ambiguities": [
-    "One short question per ambiguity"
+    "One specific question per ambiguity — include why it affects test coverage"
   ]
 }}
 
 ## Input Handling
 {input_section}
 
+## Self-Review Before Output
+Work through each checklist before finalising that category. Fix any gaps.
+
+### business_rules
+- [ ] Includes explicit rules stated in the spec
+- [ ] Includes implicit rules a developer might omit (ownership, state transitions, defaults)
+- [ ] Each rule is a single, concrete sentence — not a category label
+
+### constraints
+- [ ] Covers every field: length/size limits, allowed characters, data formats
+- [ ] Covers permissions: who can perform which action under which conditions
+- [ ] Covers time/rate constraints if applicable (session expiry, rate limits, cooldowns)
+- [ ] Each entry includes specific values where inferable (e.g. "3–30 chars", "max 5 MB")
+
+### flows
+- [ ] happy_paths: covers every intended successful journey, including multi-step ones
+- [ ] alternative_flows: covers valid but non-default paths (optional fields, secondary actions,
+      role-based variants)
+- [ ] exception_flows: covers every distinct failure path — validation errors, system errors,
+      permission denials, network failures, concurrent conflicts
+
+### scenarios — coverage dimensions
+Before outputting, verify scenarios cover ALL dimensions below.
+For each dimension, add at least 1 scenario to the appropriate category if not already present.
+
+**Input validation** (→ functional / security)
+- [ ] Empty input
+- [ ] Input at minimum boundary (valid)
+- [ ] Input just below minimum (invalid)
+- [ ] Input at maximum boundary (valid)
+- [ ] Input just above maximum (invalid)
+- [ ] Input with special characters (!@#$%^&*)
+- [ ] Input with Vietnamese characters and diacritics
+- [ ] Input with only whitespace
+- [ ] Input with emoji or Unicode control characters
+
+**Access control** (→ security)
+- [ ] Unauthenticated user attempting the action
+- [ ] User with insufficient permissions
+- [ ] Session expiry during action
+
+**Data state** (→ functional / database)
+- [ ] Action on empty dataset (no results, empty list)
+- [ ] Action on exactly 1 item
+- [ ] Action on dataset at maximum size
+
+**Performance** (→ performance)
+- [ ] Response time under normal conditions
+- [ ] Load test: concurrent users (50/100/1000 users)
+- [ ] Stress test: beyond capacity threshold, resource limits
+- [ ] Stability test: sustained load over extended period
+
+**Security** (→ security)
+- [ ] Sensitive data is encrypted at rest and in transit (password, token, PII)
+- [ ] SQL Injection — authentication bypass
+- [ ] CSRF — request with forged token
+- [ ] XSS — reflected and stored
+- [ ] Rate limiting / brute force protection
+
+**Reliability** (→ functional)
+- [ ] Behavior when network connection is lost mid-action
+- [ ] Recovery behavior when server encounters an error
+
+**User Interface / Usability** (→ user_interface / usability)
+- [ ] Real-time validation feedback (inline errors as user types)
+- [ ] Error message placement and wording
+- [ ] Disabled / loading / empty states of interactive elements
+- [ ] Use [] only if the feature genuinely has no UI component (consistent with the Rules below)
+
+### ambiguities
+- [ ] Each question is specific and names the missing information
+- [ ] Each question explains how the answer would change test coverage
+- [ ] Use [] only if the spec is fully unambiguous
+
+### final
+- [ ] No scenario name is vague ("Test login" → bad; "Login with expired session token" → good)
+- [ ] No field outside the schema is present in the output
+
 ## Rules
-- Each array item must be 1 short sentence only - no nested objects, no bullet points
-- Use [] for categories with no applicable scenarios
-- Do NOT generate detailed test cases - scenario names only
+- Each array item must be 1 sentence only — no nested objects, no bullet sub-points
+- Use [] ONLY when a category genuinely does not apply (e.g. performance for a purely static display)
+- Do NOT generate detailed test cases — scenario names only
 - Do NOT include feature summary, entities, or any field outside the schema above
-- Be exhaustive on scenarios - missing a scenario here = missing test coverage later
 - Output ONLY the JSON object. No explanation, no markdown code blocks.
   Start your response with "{{" and end with "}}"
 """
@@ -103,7 +211,14 @@ details, or flows not explicitly mentioned in the text.
 
 # ── Stage 2: Gemini as Expert QA Engineer ────────────────────────────────────
 
-SYSTEM_QA = "You are an expert QA engineer specializing in comprehensive test case design."
+SYSTEM_QA = (
+    "You are a senior QA engineer with 8+ years of experience writing production test suites. "
+    "You receive a structured feature analysis from a business analyst and translate it into "
+    "exhaustive, immediately executable test cases. "
+    "You think adversarially: every boundary is a potential bug, every permission gap is a "
+    "potential exploit, every missing error handler is a potential crash. "
+    "A test case you omit is a defect that reaches production."
+)
 
 _QA_TMPL = """\
 You will receive a structured feature analysis and must generate a complete \
@@ -122,19 +237,20 @@ For EACH scenario in the outline, generate detailed test cases covering:
 - All happy paths
 - All boundary and edge cases (min, max, just-inside, just-outside)
 - All negative and error cases
-- UI/UX flows (if present in outline)
+- User Interface / Usability flows (if present in outline)
 - Security scenarios (if present in outline)
 - Performance hints (if present in outline)
 
 ## Coverage Requirements (MANDATORY)
 Generate test cases until ALL of the following minimums are met:
-- At least 25% of test cases must be Negative category
+- At least 20% of test cases must cover error conditions, invalid inputs, or boundary violations
+  (classify under Functional, Security, or Database as appropriate)
 - At least 3 Security test cases (SQL injection, XSS, authentication bypass,
   brute-force, data exposure — pick the most relevant for this feature)
 - At least 2 Performance test cases (response time under load, concurrent users)
 - Every boundary value in the feature constraints must have its own test case
   (e.g. if max = 5MB, generate TC for exactly 5MB, 5MB+1byte, and just below)
-- Every exception_flow in the analysis must map to at least 1 Negative TC
+- Every exception_flow in the analysis must map to at least 1 test case covering the failure path
 
 ## Test Data Requirements (STRICT)
 Every test case MUST have test_data populated with domain-specific realistic values.
@@ -186,7 +302,7 @@ Each expected_result must describe TWO things:
       "test_case_id": "TC_001",
       "title": "...",
       "priority": "High | Medium | Low",
-      "category": "Functional | UI/UX | Negative | Security | Performance",
+      "category": "Functional | Database | User Interface | Usability | Performance | Security | Integration",
       "preconditions": ["..."],
       "steps": ["1. ...", "2. ...", "3. ..."],
       "expected_result": "...",
@@ -202,11 +318,17 @@ Each expected_result must describe TWO things:
 - Low    → Minor UI details, low-impact edge cases
 
 ## Category Rules
-- Functional  → Business logic, data processing, CRUD operations
-- UI/UX       → Layout, navigation, responsiveness, usability
-- Negative    → Invalid input, unauthorized access, error handling
-- Security    → Authentication, authorization, injection, data exposure
-- Performance → Load time, response time, concurrent users
+- Functional      → Business logic, data processing, CRUD operations
+- Database        → Data persistence, constraints, transactions, query correctness
+- User Interface  → Layout, element visibility, responsive design; browser/device
+                    compatibility (iOS Safari, Android Chrome, minimum browser versions)
+- Usability       → User flow clarity, error message quality, accessibility
+- Performance     → Load time, response time, concurrent users (50/100/1000+),
+                    stress testing beyond capacity, stability under sustained load
+- Security        → Authentication, authorization, SQL injection, XSS, CSRF,
+                    data encryption, brute force, rate limiting
+- Integration     → Third-party APIs, payment gateways, external services
+                    (use only if the feature involves external integrations)
 
 ## Self-Review Before Output
 Before returning, verify ALL of the following — fix any violations before outputting:
@@ -215,7 +337,7 @@ Before returning, verify ALL of the following — fix any violations before outp
 - [ ] Every test_data has realistic domain-specific values (no placeholders)
 - [ ] Every preconditions list has at least 2 items with specific values
 - [ ] Every expected_result describes both UI response AND system state change
-- [ ] At least 25% are Negative category
+- [ ] At least 20% cover error conditions, invalid inputs, or boundary violations
 - [ ] At least 3 Security test cases exist
 - [ ] At least 2 Performance test cases exist
 - [ ] total_count equals exactly the number of items in test_cases
@@ -255,14 +377,16 @@ You will receive:
 
 ### Phase 1 — Coverage Gap Analysis
 Mentally map ALL test scenarios the feature requires across these dimensions:
-- Functional: happy paths, alternative flows, edge cases
-- Negative: invalid input, missing data, boundary violations, error handling
-- Security: injection attacks (SQL, XSS), authentication bypass, brute-force
-  protection, data exposure, rate limiting, session management
-- UI/UX: real-time validation, error message placement, countdown timers,
-  disabled states, responsive layout
-- Performance: response time, concurrent users, load handling
+- Functional: happy paths, alternative flows, edge cases, invalid inputs, error handling
+- Database: data persistence, constraint violations, transaction integrity, query correctness
+- User Interface: layout, element visibility, responsive design, browser/device compatibility
+- Usability: user flow clarity, error message placement, real-time validation feedback, accessibility
+- Performance: response time, concurrent users, load handling, stress beyond capacity
+- Security: injection attacks (SQL, XSS), CSRF, authentication bypass, brute-force
+  protection, data encryption, rate limiting, session management
+- Integration: third-party APIs, payment gateways (only if applicable to the feature)
 - Boundary: just-inside and just-outside limits for ALL numeric/size/time constraints
+  (assign to Functional, Database, or Security as appropriate)
 
 Identify which dimensions are missing or undercovered in the raw suite.
 
@@ -315,7 +439,7 @@ If yes, upgrade the existing one instead of adding a duplicate.
 ### Phase 5 — Standardization
 - Re-index all test_case_id sequentially: TC_001, TC_002, TC_003...
 - Normalize priority: only "High | Medium | Low" — no other values
-- Validate category: only "Functional | UI/UX | Negative | Security | Performance"
+- Validate category: only "Functional | Database | User Interface | Usability | Performance | Security | Integration"
 - Ensure steps are numbered strings: "1. ...", "2. ..."
 - Verify total_count equals exactly the number of items in test_cases
 
@@ -325,8 +449,8 @@ Before outputting, confirm ALL of the following are true:
 - [ ] No step says "enter valid data" — all steps specify the exact value
 - [ ] No expected_result is a single short phrase — all describe UI + system state
 - [ ] No test_data contains placeholder values like "test", "abc", "123", "example"
-- [ ] At least 25% of test cases are Negative category
-- [ ] Security and Performance categories each have at least 3 test cases
+- [ ] At least 20% of test cases cover error conditions, invalid inputs, or boundary violations
+- [ ] Security category has at least 3 test cases; Performance category has at least 2 test cases
 - [ ] total_count matches actual array length
 
 ## Output Format (JSON)
@@ -338,7 +462,7 @@ Before outputting, confirm ALL of the following are true:
       "test_case_id": "TC_001",
       "title": "...",
       "priority": "High | Medium | Low",
-      "category": "Functional | UI/UX | Negative | Security | Performance",
+      "category": "Functional | Database | User Interface | Usability | Performance | Security | Integration",
       "preconditions": ["..."],
       "steps": ["1. ...", "2. ...", "3. ..."],
       "expected_result": "...",
@@ -347,6 +471,24 @@ Before outputting, confirm ALL of the following are true:
   ],
   "total_count": 0
 }}
+
+## Priority Rules
+- High   → Core happy paths, critical failures, security breaches
+- Medium → Alternative flows, important edge cases
+- Low    → Minor UI details, low-impact edge cases
+
+## Category Rules
+- Functional      → Business logic, data processing, CRUD operations
+- Database        → Data persistence, constraints, transactions, query correctness
+- User Interface  → Layout, element visibility, responsive design; browser/device
+                    compatibility (iOS Safari, Android Chrome, minimum browser versions)
+- Usability       → User flow clarity, error message quality, accessibility
+- Performance     → Load time, response time, concurrent users (50/100/1000+),
+                    stress testing beyond capacity, stability under sustained load
+- Security        → Authentication, authorization, SQL injection, XSS, CSRF,
+                    data encryption, brute force, rate limiting
+- Integration     → Third-party APIs, payment gateways, external services
+                    (use only if the feature involves external integrations)
 
 ## Rules
 - Do NOT remove test cases without a clear reason (duplicate or genuinely redundant)
@@ -366,9 +508,6 @@ Before outputting, confirm ALL of the following are true:
 # ═══════════════════════════════════════════════════════════════════════════════
 # MODE B — RESEARCH (combined BA + QA role, each model works independently)
 # ═══════════════════════════════════════════════════════════════════════════════
-# (unchanged — Research mode dùng để so sánh độc lập từng model, không sửa)
-
-SYSTEM_RESEARCH = "You are an expert QA engineer. Your task is to analyze a feature description and generate a complete test suite in a single pass."
 
 _RESEARCH_TMPL = """\
 ## Output Language
@@ -387,13 +526,13 @@ Work through these steps internally (do NOT output intermediate steps):
    - All happy paths
    - Boundary / edge cases (min, max, just-inside, just-outside)
    - Negative / error cases (invalid input, missing data, wrong permissions)
-   - UI/UX scenarios (if applicable)
+   - User Interface / Usability scenarios (if applicable)
    - Security scenarios (if applicable)
    - Performance hints (if applicable)
 
 3. Self-review before outputting:
    - Remove duplicates
-   - Ensure at least 25% of test cases are Negative category
+   - Ensure at least 20% of test cases cover error conditions, invalid inputs, or boundary violations
    - Verify total_count matches actual number of test cases
    - Replace any placeholder test data with specific realistic values
 
@@ -406,7 +545,7 @@ Work through these steps internally (do NOT output intermediate steps):
       "test_case_id": "TC_001",
       "title": "...",
       "priority": "High | Medium | Low",
-      "category": "Functional | UI/UX | Negative | Security | Performance",
+      "category": "Functional | Database | User Interface | Usability | Performance | Security | Integration",
       "preconditions": ["..."],
       "steps": ["1. ...", "2. ...", "3. ..."],
       "expected_result": "...",
@@ -422,11 +561,17 @@ Work through these steps internally (do NOT output intermediate steps):
 - Low    → Minor UI details, low-impact edge cases
 
 ## Category Rules
-- Functional  → Business logic, data processing, CRUD operations
-- UI/UX       → Layout, navigation, responsiveness, usability
-- Negative    → Invalid input, unauthorized access, error handling
-- Security    → Authentication, authorization, injection, data exposure
-- Performance → Load time, response time, concurrent users
+- Functional      → Business logic, data processing, CRUD operations
+- Database        → Data persistence, constraints, transactions, query correctness
+- User Interface  → Layout, element visibility, responsive design; browser/device
+                    compatibility (iOS Safari, Android Chrome, minimum browser versions)
+- Usability       → User flow clarity, error message quality, accessibility
+- Performance     → Load time, response time, concurrent users (50/100/1000+),
+                    stress testing beyond capacity, stability under sustained load
+- Security        → Authentication, authorization, SQL injection, XSS, CSRF,
+                    data encryption, brute force, rate limiting
+- Integration     → Third-party APIs, payment gateways, external services
+                    (use only if the feature involves external integrations)
 
 ## Format Rules
 - steps: array of strings, each formatted as "1. action", "2. action"...
@@ -440,7 +585,8 @@ Your response must be ONLY the JSON object.
 No explanation, no markdown code blocks, no preamble.
 Start your response with "{{" and end with "}}"
 
-## {input_section}\
+## Input
+{input_section}\
 """
 
 _RESEARCH_INPUT_TEXT_ONLY = """\
@@ -448,7 +594,6 @@ Feature Description:
 {requirement}"""
 
 _RESEARCH_INPUT_IMAGE_ONLY = """\
-Input
 No text description has been provided. A UI screenshot or diagram has been
 attached as the sole input. Derive all business rules, constraints, flows,
 and test cases entirely from what is visible in the image: UI elements,
@@ -497,15 +642,16 @@ def build_review_prompt(
     language: str,
 ) -> str:
     """Stage 3 — Claude as Senior QA Lead (final review & standardization)."""
+    requirement_section = requirement.strip() or "[Feature provided as image only — infer requirements from the raw test suite below]"
     return _REVIEW_TMPL.format(
-        requirement=requirement,
+        requirement=requirement_section,
         qa_cases=qa_cases,
         language=language,
     )
 
 
 def build_research_system(language: str) -> str:
-    """Research mode system prompt — includes language to ensure GPT-4o honours it."""
+    """Research mode system prompt — reinforces language for all models."""
     return (
         "You are an expert QA engineer. Your task is to analyze a feature description "
         "and generate a complete test suite in a single pass. "

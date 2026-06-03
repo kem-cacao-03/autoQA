@@ -20,6 +20,7 @@ from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+from app.core.config import settings
 from app.core.schemas import GenerationResult
 from app.modules.generator import llm_caller, prompts
 from app.modules.generator.schema import (
@@ -27,7 +28,9 @@ from app.modules.generator.schema import (
     GenerationMode,
     JobStatus,
     LLMProvider,
+    ProviderAttempt,
     ResearchProviderResult,
+    StageFallbackLog,
     StageUsage,
 )
 
@@ -51,6 +54,7 @@ class JobState:
     # Observability
     elapsed_seconds: float | None = None
     usage: list[StageUsage] | None = None
+    fallbacks: list[StageFallbackLog] | None = None  # provider switching + retry info (pipeline only)
     error: str | None = None
     created_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
@@ -106,34 +110,61 @@ async def cleanup_expired_jobs() -> int:
 
 # ── Shared helpers ────────────────────────────────────────────────────────────
 
+def _log_fallback_summary(stage: str, attempts: list[ProviderAttempt], final_provider: str) -> None:
+    """Log a single structured line when a stage had to switch providers."""
+    if len(attempts) <= 1:
+        return  # no fallback — nothing to report
+    lines = []
+    for a in attempts:
+        if a.succeeded:
+            lines.append(f"{a.provider}=OK(retry={a.retry_count})")
+        else:
+            reason = (a.failure_reason or "unknown")[:80]
+            lines.append(f"{a.provider}=FAIL(retry={a.retry_count}, reason={reason!r})")
+    logger.warning(
+        "[PIPELINE] Stage %-8s FALLBACK  %s  →  final=%s",
+        stage, " | ".join(lines), final_provider,
+    )
+
+
 async def _call_with_fallback(
     providers: list[str],
     prompt: str,
     system: str,
     image_bytes: bytes | None = None,
-) -> tuple[llm_caller.CallResult, str]:
-    """Try each provider in order; return (CallResult, provider_used) on first success.
+) -> tuple[llm_caller.CallResult, str, list[ProviderAttempt]]:
+    """Try each provider in order; return (CallResult, provider_used, attempts) on first success.
 
     Truncated output is treated as failure so the next provider is tried — passing
     an incomplete test suite to the next pipeline stage would silently corrupt results.
+    Each attempt is recorded so callers can surface fallback reasons to the user.
     """
+    attempts: list[ProviderAttempt] = []
     last_exc: Exception | None = None
     for provider in providers:
         try:
             cr = await llm_caller.call(provider, prompt, system, image_bytes=image_bytes)
             if cr.truncated:
-                logger.warning(
-                    "[PIPELINE] %s output truncated (%d tokens), trying next provider",
-                    provider, cr.completion_tokens,
-                )
-                last_exc = RuntimeError(
-                    f"{provider} output was truncated at {cr.completion_tokens:,} tokens "
-                    "(hit max_output_tokens limit)"
-                )
+                reason = f"output truncated at {cr.completion_tokens:,} tokens (hit max_output_tokens limit)"
+                logger.warning("[PIPELINE] %s %s, trying next provider", provider, reason)
+                attempts.append(ProviderAttempt(
+                    provider=provider,
+                    succeeded=False,
+                    retry_count=cr.retry_count,
+                    failure_reason=reason,
+                ))
+                last_exc = RuntimeError(f"{provider} {reason}")
                 continue
-            return cr, provider
+            attempts.append(ProviderAttempt(provider=provider, succeeded=True, retry_count=cr.retry_count))
+            return cr, provider, attempts
         except Exception as exc:
             logger.warning("[PIPELINE] %s failed, trying next provider: %s", provider, exc)
+            attempts.append(ProviderAttempt(
+                provider=provider,
+                succeeded=False,
+                retry_count=getattr(exc, "_retry_count", 0),
+                failure_reason=str(exc),
+            ))
             last_exc = exc
     raise last_exc  # type: ignore[misc]
 
@@ -206,6 +237,67 @@ def _build_result(
     )
 
 
+_STAGE_COLLECTION: dict[str, str] = {
+    "ba": "pipeline_stage1_ba",
+    "qa": "pipeline_stage2_qa",
+}
+
+
+async def _persist_stage(
+    db: AsyncIOMotorDatabase,
+    stage: str,
+    job_id: str,
+    user_id: str,
+    requirement: str,
+    provider: str,
+    text: str,
+    prompt_tokens: int,
+    completion_tokens: int,
+    total_tokens: int,
+    duration_seconds: float | None,
+    history_id: str | None = None,
+) -> None:
+    collection = _STAGE_COLLECTION[stage]
+    try:
+        await db[collection].insert_one({
+            "_id":               str(uuid.uuid4()),
+            "job_id":            job_id,
+            "history_id":        history_id,
+            "user_id":           user_id,
+            "requirement":       requirement,
+            "provider":          provider,
+            "text":              text,
+            "prompt_tokens":     prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens":      total_tokens,
+            "duration_seconds":  duration_seconds,
+            "created_at":        datetime.now(timezone.utc),
+        })
+    except Exception as exc:
+        logger.warning("[PIPELINE] Failed to write %s doc: %s", collection, exc)
+
+
+async def _persist_debug(
+    db: AsyncIOMotorDatabase,
+    history_id: str,
+    stages: dict[str, dict],
+) -> None:
+    """Write per-stage raw text to `pipeline_debug` for inspection.
+
+    Each entry in `stages` maps a stage name to:
+      { "provider": str, "text": str, "duration_seconds": float | None }
+    """
+    try:
+        await db["pipeline_debug"].insert_one({
+            "_id":        str(uuid.uuid4()),
+            "history_id": history_id,
+            "stages":     stages,
+            "created_at": datetime.now(timezone.utc),
+        })
+    except Exception as exc:
+        logger.warning("[PIPELINE] Failed to write pipeline_debug doc: %s", exc)
+
+
 async def _persist(
     result: GenerationResult,
     req: GenerateRequest,
@@ -266,7 +358,7 @@ async def run_pipeline(
         # Image (if any) is passed here so the BA can extract visual context.
         # Stages 2 and 3 work on structured text output from Stage 1, no image needed.
         t_ba = datetime.now(timezone.utc)
-        cr_ba, ba_provider = await _call_with_fallback(
+        cr_ba, ba_provider, ba_attempts = await _call_with_fallback(
             ["openai", "claude"],
             prompt=prompts.build_ba_prompt(req.requirement, req.language, has_image=image_bytes is not None),
             system=prompts.SYSTEM_BA,
@@ -278,6 +370,14 @@ async def run_pipeline(
             "[PIPELINE] Stage 1 %-8s (BA):       input=%6d  output=%5d  total=%6d  (%.1fs)",
             ba_provider, cr_ba.prompt_tokens, cr_ba.completion_tokens, cr_ba.total_tokens, dur_ba,
         )
+        _log_fallback_summary("ba", ba_attempts, ba_provider)
+        await _persist_stage(
+            db=db, stage="ba",
+            job_id=job_id, user_id=user_id, requirement=req.requirement,
+            provider=ba_provider, text=cr_ba.text,
+            prompt_tokens=cr_ba.prompt_tokens, completion_tokens=cr_ba.completion_tokens,
+            total_tokens=cr_ba.total_tokens, duration_seconds=dur_ba,
+        )
         _update(job_id, progress=30)
 
         # Strip any markdown fences the model may have added despite instructions
@@ -285,7 +385,7 @@ async def run_pipeline(
 
         # ── Stage 2: Gemini — Expert QA Engineer ─────────────────────────────
         t_qa = datetime.now(timezone.utc)
-        cr_qa, qa_provider = await _call_with_fallback(
+        cr_qa, qa_provider, qa_attempts = await _call_with_fallback(
             ["gemini", "openai"],
             prompt=prompts.build_qa_prompt(ba_spec=ba_spec_text, language=req.language),
             system=prompts.SYSTEM_QA,
@@ -296,11 +396,19 @@ async def run_pipeline(
             "[PIPELINE] Stage 2 %-8s (QA):       input=%6d  output=%5d  total=%6d  (%.1fs)",
             qa_provider, cr_qa.prompt_tokens, cr_qa.completion_tokens, cr_qa.total_tokens, dur_qa,
         )
+        _log_fallback_summary("qa", qa_attempts, qa_provider)
+        await _persist_stage(
+            db=db, stage="qa",
+            job_id=job_id, user_id=user_id, requirement=req.requirement,
+            provider=qa_provider, text=cr_qa.text,
+            prompt_tokens=cr_qa.prompt_tokens, completion_tokens=cr_qa.completion_tokens,
+            total_tokens=cr_qa.total_tokens, duration_seconds=dur_qa,
+        )
         _update(job_id, progress=65)
 
         # ── Stage 3: Claude — Senior QA Lead / Final Review (GPT-4o fallback) ─
         t_review = datetime.now(timezone.utc)
-        cr_review, reviewer_provider = await _call_with_fallback(
+        cr_review, reviewer_provider, reviewer_attempts = await _call_with_fallback(
             ["claude", "openai"],
             prompt=prompts.build_review_prompt(
                 requirement=req.requirement,
@@ -316,6 +424,7 @@ async def run_pipeline(
             reviewer_provider, cr_review.prompt_tokens, cr_review.completion_tokens,
             cr_review.total_tokens, dur_review,
         )
+        _log_fallback_summary("reviewer", reviewer_attempts, reviewer_provider)
         _update(job_id, progress=90)
 
         result = _build_result(
@@ -336,6 +445,24 @@ async def run_pipeline(
             output_tokens=total_out,
             elapsed_seconds=elapsed,
         )
+        # Back-fill history_id on stage 1 & 2 docs now that we have it
+        for col in ("pipeline_stage1_ba", "pipeline_stage2_qa"):
+            try:
+                await db[col].update_one(
+                    {"job_id": job_id},
+                    {"$set": {"history_id": history_id}},
+                )
+            except Exception as exc:
+                logger.warning("[PIPELINE] Failed to back-fill history_id in %s: %s", col, exc)
+        await _persist_debug(
+            db=db,
+            history_id=history_id,
+            stages={
+                "ba":  {"provider": ba_provider,       "text": cr_ba.text,     "duration_seconds": dur_ba},
+                "qa":  {"provider": qa_provider,       "text": cr_qa.text,     "duration_seconds": dur_qa},
+                "rev": {"provider": reviewer_provider, "text": cr_review.text, "duration_seconds": dur_review},
+            },
+        )
         await _log_usage(
             db=db, user_id=user_id, mode=req.mode.value,
             stages=usage, elapsed_seconds=elapsed, history_id=history_id,
@@ -349,6 +476,11 @@ async def run_pipeline(
             history_id=history_id,
             elapsed_seconds=elapsed,
             usage=usage,
+            fallbacks=[
+                StageFallbackLog(stage="ba",       attempts=ba_attempts,       final_provider=ba_provider),
+                StageFallbackLog(stage="qa",       attempts=qa_attempts,       final_provider=qa_provider),
+                StageFallbackLog(stage="reviewer", attempts=reviewer_attempts, final_provider=reviewer_provider),
+            ],
         )
 
     except asyncio.CancelledError:
@@ -389,6 +521,7 @@ async def run_research(
                     ),
                     system=prompts.build_research_system(req.language),
                     image_bytes=image_bytes,
+                    model_override=None,
                 )
                 duration = (datetime.now(timezone.utc) - t_start).total_seconds()
                 logger.info(

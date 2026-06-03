@@ -76,6 +76,7 @@ class GeneratorService:
             research_results=job.research_results,
             elapsed_seconds=job.elapsed_seconds,
             usage=job.usage,
+            fallbacks=job.fallbacks,
             error=job.error,
             created_at=job.created_at,
         )

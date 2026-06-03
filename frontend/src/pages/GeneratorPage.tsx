@@ -644,8 +644,8 @@ export default function GeneratorPage() {
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
               <ImagePlus className="w-3.5 h-3.5 inline mr-1.5 text-slate-400" />
-              Attachment
-              <span className="text-xs font-normal text-slate-400 ml-1.5">(optional — screenshot, wireframe, diagram)</span>
+              Attach photo
+              <span className="text-xs font-normal text-slate-400 ml-1.5">(optional — 1 photo max)</span>
             </label>
 
             {imagePreview ? (
@@ -669,9 +669,6 @@ export default function GeneratorPage() {
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{image?.name}</p>
                   <p className="text-xs text-slate-400 mt-0.5">
                     {image ? `${(image.size / 1024).toFixed(0)} KB` : ""}
-                  </p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" /> AI will use this image as visual context
                   </p>
                 </div>
               </div>
