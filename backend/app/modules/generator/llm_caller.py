@@ -98,7 +98,7 @@ async def call(
         prompt:         User-turn content (built by prompts.py)
         system:         System-turn content (role persona, also from prompts.py)
         image_bytes:    Optional raw image bytes for vision-enabled calls
-        model_override: Override the default model for this provider (e.g. use Haiku in research mode)
+        model_override: Override the default model for this provider
     """
     if provider == "openai":
         return await _with_retry(_openai, prompt, system, image_bytes)

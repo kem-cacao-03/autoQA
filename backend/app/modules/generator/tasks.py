@@ -356,7 +356,9 @@ async def run_pipeline(
     try:
         # ── Stage 1: GPT-4o — Senior Business Analyst / QA Architect ──────────
         # Image (if any) is passed here so the BA can extract visual context.
-        # Stages 2 and 3 work on structured text output from Stage 1, no image needed.
+        # Stage 2 works on structured text from Stage 1 (no image needed).
+        # Stage 3 also receives the image so the reviewer can catch UI gaps
+        # the BA may have missed and verify coverage against the visual spec.
         t_ba = datetime.now(timezone.utc)
         cr_ba, ba_provider, ba_attempts = await _call_with_fallback(
             ["openai", "claude"],
@@ -414,8 +416,10 @@ async def run_pipeline(
                 requirement=req.requirement,
                 qa_cases=llm_caller.strip_fences(cr_qa.text),
                 language=req.language,
+                has_image=image_bytes is not None,
             ),
             system=prompts.SYSTEM_REVIEWER,
+            image_bytes=image_bytes,
         )
         dur_review = (datetime.now(timezone.utc) - t_review).total_seconds()
         usage.append(_make_stage_usage("reviewer", reviewer_provider, cr_review, dur_review))

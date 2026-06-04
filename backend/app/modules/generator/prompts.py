@@ -358,6 +358,8 @@ Start your response with "{{" and end with "}}"
 SYSTEM_REVIEWER = (
     "You are a senior QA lead performing final review and standardization of "
     "a generated test suite before delivery to the development team. "
+    "You receive the original feature description — which may include a UI screenshot "
+    "or diagram in addition to text — and the raw test suite produced by the QA engineer. "
     "Your standard is higher than the generator — every test case you output "
     "must be immediately executable by a junior QA engineer without clarification."
 )
@@ -370,7 +372,7 @@ test_data values) must be written in: {language}
 
 ## Inputs
 You will receive:
-1. Original feature description (user's raw input)
+1. Original feature description (text and/or UI screenshot/diagram attached as image)
 2. Raw test suite JSON (from generator)
 
 ## Your Tasks
@@ -498,11 +500,25 @@ Before outputting, confirm ALL of the following are true:
   Start your response with "{{" and end with "}}"
 
 ## Input 1 — Original Feature Description:
-{requirement}
+{requirement_section}
 
 ## Input 2 — Raw Test Suite:
 {qa_cases}\
 """
+
+_REVIEW_INPUT_IMAGE_ONLY = (
+    "[No text description was provided. A UI screenshot or diagram is attached as the sole "
+    "input — infer all requirements from what is visible in the image and from the raw test "
+    "suite below.]"
+)
+
+_REVIEW_INPUT_BOTH = (
+    "{requirement}\n\n"
+    "## Visual Context\n"
+    "A UI screenshot or diagram is also attached. Use it as additional context "
+    "when reviewing coverage gaps — UI elements, field labels, or flows visible "
+    "in the image but missing from the test suite should be added."
+)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -518,7 +534,10 @@ All human-readable values must be written in: {language}
 Work through these steps internally (do NOT output intermediate steps):
 
 1. Analyze the feature description:
-   - Identify entities, business rules, and constraints
+   - Identify entities, explicit business rules, and constraints
+   - Identify implicit rules: things the spec doesn't say but any reasonable
+     user would expect (e.g. "Users can only edit their own posts" even if
+     not stated; "Deleted items cannot be restored" if no undo is mentioned)
    - Map all user flows: happy paths, alternative flows, error flows
    - Detect boundary conditions and edge cases
 
@@ -575,9 +594,22 @@ Work through these steps internally (do NOT output intermediate steps):
 
 ## Format Rules
 - steps: array of strings, each formatted as "1. action", "2. action"...
-- test_data: key-value with specific realistic values (real email, real phone number format,
-  real boundary numbers...), use {{}} if not applicable
-- expected_result: one clear paragraph describing the verifiable outcome
+  Each step must be atomic — exactly ONE action per step:
+  BAD:  "1. Nhập email và mật khẩu rồi nhấn đăng nhập"
+  GOOD: "1. Nhập 'nguyenvana@gmail.com' vào trường Email
+         2. Nhập 'Matkhau@2024' vào trường Mật khẩu
+         3. Nhấn nút Đăng nhập"
+- test_data: key-value with specific realistic values (real email, real phone
+  number format, real boundary numbers...), use {{}} if not applicable
+  BAD:  {{"email": "test@test.com", "password": "abc123"}}
+  GOOD: {{"email": "nguyenvana@gmail.com", "password": "Matkhau@2024"}}
+- expected_result: one clear paragraph describing BOTH:
+  (a) what the tester sees on the UI (message shown, page navigated to)
+  (b) what changed in the system (data saved, status updated, log created)
+  BAD:  "Đăng nhập thành công"
+  GOOD: "Hệ thống chuyển hướng người dùng đến trang chủ và hiển thị tên
+         'Nguyễn Văn An' ở góc trên phải. Phiên đăng nhập được tạo và
+         access token được lưu trong localStorage."
 - total_count: must equal exactly the number of items in test_cases
 
 ## IMPORTANT
@@ -640,11 +672,18 @@ def build_review_prompt(
     requirement: str,
     qa_cases: str,
     language: str,
+    has_image: bool = False,
 ) -> str:
     """Stage 3 — Claude as Senior QA Lead (final review & standardization)."""
-    requirement_section = requirement.strip() or "[Feature provided as image only — infer requirements from the raw test suite below]"
+    text = requirement.strip()
+    if text and has_image:
+        requirement_section = _REVIEW_INPUT_BOTH.format(requirement=text)
+    elif has_image:
+        requirement_section = _REVIEW_INPUT_IMAGE_ONLY
+    else:
+        requirement_section = text or "[Feature provided as image only — infer requirements from the raw test suite below]"
     return _REVIEW_TMPL.format(
-        requirement=requirement_section,
+        requirement_section=requirement_section,
         qa_cases=qa_cases,
         language=language,
     )
@@ -653,7 +692,7 @@ def build_review_prompt(
 def build_research_system(language: str) -> str:
     """Research mode system prompt — reinforces language for all models."""
     return (
-        "You are an expert QA engineer. Your task is to analyze a feature description "
+        "You are a senior QA engineer with 8+ years of experience writing production test suites. Your task is to analyze a feature description "
         "and generate a complete test suite in a single pass. "
         f"All human-readable content in your output MUST be written in {language}."
     )

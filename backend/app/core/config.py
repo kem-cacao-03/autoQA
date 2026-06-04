@@ -38,7 +38,6 @@ class Settings(BaseSettings):
 
     ANTHROPIC_API_KEY: str = ""
     CLAUDE_MODEL: str = "claude-sonnet-4-5"
-    CLAUDE_RESEARCH_MODEL: str = "claude-haiku-4-5-20251001"  # lighter model for parallel research calls
 
     class Config:
         env_file = ".env"
